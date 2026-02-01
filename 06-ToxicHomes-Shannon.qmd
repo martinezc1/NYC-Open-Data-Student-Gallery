@@ -1,0 +1,732 @@
+---
+title: "Toxic Homes: Exploring Mold Exposure Complaint and Domestic Violence Report Trends in NYC"
+author: "Shannon Joyce"
+---
+
+## Toxic Homes: Exploring Mold Exposure Complaint and Domestic Violence Report Trends in NYC {#sec-shannon}
+
+Housing conditions are an important factor in public health and well-being. Poor residential environments, such as mold exposure, can contribute to physical health problems and increased stress. Domestic violence is also influenced by environmental and social stressors, making housing conditions a relevant area of study.
+
+This project examines the relationship between residential mold complaints and domestic violence reports in New York City from 2010 to 2024. I am using two datasets from NYC Open Data: [311 Complaint Data](https://data.cityofnewyork.us/Social-Services/311-Service-Requests-from-2010-to-Present/erm2-nwe9/about_data) to extract residential mold complaints and [NYPD Complaint Data Historic](https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i/about_data) to extract domestic violence reports. Using NYC 311 mold complaint data and DV report data, I explore whether these two types of reports follow similar patterns over time. The goal is not to determine causation, but to understand whether mold complaints and DV reports tend to rise and fall together.
+
+The analysis focuses on monthly aggregated data and includes exploratory summaries, correlation analyses, and regression models. I also explore delayed (or lagged) relationships and mold complaint resolution time to better understand how timing may play a role.
+
+## Loading, Prepping, Cleaning, & Aggregating
+
+### Data Preparation & Cleaning
+
+```{r}
+#| label: load-package
+#| message: false
+#| warning: false
+library(tidyverse)
+library(readxl)
+library(ggplot2)
+library(mosaic)
+library(AICcmodavg)
+library(knitr)
+library(arrow)
+```
+
+```{r}
+#| label: load-data
+#| message: false
+#| warning: false
+#| cache: true
+mold_data <- read_parquet("311_Service_Requests_from_2010_to_Present_20251215.parquet")
+dv_data <- read_parquet("NYPD_Complaint_Data_Historic_20251218.parquet")
+```
+
+```{r}
+#| label: cleaning-data
+#| message: false
+#| warning: false
+
+# 1. Create a Lookup Table for the Cities (The "Max Squeeze" approach)
+# This replaces the 100-line case_when and is much faster/stable
+city_lookup <- data.frame(
+  City = c("NEW YORK", "BROOKLYN", "ARVERNE", "BRONX", "JAMAICA", "STATEN ISLAND", 
+           "SPRINGFIELD GARDENS", "FLUSHING", "RICHMOND HILL", "ASTORIA", "HOLLIS", 
+           "RIDGEWOOD", "FOREST HILLS", "ELMHURST", "MASPETH", "SOUTH RICHMOND HILL", 
+           "JACKSON HEIGHTS", "BAYSIDE", "FAR ROCKAWAY", "SAINT ALBANS", "CORONA", 
+           "WOODSIDE", "QUEENS VILLAGE", "REGO PARK", "ROSEDALE", "SUNNYSIDE", 
+           "OZONE PARK", "EAST ELMHURST", "MIDDLE VILLAGE", "WOODHAVEN", 
+           "SOUTH OZONE PARK", "ROCKAWAY PARK", "KEW GARDENS", "FRESH MEADOWS", 
+           "COLLEGE POINT", "LONG ISLAND CITY", "OAKLAND GARDENS", "WHITESTONE", 
+           "HOWARD BEACH", "CAMBRIA HEIGHTS", "BELLEROSE", "LITTLE NECK", 
+           "BREEZY POINT", "GLEN OAKS", "FLORAL PARK", "PELHAM", "NEW HYDE PARK", 
+           "QUEENS", "MANHATTAN"),
+  Borough_Mapped = c("MANHATTAN", "BROOKLYN", "QUEENS", "BRONX", "QUEENS", "STATEN ISLAND", 
+                     "QUEENS", "QUEENS", "QUEENS", "QUEENS", "QUEENS", 
+                     "QUEENS", "QUEENS", "QUEENS", "QUEENS", "QUEENS", 
+                     "QUEENS", "QUEENS", "QUEENS", "QUEENS", "QUEENS", 
+                     "QUEENS", "QUEENS", "QUEENS", "QUEENS", "QUEENS", 
+                     "QUEENS", "QUEENS", "QUEENS", "QUEENS", 
+                     "QUEENS", "QUEENS", "QUEENS", "QUEENS", 
+                     "QUEENS", "QUEENS", "QUEENS", "QUEENS", 
+                     "QUEENS", "QUEENS", "QUEENS", "QUEENS", 
+                     "QUEENS", "QUEENS", "QUEENS", "BRONX", "QUEENS", 
+                     "QUEENS", "MANHATTAN")
+)
+
+# 2. Process Mold Data
+mold_data_clean <- mold_data %>%
+  # Filter Location Types efficiently
+  filter(`Location Type` %in% c("RESIDENTIAL BUILDING", "Residential Building", "Loft Residence", 
+                                "Mixed Use Building", "Apartment", "3+ Family Apartment Building", 
+                                "1-2 Family Dwelling", "1-2 Family Mixed Use Building", 
+                                "3+ Family Mixed Use Building", "Single Room Occupancy (SRO)")) %>%
+  filter(Descriptor != "Unsafe Mold Cleanup") %>%
+  mutate(
+    created_date = as.Date(`Created Date`),
+    closed_date  = as.Date(`Closed Date`),
+    # Force Year to numeric to prevent Join errors
+    Year  = as.numeric(lubridate::year(created_date)),
+    # Clean Month formatting
+    Month = sprintf("%02d - %s", 
+                    lubridate::month(created_date), 
+                    lubridate::month(created_date, label = TRUE, abbr = FALSE)),
+    resolution_days = as.numeric(closed_date - created_date),
+    `Complaint Type` = case_when(
+      `Complaint Type` %in% c("UNSANITARY CONDITION", "Unsanitary Condition", "MOLD", "GENERAL", "GENERAL CONSTRUCTION") ~ "Mold",
+      TRUE ~ `Complaint Type`
+    )
+  ) %>%
+  # Use the lookup table for City -> Borough
+  left_join(city_lookup, by = "City") %>% 
+  mutate(Borough = coalesce(Borough_Mapped, "UNKNOWN")) %>%
+  filter(Borough != "UNKNOWN", Year != 2025)
+
+# 3. Process DV Data
+dv_data_clean <- dv_data %>% 
+  rename(
+    "complaint_number" = `CMPLNT_NUM`,
+    "inc_occur_date" = `CMPLNT_FR_DT`,
+    "inc_occur_time" = `CMPLNT_FR_TM`,
+    "inc_end_date" = `CMPLNT_TO_DT`,
+    "inc_end_time" = `CMPLNT_TO_TM`,
+    "precinct_occur" = `ADDR_PCT_CD`,
+    "report_date" = `RPT_DT`,
+    "key_code" = `KY_CD`,
+    "offense_type" = `OFNS_DESC`,
+    "class_code" = `PD_CD`,
+    "class_code_desc" = `PD_DESC`,
+    "attempt_completion" = `CRM_ATPT_CPTD_CD`,
+    "offense_level" = `LAW_CAT_CD`,
+    "borough" = `BORO_NM`,
+    "suspect_age" = `SUSP_AGE_GROUP`,
+    "suspect_race" = `SUSP_RACE`,
+    "suspect_sex" = `SUSP_SEX`,
+    "victim_age" = `VIC_AGE_GROUP`,
+    "victim_race" = `VIC_RACE`,
+    "victim_sex" = `VIC_SEX`
+  ) %>%
+  mutate(
+    inc_date_converted = as.Date(inc_occur_date),
+    # Force Year to numeric to match Mold data
+    Year  = as.numeric(lubridate::year(inc_date_converted)),
+    Month = sprintf("%02d - %s", 
+                    lubridate::month(inc_date_converted), 
+                    lubridate::month(inc_date_converted, label = TRUE, abbr = FALSE)),
+    complaint = "DV"
+  ) %>%
+  filter(Year >= 2010 & Year < 2025)
+
+mold_data_clean <- mold_data_clean %>% mutate(Year = as.character(Year))
+dv_data_clean   <- dv_data_clean   %>% mutate(Year = as.character(Year))
+
+# 4. Final memory cleanup (optional but helpful for cloud publishing)
+rm(mold_data, dv_data)
+```
+
+```{r}
+#| label: tbl-mold_data_clean
+kable(head(mold_data_clean, 3),
+      caption = "Preview of cleaned 311 residential mold complaints (first 3 rows) after filtering to residential location types and creating date/resolution fields.")
+
+```
+
+```{r}
+#| label: tbl-dv_data_clean
+kable(head(dv_data_clean, 5),
+      caption = "Preview of cleaned NYPD complaint records used to identify domestic violence reports (first 5 rows) after renaming fields and extracting date components.")
+
+```
+
+
+This chunk deals with some heavy cleaning of large datasets; I am mostly standardizing column names, values, filling in NA values for Borough (using the City column), and getting rid of otherwise NA values. I also separated the dates so that Year, Month, and Day could be individually utilized in the project.
+
+### Aggregating Mold Data & DV Data
+
+```{r}
+#| label: tbl-agg
+#| message: false
+#| warning: false
+aggregated_dv_data <- dv_data_clean %>%
+  group_by(Year, Month, borough) %>%
+  summarise(
+    `complaint` = n(),
+    .groups = "drop"
+  )
+aggregated_dv_data <- aggregated_dv_data %>%
+  filter(borough != "(null)")
+
+aggregated_dv_data <- aggregated_dv_data %>%
+  mutate(Year = as.character(Year))
+
+aggregated_dv_data<- aggregated_dv_data %>% rename(
+  "Borough" = "borough")
+
+aggregated_dv_data<- aggregated_dv_data %>% rename(
+  "DV Reports" = "complaint"
+)
+
+aggregated_mold_data <- mold_data_clean %>%
+  group_by(Year, Month, Borough) %>%
+  summarise(
+  `Complaint Type` = n(),
+  .groups = "drop"
+)
+
+aggregated_mold_data<- aggregated_mold_data %>% rename(
+  "Mold Complaints" = "Complaint Type"
+)
+
+aggregated_dv_mold_data <- left_join(
+  aggregated_dv_data,
+  aggregated_mold_data,
+  by = c("Borough", "Year", "Month")
+)
+
+aggregated_dv_mold_data <- aggregated_dv_mold_data %>%
+  mutate(
+    year_month = paste(Year, Month)
+  )
+
+aggregated_dv_mold_data <- aggregated_dv_mold_data %>%
+  group_by(Borough) %>%
+  mutate(time_index = row_number()) %>%
+  ungroup()
+
+kable(head(aggregated_dv_mold_data, 15),
+      caption = "Monthly borough-level dataset combining domestic violence report counts and residential mold complaint counts (first 15 rows).")
+
+```
+
+In this chunk, I aggregated the domestic violence reports and mold complaints datasets into one, grouped by month and borough, in order to easily analyze trends.
+
+## Exploring the Data
+
+### Domestic Violence Data
+
+#### Summary Stats
+
+```{r}
+#| label: tbl-dv-data
+#| message: false
+#| warning: false
+
+dv_summary <- aggregated_dv_data %>%
+  summarise(
+    total_reports = sum(`DV Reports`),
+    start_year = min(as.numeric(Year)),
+    end_year = max(as.numeric(Year)),
+    boroughs = n_distinct(Borough),
+    avg_monthly = mean(`DV Reports`)
+  )
+
+kable(dv_summary,
+      caption = "Summary of domestic violence reports in NYC (2010–2024), aggregated from NYPD complaint data.")
+
+```
+
+From the beginning of the year in 2010 to the end of the year in 2024, there were a total of 669,136 domestic violence incidents reported across all five boroughs in New York City. Without grouping by year or borough, there are roughly 743 domestic violence incident reports filed each month.
+
+#### Borough/Year Distribution
+
+```{r}
+#| label: tbl-boro
+#| message: false
+#| warning: false
+dv_by_year_borough <- aggregated_dv_data %>%
+  group_by(Year, Borough) %>%
+  summarise(total_reports = sum(`DV Reports`)) %>%
+  pivot_wider(names_from = Year,
+    values_from = total_reports)
+
+kable(dv_by_year_borough,
+      caption = "Total domestic violence reports by borough and year (2010–2024).")
+
+```
+
+From 2010 to 2024, Brooklyn and Bronx have consistently had the highest amount of domestic violence reports in NYC. Brooklyn was the borough with the most amount of reports since 2010, but sometime in 2018, Bronx took the title for highest reported incidents and has been the borough with the highest number of reports since then. Staten Island has had the lowest reported incidents each year.
+
+For the most part, domestic violence incident reports have risen across the boroughs consistently from 2010-2024. However, Brooklyn is the only borough in which the number of reported incidents are lower in 2024 than they were in 2010. (This could be something interesting to look into!)
+
+#### Heat Map
+
+```{r}
+#| label: fig-dv-chart
+#| message: false
+#| warning: false
+#| fig-cap: "Domestic violence reports by borough and year (2010–2024)."
+#| fig-alt: "Heat map showing yearly domestic violence report counts for each NYC borough from 2010 to 2024. Color intensity increases as report totals increase."
+
+library(ggplot2)
+
+dv_plot_data <- aggregated_dv_data %>%
+  group_by(Year, Borough) %>%
+  summarise(total_reports = sum(`DV Reports`))
+
+ggplot(dv_plot_data, aes(x = Year, y = Borough, fill = total_reports)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient(low = "lightblue", high = "darkred") +
+  labs(
+    title = "DV Reports by Borough and Year",
+    x = "Year",
+    y = "Borough",
+    fill = "DV Reports"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45))
+```
+
+Above is a heat map of domestic violence incident reports from 2010-2024. This reflects what was observed in the previous table; The Bronx and Brooklyn typically tend to have a higher volume of reports, and Staten Island has stayed largely below the average.
+
+### Mold Exposure Data
+
+### Summary Stats
+
+```{r}
+#| label: tbl-mold-data
+#| message: false
+#| warning: false
+mold_summary <- aggregated_mold_data %>%
+  summarise(
+    total_complaints = sum(`Mold Complaints`),
+    start_year = min(as.numeric(Year)),
+    end_year = max(as.numeric(Year)),
+    boroughs = n_distinct(Borough),
+    avg_monthly = mean(`Mold Complaints`)
+  )
+
+kable(mold_summary,
+      caption = "Summary of residential mold complaints in NYC (2010–2024), aggregated from 311 service requests.")
+
+```
+
+From 2010-2025, there have been a total of 412,698 mold complaints in residential buildings reported across all five boroughs in New York City. Without grouping by year or borough, there are roughly 431 residential mold complaints made to 311 every month.
+
+### Borough/Year Distributions
+
+```{r}
+#| label: tbl-boro-mold
+#| message: false
+#| warning: false
+mold_by_year_borough <- aggregated_mold_data %>%
+  group_by(Year, Borough) %>%
+  summarise(total_complaints = sum(`Mold Complaints`)) %>%
+  pivot_wider(names_from = Year,
+    values_from = total_complaints)
+
+kable(mold_by_year_borough,
+      caption = "Total residential mold complaints by borough and year (2010–2024).")
+
+```
+
+From 2010 to 2024, Brooklyn and Bronx seem to have the highest complaints of mold in residential buildings, and they compete for first place. Staten Island was found to have the lowest number of residential mold complaints to 311 each year.
+
+Across all 5 boroughs, there are more mold complaints in 2024 than there were in 2010, with the overall trend being an increase in 311 complaints for residential mold.
+
+### Heat Map
+
+```{r}
+#| label: fig-mold-chart
+#| message: false
+#| warning: false
+#| fig-cap: "Residential mold complaints by borough and year (2010–2024)."
+#| fig-alt: "Heat map showing yearly residential mold complaint totals for each NYC borough from 2010 to 2024. Darker shading indicates higher complaint counts."
+
+mold_plot_data <- aggregated_mold_data %>%
+  group_by(Year, Borough) %>%
+  summarise(total_complaints = sum(`Mold Complaints`))
+
+ggplot(mold_plot_data, aes(x = Year, y = Borough, fill = total_complaints)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient(low = "wheat", high = "darkgreen") +
+  labs(
+    title = "Mold Complaints by Borough and Year",
+    x = "Year",
+    y = "Borough",
+    fill = "Mold Complaints"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45))
+```
+
+Above is a heat map of residential mold complaints to 311 from 2010-2025. Similar in density to the domestic violence report heat map; The Bronx and Brooklyn seem to have a higher volume of complaints, and Staten Island has stayed largely below the average.
+
+### Preliminary Correlation
+
+```{r}
+#| label: corr
+#| message: false
+#| warning: false
+cor.test(aggregated_dv_mold_data$`DV Reports`, 
+         aggregated_dv_mold_data$`Mold Complaints`)
+```
+
+-   Strength: 0.82 (very strong)
+
+-   Direction: positive
+
+-   Significance: statistically significant (p\<0.05)
+
+I ran a correlation between domestic violence reports and residential mold complaints to see if there was a substantial relationship between them, and there is! The relationship between the two is positive and very strong, suggesting that a higher amount of DV reports is associated with a higher amount of mold complaints, and a lower number of DV reports is associated with a lower amount of mold complaints. This tells us that both variables move together.
+
+##### Let's visualize this:
+
+```{r}
+#| label: fig-corr-plot
+#| message: false
+#| warning: false
+#| fig-cap: "Association between monthly residential mold complaints and domestic violence reports by borough (2010–2024)."
+#| fig-alt: "Scatter plot of monthly borough-level observations with mold complaints on the x-axis and domestic violence reports on the y-axis. Points are colored by borough and a single linear trend line summarizes the overall relationship."
+
+ggplot(aggregated_dv_mold_data, aes(x = `Mold Complaints`, y = `DV Reports`, color = Borough)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE, color = "gray18") +
+  labs(title = "DV Reports vs Mold Complaints by Borough",
+       x = "Mold Complaints",
+       y = "DV Reports") +
+  theme_minimal()
+```
+
+However, this only tells us that domestic violence reports and mold complaints co-occur, and it does not tell us anything about causality.
+
+Let's dive into how domestic violence reports and mold complaints develop over time!
+
+## Temporal Trends
+
+#### Yearly Counts
+
+```{r}
+#| label: tbl-yearly-counts
+#| message: false
+#| warning: false
+yearly_counts_wide <- aggregated_dv_mold_data %>%
+  group_by(Year) %>%
+  summarise(
+    `DV Reports` = sum(`DV Reports`, na.rm = TRUE),
+    `Mold Complaints` = sum(`Mold Complaints`, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  pivot_longer(
+    cols = c(`DV Reports`, `Mold Complaints`),
+    names_to = "Type",
+    values_to = "Count"
+  ) %>%
+  pivot_wider(
+    names_from = Year,
+    values_from = Count
+  )
+
+kable(yearly_counts_wide,
+      caption = "Citywide totals by year for domestic violence reports and residential mold complaints (2010–2024).")
+
+```
+
+Looking at this table, we can see that DV reports and mold complaints have staggered over the years, but overall they seem to have an increasing trend. Both variables have higher reports in 2024 than they did in 2010.
+
+#### Monthly Counts
+
+```{r}
+#| label: tbl-monthly-counts
+#| message: false
+#| warning: false
+monthly_counts <- aggregated_dv_mold_data %>%
+  group_by(Year, Month) %>%
+  summarise(
+    total_dv = sum(`DV Reports`, na.rm = TRUE),
+    total_mold = sum(`Mold Complaints`, na.rm = TRUE)
+  )
+
+kable(head(monthly_counts, 12),
+      caption = "First 12 rows of citywide monthly totals for domestic violence reports and residential mold complaints (2010–2024).")
+
+```
+
+Above is a table that separates the total domestic violence reports and mold complaints by each month per year. If we plot this, we can see how they both trend over time compared to one another:
+
+```{r}
+#| label: fig-temporal-plots
+#| message: false
+#| warning: false
+#| fig-cap: "Monthly trends in domestic violence reports and mold complaints by borough (2010–2024)."
+#| fig-alt: "Faceted line chart with one panel per borough. Two time series per panel show monthly counts of domestic violence reports and residential mold complaints from 2010 through 2024, illustrating seasonal peaks and long-run trends."
+
+plot_data <- aggregated_dv_mold_data %>%
+  pivot_longer(
+    cols = c(`DV Reports`, `Mold Complaints`),
+    names_to = "Type",
+    values_to = "Count"
+  )
+
+ggplot(plot_data, aes(x = time_index, y = Count, color = Type)) +
+  geom_line(linewidth = 0.5) +
+  facet_wrap(~Borough) +
+  scale_color_manual(values = c("DV Reports" = "darkred", "Mold Complaints" = "darkgreen")) +
+  labs(
+    title = "Monthly DV and Mold Reports by Borough",
+    x = "Time",
+    y = "Number of Reports",
+    color = "Report Type"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45)
+  )
+```
+
+Here, we have line plots of domestic violence reports and residential mold complaints per month from January of 2010 to December of 2024 (faceted by borough). We can see similar peaks across the boroughs (especially The Bronx and Brooklyn).
+
+So, how **exactly** does mold exposure relate to domestic violence reports over time?
+
+We've established that a relationship exists between the two variables themselves, but we need to look closer at this data. How does domestic violence in a given borough during a given month correlate with mold complaints in the same borough during the same month, and how does **those** variables move together?
+
+Month-by-Month DV vs. Mold Counts
+
+```{r}
+#| label: monthly-dv-mold-cor
+#| message: false
+#| warning: false
+cor.test(monthly_counts$total_dv, monthly_counts$total_mold)
+```
+
+-   Strength: 0.36
+
+-   Direction: positive
+
+-   Significance: statistically significant (p\<0.05)
+
+This is a much more realistic look at how mold complaints and DV reports move together across time! We got rid of borough size differences and were able to focus on the complaints and reports that were really happening in the same area during the same time. We can see that month-by-month DV reports and mold complaints have a moderate, positive correlation with one another and this result is statistically significant. This suggests that mold complaints and DV reports tend to coincide with each other each month.
+
+### Exploring Mold Resolution
+
+Counts of mold complaints provide insight into the amount of housing issues that exist, but they do not tell us how long the residents are dealing with the exposure to mold. When investigating predictors of household stress, the length of time a complaint remains unresolved may be important.
+
+So, let's take a look at how resolution time may play a role in the relationship between domestic violence reports and mold complaints:
+
+### Quick Look at Resolution Time
+
+```{r}
+#| label: tbl-res-time
+#| message: false
+#| warning: false
+res_time<- mold_data_clean %>%
+  group_by(Borough) %>%
+  summarise(
+    avg_resolution_days = mean(resolution_days, na.rm = TRUE),
+    median_days = median(resolution_days, na.rm = TRUE),
+    min_days = min(resolution_days, na.rm = TRUE),
+    max_days = max(resolution_days, na.rm = TRUE),
+    n_complaints = n()
+  ) %>%
+  arrange(desc(avg_resolution_days))
+
+kable(res_time,
+      caption = "Residential mold complaint resolution time by borough (days between created and closed dates).")
+
+```
+
+Right away, we see a huge variation in the amount of days it has taken for a residential mold complaint to be resolved. Some reports are addressed as early as the same day, while others can take years to be fully resolved. The average amount of days it takes for a complaint to be resolved varies per borough, but it is roughly between 14 to 21 days, or 2 to 3 weeks.
+
+### Average Resolution Delay per Month
+
+```{r}
+#| label: tbl-avg-res-delay
+#| message: false
+#| warning: false
+mold_monthly_resolution <- mold_data_clean %>%
+  group_by(Year, Month) %>%
+  summarise(
+    avg_resolution_days = mean(resolution_days, na.rm = TRUE),
+    n_complaints = n()
+  ) %>%
+  arrange(Year, Month)
+
+kable(head(mold_monthly_resolution, 12),
+      caption = "First 12 rows of monthly average mold-complaint resolution time (in days), with complaint volume.")
+
+```
+
+Above, we see the monthly average amount of days it took to resolve a mold complaint in 2010. This closely follows our averages from the previous table, with December as a bit of an outlier.
+
+### Lagged Data
+
+```{r}
+#| label: tbl-lag
+#| message: false
+#| warning: false
+dv_mold_lagged <- aggregated_dv_mold_data %>%
+  arrange(Borough, time_index) %>%
+  group_by(Borough) %>%
+  mutate(DV_next_month = lead(`DV Reports`, n = 1)) %>%
+  ungroup()
+
+kable(head(dv_mold_lagged, 12),
+      caption = "Lagged dataset preview: current-month mold complaints matched to next-month domestic violence reports (first 12 rows).")
+
+```
+
+Because psychological effects related to mold exposure may not develop immediately, I wanted to explore whether there are delayed temporal patterns between mold complaints and domestic violence reports. Specifically, if mold complaints increase in one month, could this be associated with higher levels of domestic violence in the following month?
+
+To examine this, I created a lagged dataset that matches residential mold complaints from one month with domestic violence incidents reported in the following month.
+
+##### Let's visualize what this looks like:
+
+```{r}
+#| label: fig-lag-plot
+#| message: false
+#| warning: false
+#| fig-cap: "Lagged association: next-month domestic violence reports versus current-month mold complaints (borough-month observations)."
+#| fig-alt: "Scatter plot of borough-month observations with current-month mold complaints on the x-axis and next-month domestic violence reports on the y-axis. A fitted linear trend line indicates whether higher mold complaint counts tend to precede higher DV reports."
+
+ggplot(dv_mold_lagged, aes(x = `Mold Complaints`, y = DV_next_month)) +
+  geom_point(alpha = 0.5, color = "darkgreen") +
+  geom_smooth(method = "lm", color = "darkred") +
+  labs(
+    title = "Next Month DV Reports vs Current Month Mold Complaints",
+    x = "Mold Complaints (Current Month)",
+    y = "DV Reports (Next Month)"
+  ) +
+  theme_minimal()
+```
+
+These two variables still look very closely related! But, does time passing really have anything to do with it?
+
+Let's conduct some statistical tests to dig deeper!
+
+## Statistical Analysis
+
+#### Lagged Data Correlation Analysis
+
+```{r}
+#| label: lagged-cor
+#| message: false
+#| warning: false
+cor.test(dv_mold_lagged$DV_next_month, dv_mold_lagged$`Mold Complaints`)
+```
+
+I conducted a Pearson's correlation test to examine the relationship between mold complaints in one month and DV reports the following month.
+
+-   Strength: 0.81 (very strong)
+
+-   Direction: positive
+
+-   Significance: statistically significant (p\<0.05)
+
+The results show a very strong positive correlation, suggesting that months with higher mold complaint counts are associated with higher domestic violence reports in the following month. However, this result is similar to the basic correlation between mold complaints and DV reports (conducted earlier on) and does not account for other factors that might influence the relationship, such as borough.
+
+To better understand how additional variables (such as borough and average resolution time) affect this association, I conducted regression analyses.
+
+## Regression Models
+
+#### DV \~ Mold
+
+```{r}
+#| label: r-dv-mold-reg
+#| message: false
+#| warning: false
+aggregated_dv_mold_data <- aggregated_dv_mold_data %>%
+  mutate(Borough = factor(Borough)) %>%
+  arrange(Year, Month)
+
+lm_dv_mold <- lm(`DV Reports` ~ `Mold Complaints`,
+  data = aggregated_dv_mold_data)
+
+summary(lm_dv_mold)
+AIC(lm_dv_mold)
+```
+
+This linear regression model tests the association between monthly residential mold complaints and domestic violence reports across all 5 boroughs and all time periods.
+
+-   Strength: strong (R\^2 = 0.67)
+
+-   Direction: positive
+
+-   Significance: statistically significant (p\<0.05)
+
+-   AIC: 12160.34
+
+Results suggest a strong and statistically significant positive association between mold complaints and DV reports. On average, months with higher numbers of mold complaints are associated with higher numbers of reported domestic violence incidents. However, this model does not account for differences across boroughs or temporal patterns.
+
+#### DV \~ Mold + Borough
+
+```{r}
+#| label: borough-reg
+#| message: false
+#| warning: false
+lm_borough <- lm(
+  `DV Reports` ~ `Mold Complaints` + Borough,
+  data = aggregated_dv_mold_data
+)
+
+summary(lm_borough)
+AIC(lm_borough)
+```
+
+This linear regression model tests the association between monthly residential mold complaints and domestic violence reports within each borough rather than across the city.
+
+-   Strength: very strong (R\^2 = 0.94)
+
+-   Direction: positive
+
+-   Significance: statistically significant (p\<0.05)
+
+-   AIC: 10571.03
+
+The association between mold complaints and DV reports remains positive and statistically significant. Including boroughs greatly increases the R\^2, showing that much of the variation in DV reports is explained by differences between boroughs rather than mold alone. The borough coefficients compare each borough to the Bronx and highlight that DV reporting levels differ substantially across boroughs.
+
+#### DV \~ Mold + Borough + Average Resolution Days
+
+```{r}
+#| label: total-reg
+#| message: false
+#| warning: false
+aggregated_dv_mold_data <- aggregated_dv_mold_data %>%
+  left_join(mold_monthly_resolution, by = c("Year", "Month"))
+
+lm_resolution_borough <- lm(
+  `DV Reports` ~ `Mold Complaints` + Borough + avg_resolution_days,
+  data = aggregated_dv_mold_data
+)
+
+summary(lm_resolution_borough)
+AIC(lm_resolution_borough)
+```
+
+This linear regression model continues to test the association while incorporating resolution time of mold complaints.
+
+-   Strength: very strong (R\^2 = 0.95)
+
+-   Direction: negative
+
+-   Significance: statistically significant (p\<0.05)
+
+-   AIC: 10539.76
+
+Even after controlling for borough and resolution time, mold complaints remain a statistically significant predictor of DV reports. Average resolution days show a statistically significant negative association with DV reports, suggesting that months with longer resolution delays are associated with fewer reported DV incidents. While this may intuitively feel like the opposite of the expected result, this could be due to many factors, such as a lack of borough/community relationship. For instance, this relationship may have been lower in times where city officials took longer to respond to mold complaints. If there was a low borough/community relationship, it is possible community members felt less confident in filing domestic violence reports, out of lack of perceived resources.
+
+Overall, the final linear regression model is our best predictive model for domestic violence reports. With R\^2 of 0.95, and the lowest AIC out of the three regression models (10539.76), this model best supports the hypothesis that domestic violence reports can be predicted by residential mold complaints in the same area at the same time.
+
+## Discussion & Insights
+
+Overall, the results show a consistent positive association between residential mold complaints and domestic violence reports. Simple correlations suggest that months with more mold complaints tend to have more DV reports as well. This pattern appears at both yearly and monthly levels.
+
+When borough differences are accounted for in regression models, the relationship between mold complaints and DV reports still remains statistically significant, but weaker. This suggests that while borough-level differences explain much of the variation, mold complaints still have an independent association with DV reports.
+
+Adding average mold resolution time shows that longer resolution delays are associated with lower DV report counts. This may be due to reporting behavior or service engagement rather than a direct effect.
+
+Lagged analyses were used to test whether mold complaints in one month are related to DV reports in the following month. Although the lagged relationship remains positive, it closely resembles the non-lagged results, suggesting that the results may not largely be due to time.
+
+In summary, the analysis suggests a consistent positive relationship between residential mold complaints and domestic violence reports, but borough-level differences and other contextual factors appear to drive much of the variation, highlighting the complexity of environmental and social influences on public health outcomes. In the future, I would like to look at neighborhood-specific trends, or DV/mold rates instead of counts as populations vary across boroughs.

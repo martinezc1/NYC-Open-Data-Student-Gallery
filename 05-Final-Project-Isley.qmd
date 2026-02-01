@@ -1,0 +1,275 @@
+---
+title: "Final Project"
+author: "Isley Jean-Pierre"
+---
+
+# Final Project {#sec-isley}
+
+This is a project that I hope to present at the NYC OpenData conference next spring. I must admit that there are some datasets that I intended to use for this final assignment, but because of time and roadblocks, I will focus on the two keys datasets for now. My goal is to keep on this project by finding a meaningful way to include the other datasets. I believe that this project has the potential to become something special.
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(Hmisc)
+library(ggplot2)
+library(corrplot)
+library(lubridate)
+library(nycOpenData)
+```
+
+## Let's load the dataset
+
+```{r}
+rea <- nycOpenData::nyc_dop_juvenile_rearrest_rate(limit= 10000)
+head(rea)
+```
+
+## Let's focus on the years between 2023 and 2025
+
+```{r}
+rea_clean <- rea %>%
+  filter(year >= 2023 & year <= 2025)
+head(rea_clean)
+```
+
+## Let's create a new column that contains month and year
+
+```{r}
+rea_clean <- rea_clean %>%
+  mutate(
+    month_year = paste(month,year, sep = " "),
+    month_year = my(month_year)
+  )
+```
+
+## Removing the previous columns
+
+```{r}
+rea_clean <- rea_clean %>%
+  select(-month, -year)
+```
+
+## Let's see if we can find a correlation between rearrest rates and date Before that let's make sure that the columns are in the right format
+
+```{r}
+str(rea_clean)
+```
+
+To see the structure.
+
+```{r}
+rea_clean <- rea_clean %>%
+  mutate(
+    rate = as.numeric(rate)  # Making rate into numeric instead of character
+  )
+```
+
+## Let's look at the sum of rearrest rates per year
+
+```{r}
+sum_year <- rea_clean %>%
+  mutate(year = year(month_year)) %>%
+  group_by(year) %>%
+  summarise(
+    total_rate = sum(rate, na.rm = TRUE)
+  )
+sum_year
+```
+
+## For fun, let's look at the average rearrest rates per year
+
+```{r}
+avg_rea_year <- rea_clean %>%
+  mutate(year = year(month_year)) %>%
+  group_by(year) %>%
+  summarise(
+    mean_rate = mean(rate, na.rm = TRUE)
+  )
+avg_rea_year
+```
+
+## Investigating the months
+
+Let's take a closer look to see if there are some months where rearrest rates are higher than others
+
+```{r}
+month_repeat <- rea_clean %>%
+  mutate(month = month(month_year, label = TRUE)) %>%
+  group_by(month) %>%
+  summarise(
+    mean_rate = mean(rate, na.rm = TRUE)
+  )
+month_repeat
+```
+
+## Let's finally see if we can find a correlation between rearrest rates and year
+
+```{r}
+cor(as.numeric(rea_clean$rate), as.numeric(rea_clean$month_year))
+```
+
+It seems that there is indeed a strong correlation between rearrest rates and year with r = 0.69.
+
+## Trying to run a correlation Matrix
+
+```{r}
+rea_cor <- rea_clean %>%
+  mutate(
+    year         = lubridate::year(month_year),
+    month        = lubridate::month(month_year)
+  ) %>%
+  select(rate, year, month)
+```
+
+```{r}
+cor_matrix <- cor(rea_cor)
+cor_matrix
+```
+
+## Building the Correlation Matrix
+
+```{r}
+corrplot(cor_matrix, method = "color", addCoef.col = "orange")
+```
+
+## Playing with ggplot
+
+```{r fig.cap= "This figure shows rearrest rates over time."}
+ggplot(rea_clean, aes(x = month_year, y = rate)) +
+  geom_line(color = "green", size = 1) +
+  geom_point(color = "black", size = 2) +
+  geom_smooth(method = "loess", se = FALSE, color = "red", linetype = "dashed") +
+  labs(
+    title = "Rearrest Rates Over Time",
+    x = "Year",
+    y = "Rate"
+  ) +
+  theme_minimal()
+```
+
+## Playing with ggplot (adding months into the graph)
+
+```{r fig.cap="This figure shows rearrest rates by year."}
+ggplot(rea_clean, aes(x = month_year, y = rate)) +
+  geom_line(color = "lightblue", size = 1) +
+  geom_point(color = "orange", size = 2) +
+  labs(
+    title = "Rearrest Rates Over Time",
+    subtitle = "Monthly Data",
+    x = "Year",
+    y = "Rate"
+  ) +
+  scale_x_date(date_breaks = "3 months", date_labels = "%b %Y") +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## For this section, I will use another dataset
+
+## Let's call the data
+
+```{r}
+juv <- nycOpenData::nyc_dop_Juvenile_cases(limit = 10000)
+head(juv)
+```
+
+## Let's look into the data from 2023 until 2025
+
+```{r}
+juv_clean <- juv %>%
+  filter(year >= 2023 & year <= 2025)
+head(juv_clean)
+```
+
+## let's combine month and year together
+
+```{r}
+juv_clean <- juv_clean %>%
+  mutate(
+    month_year = paste(month,year, sep = " "),
+    month_year = my(month_year)
+  )
+head(juv_clean)
+```
+
+## Removing unwanted columns
+
+```{r}
+juv_clean <- juv_clean %>%
+  select(-month, -year)
+```
+
+## Let's play around
+
+Let's see if we can find a correlation between rearrest rates and date but before that let's make sure that the columns are in the right format.
+
+```{r}
+str(juv_clean)
+```
+
+To look at the structure.
+
+## Let's see... (mutating scc form character to numeric)
+
+```{r}
+juv_clean <- juv_clean %>%
+  mutate(supervision_caseload_count = as.numeric(supervision_caseload_count))
+```
+
+```{r}
+juv_clean %>%
+  group_by(supervision_caseload_type) %>%
+  summarise(mean_count = mean(supervision_caseload_count, na.rm = TRUE))
+```
+
+## Let's run a correlation
+
+```{r}
+cor(juv_clean$supervision_caseload_count, as.numeric(juv_clean$month_year))
+```
+
+There is a very weak correlation (r = 0.06) between Supervision Caseload Count and Year.
+
+## Let's visualize the data
+
+```{r fig.cap="This figure shows the average supervision caseload count per program type."}
+juv_clean %>%
+  group_by(supervision_caseload_type) %>%
+  summarise(mean_count = mean(supervision_caseload_count, na.rm = TRUE)) %>%
+  ggplot(aes(x = reorder(supervision_caseload_type, mean_count), y = mean_count, fill = supervision_caseload_type)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  labs(
+    title = "Average Supervision Caseload Count by Program",
+    x = "Program Type",
+    y = "Average Caseload Count"
+  ) +
+  theme_minimal()
+```
+
+## Let's investigate further
+
+Let's try to include years into the graph.
+
+```{r}
+juv_year <- juv_clean %>%
+  mutate(year = year(month_year)) %>%         
+  group_by(supervision_caseload_type, year) %>%
+  summarise(
+    total_count = sum(supervision_caseload_count, na.rm = TRUE),
+    .groups = "drop"                        
+  )
+```
+
+```{r fig.cap="This figure shows supervision caseload type and count per year."}
+ggplot(juv_year, aes(x = factor(year), y = supervision_caseload_type, fill = total_count)) +
+  geom_tile(color = "white") +
+  scale_fill_viridis_c(option = "C") +
+  labs(
+    title = "Caseload Counts by Program Per Year",
+    x = "Year",
+    y = "Program Type",
+    fill = "Total Count"
+  ) +
+  theme_minimal()
+```

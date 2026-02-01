@@ -1,0 +1,1004 @@
+---
+title: "NYC Restaurants and Museums"
+author: "Joyce Escatel Flores"
+---
+
+## NYC Restaurants and Museums {#sec-joyce}
+
+Hello and welcome to my PSYC 7750G course final project. I will be using **two** NYC data sets. The first one is called "DOHMH New York City Restaurant Inspection results" which you can find [here](https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j/about_data). I called this data set "restaurant_data". The second one is called "MUSEUM", which you can find [here](https://data.cityofnewyork.us/Recreation/MUSEUM/fn6f-htvy/about_data). I called this data set "museum_data". The third data set is a Kaggle open data set created by **Beridzeg45** called "NYC Restaurants", which you can find [here](https://www.kaggle.com/datasets/beridzeg45/nyc-restaurants). I called this data set "restaurant_rating_data".
+
+I had 3 goals for this project which include:
+
+-   Explore whether restaurants near art museums are more likely to have higher ratings than restaurants not close to museums.
+
+-   Explore whether restaurants near museums are less likely to have no violation citations than restaurants not close to museums.
+
+-   Creating an interactive map that pinpoints restaurants that are nearby museums so that people who want to go to a museum and go to eat before or after are able to explore this map freely!
+
+::: {style="text-align: center;"}
+## Packages
+:::
+
+In this piece of code, I am putting all the packages used for this project.
+
+```{r message=FALSE, warning=FALSE}
+#| message: false
+#| warning: true
+library(readr)
+library(tidyr)
+library(dplyr)
+library(stats)
+library(tidyverse)
+library(stringr)
+library(readxl)
+library(janitor)
+library(ggthemes)
+library(rcompanion)
+library(leaflet)
+library(leaflet.extras)
+library(leaflet.providers)
+library(htmltools)
+```
+
+::: {style="text-align: center;"}
+## Data Loading, Cleaning, and Merging
+:::
+
+## Loading Data
+
+In this section, I simply loaded the data and previewed the data in order to start working on it.
+
+```{r}
+#| label: loading-data
+endpoint<- "https://data.cityofnewyork.us/resource/fn6f-htvy.json"
+resp <- httr::GET(endpoint)
+museum_data <- jsonlite::fromJSON(httr::content(resp, as = "text"), flatten = TRUE)
+
+
+endpoint_1<-"https://data.cityofnewyork.us/resource/43nn-pn8j.json"
+resp1 <- httr::GET(endpoint_1)
+restaurant_data <- jsonlite::fromJSON(httr::content(resp1, as = "text"), flatten = TRUE)
+
+restaurant_rating_data <- read_csv("restaurant rating data.csv", show_col_types = FALSE)
+```
+
+## Cleaning and Merging Data Sets
+
+In this section, what we are going to do is first work on cleaning the data sets individually. We will work on the *"restaurant_rating_data"* **FIRST**.
+
+### Cleaning "restaurant_rating_data" Set
+
+We will be working on the data set called "restaurant_rating_data". What I did was create a new column for latitude called "lat_new" because i need to give it quotation marks. I also created a new column for longitude called "lon_new" because I need to give it quotation marks. Lastly, I used the paste function to format my column "location_coordinates" so that this column exactly matches the column found in the "restaurant_data" set.
+
+```{r}
+restaurant_rating_data$lat_new<- shQuote(restaurant_rating_data$Lat)
+restaurant_rating_data$lon_new<- shQuote(restaurant_rating_data$Lon)
+restaurant_rating_data$location.coordinates<- paste("c", "(", restaurant_rating_data$lon_new, ",", restaurant_rating_data$lat_new, ")", sep = "")
+```
+
+Next, for the "restaurant_rating_data", we are going to delete rows that include New Jersey restaurants manually. We are left with **339 restaurants**.
+
+```{r}
+restaurant_rating_data <- restaurant_rating_data[-c(1, 2, 4, 5, 6, 8, 10, 11, 12, 15, 16, 26, 28, 32, 33,37, 38, 42, 45, 46, 47, 48, 50, 51, 57, 58, 61, 62, 63, 66, 68, 69, 74, 75, 79, 82, 85, 86, 89, 90, 93, 94, 95, 96, 97, 98, 99, 100, 103, 104, 105, 110, 111, 113, 117, 118, 119, 120, 128, 131, 133, 134, 138, 140, 144, 147, 151, 152, 153, 160, 165, 168, 174, 175, 176, 178, 179, 182, 183, 184, 186, 190, 192, 193, 195, 197, 198, 203, 204, 206, 208, 209, 212, 216, 218, 220, 223, 224, 225, 231, 232, 234, 236, 241, 244, 247, 249, 251, 254, 256, 265, 267, 268, 271, 274, 277, 283, 284, 285, 288, 289, 292, 294, 295, 297, 298, 299, 300, 301, 304, 305, 308, 310, 312, 315, 318, 320, 321, 322, 323, 325, 326, 328, 330, 331, 332, 334, 335, 337, 338, 339, 340, 341, 343, 345, 346, 348, 349, 350, 351, 353, 355, 356, 357, 359, 362, 363, 365, 366, 367, 370, 375, 376, 377, 378, 379, 380, 388, 389, 390, 391, 392, 393, 396, 399, 403, 406, 411, 415, 416, 417, 418, 420, 422, 423, 424, 425, 427, 429, 430, 432, 433, 435, 438, 439, 441, 442, 443, 444, 447, 449, 451, 454, 455, 457, 461, 463, 467, 469, 470, 472, 473, 474, 477, 478, 479, 483, 484, 488, 489, 491, 495, 497, 499, 500, 501, 506, 507, 508, 509, 510, 513, 514, 516, 520, 521, 522, 523, 525, 527, 528, 529, 532, 533, 537, 538, 539, 540, 543, 544, 546, 547, 549, 550, 552, 553, 554, 555, 556, 558, 560, 561, 562, 566, 567, 568, 569, 570, 571, 572, 575, 577, 578, 579, 580, 581, 582, 587, 589, 590, 591, 592, 595, 598, 599, 600, 607, 608, 610, 611, 612, 613, 614, 615, 618, 620, 621, 622, 624, 625, 626, 627, 631, 633, 635, 636, 637, 638, 640, 641, 646, 648, 653, 655, 657, 658, 660, 661, 663, 669, 670), ]
+
+```
+
+## Cleaning "restaurant_data" Set
+
+Next, we will be working on the "restaurant_data" set **Next**.
+
+We find that the "location.coordinates" column is a list and NOT character. So we go ahead and fix that with the mutate function.
+
+```{r}
+is.character(restaurant_data$location.coordinates)
+restaurant_data<- restaurant_data %>% mutate(location.coordinates = as.character(location.coordinates))
+```
+
+## Merging Data Sets
+
+We can now merge both data sets together through the "location_coordinates" column.
+
+```{r}
+merged_restaurant_data<- full_join(restaurant_data, restaurant_rating_data, by = "location.coordinates")
+```
+
+This leaves us with 1,339 rows, meaning that the restaurants in both data sets do not have duplicates. Next, we are going to delete restaurants rows with missing data in the "location.coordinates" column. Since our column data, "location.coordinates" has literal "NULL" written in the rows with missing data, we go ahead and delete those with the below code (I found this thanks to Reddit!).
+
+```{r}
+sum(merged_restaurant_data$location.coordinates == "NULL", na.rm = TRUE)
+
+merged_restaurant_data <-merged_restaurant_data[merged_restaurant_data$location.coordinates != "NULL", ]
+
+```
+
+We are left with 1,139 restaurants.
+
+## Inputting Ratings for EACH Restaurant
+
+Since I want to explore whether restaurants near art museums are more likely to have higher ratings than restaurants not close to museums, then I need to input ratings from Google to restaurants that do not have any ratings. Below is what I did manually. I looked at the "restaurant_data" set because it does not have rating. There were a lot of "restaurants" that unfortunately had to be deleted because they were not categorized as restaurants. That left us with 383 restaurants in total in the "restaurant_data" set.
+
+```{r}
+merged_restaurant_data[2,35]=4.7
+merged_restaurant_data[3,35]=4.8
+merged_restaurant_data[4,35]=4.0
+merged_restaurant_data[6,35]=4.7
+merged_restaurant_data[11,35]=4.9
+merged_restaurant_data[13,35]=4.5
+merged_restaurant_data[14,35]=4.1
+merged_restaurant_data[16,35]=4.4
+merged_restaurant_data[17,35]=4.8
+merged_restaurant_data[18,35]=4.9
+merged_restaurant_data[21,35]=4.2
+merged_restaurant_data[22,35]=5.0
+merged_restaurant_data[27,35]=4.4
+merged_restaurant_data[28,35]=4.9
+merged_restaurant_data[31,35]=4.4
+merged_restaurant_data[32,35]=4.8
+merged_restaurant_data[35,35]=4.4
+merged_restaurant_data[39,35]=4.5
+merged_restaurant_data[40,35]=4.6
+merged_restaurant_data[44,35]=5.0
+merged_restaurant_data[48,35]=5.0
+merged_restaurant_data[49,35]=4.4 
+merged_restaurant_data[50,35]=3.8
+merged_restaurant_data[55,35]=4.9
+merged_restaurant_data[58,35]=4.1
+merged_restaurant_data[59,35]=4.3
+merged_restaurant_data[61,35]=4.1
+merged_restaurant_data[62,35]=4.4
+merged_restaurant_data[63,35]=4.4
+merged_restaurant_data[64,35]=3.8
+merged_restaurant_data[67,35]=4.9
+merged_restaurant_data[69,35]=4.6
+merged_restaurant_data[73,35]=4.8
+merged_restaurant_data[78,35]=5.0
+merged_restaurant_data[82,35]=4.6
+merged_restaurant_data[94,35]=4.8
+merged_restaurant_data[96,35]=4.8
+merged_restaurant_data[98,35]=4.2
+merged_restaurant_data[103,35]=4.5
+merged_restaurant_data[104,35]=4.9
+merged_restaurant_data[105,35]=2.7
+merged_restaurant_data[111,35]=4.1
+merged_restaurant_data[113,35]=4.6
+merged_restaurant_data[114,35]=4.4
+merged_restaurant_data[115,35]=2.0
+merged_restaurant_data[118,35]=4.6
+merged_restaurant_data[130,35]=4.6
+merged_restaurant_data[133,35]=3.0
+merged_restaurant_data[134,35]=4.1
+merged_restaurant_data[136,35]=4.7
+merged_restaurant_data[142,35]=4.7
+merged_restaurant_data[144,35]=4.0
+merged_restaurant_data[146,35]=4.0
+merged_restaurant_data[148,35]=3.5
+merged_restaurant_data[150,35]=4.3
+merged_restaurant_data[152,35]=4.8
+merged_restaurant_data[153,35]=4.7
+merged_restaurant_data[154,35]=5.0
+merged_restaurant_data[159,35]=4.3
+merged_restaurant_data[164,35]=4.7
+merged_restaurant_data[169,35]=4.2
+merged_restaurant_data[172,35]=4.6
+merged_restaurant_data[173,35]=4.9
+merged_restaurant_data[179,35]=4.7
+merged_restaurant_data[180,35]=4.2
+merged_restaurant_data[184,35]=4.4
+merged_restaurant_data[185,35]=4.9
+merged_restaurant_data[186,35]=4.5
+merged_restaurant_data[189,35]=4.6
+merged_restaurant_data[190,35]=5.0
+merged_restaurant_data[191,35]=4.7
+merged_restaurant_data[193,35]=4.8
+merged_restaurant_data[195,35]=4.6
+merged_restaurant_data[197,35]=4.8
+merged_restaurant_data[199,35]=5.0
+merged_restaurant_data[201,35]=4.5
+merged_restaurant_data[207,35]=4.5
+merged_restaurant_data[215,35]=4.2
+merged_restaurant_data[217,35]=3.8
+merged_restaurant_data[219,35]=4.8
+merged_restaurant_data[221,35]=4.7
+merged_restaurant_data[223,35]=4.6
+merged_restaurant_data[229,35]=4.5
+merged_restaurant_data[232,35]=4.7
+merged_restaurant_data[233,35]=4.1
+merged_restaurant_data[235,35]=4.6
+merged_restaurant_data[236,35]=4.4
+merged_restaurant_data[237,35]=4.3
+merged_restaurant_data[241,35]=4.7
+merged_restaurant_data[243,35]=4.5
+merged_restaurant_data[245,35]=5.0
+merged_restaurant_data[246,35]=4.7
+merged_restaurant_data[260,35]=4.6
+merged_restaurant_data[262,35]=4.3
+merged_restaurant_data[270,35]=4.1
+merged_restaurant_data[271,35]=4.9
+merged_restaurant_data[273,35]=4.4
+merged_restaurant_data[275,35]=4.9
+merged_restaurant_data[278,35]=4.1
+merged_restaurant_data[279,35]=4.5
+merged_restaurant_data[280,35]=4.6
+merged_restaurant_data[285,35]=4.3
+merged_restaurant_data[286,35]=4.7
+merged_restaurant_data[287,35]=4.8
+merged_restaurant_data[288,35]=4.9
+merged_restaurant_data[297,35]=4.5
+merged_restaurant_data[304,35]=4.5
+merged_restaurant_data[305,35]=4.7
+merged_restaurant_data[308,35]=4.0
+merged_restaurant_data[310,35]=4.5
+merged_restaurant_data[314,35]=4.4
+merged_restaurant_data[315,35]=4.7
+merged_restaurant_data[319,35]=4.8
+merged_restaurant_data[321,35]=4.9
+merged_restaurant_data[322,35]=4.2 
+merged_restaurant_data[328,35]=5.0
+merged_restaurant_data[330,35]=4.6
+merged_restaurant_data[335,35]=4.6
+merged_restaurant_data[341,35]=5.0
+merged_restaurant_data[342,35]=4.2
+merged_restaurant_data[344,35]=3.6
+merged_restaurant_data[346,35]=4.1
+merged_restaurant_data[348,35]=4.9
+merged_restaurant_data[350,35]=4.2
+merged_restaurant_data[351,35]=4.1
+merged_restaurant_data[352,35]=4.5
+merged_restaurant_data[353,35]=4.5
+merged_restaurant_data[356,35]=4.4
+merged_restaurant_data[357,35]=4.3
+merged_restaurant_data[358,35]=4.2
+merged_restaurant_data[359,35]=4.8
+merged_restaurant_data[363,35]=4.5
+merged_restaurant_data[364,35]=4.8
+merged_restaurant_data[367,35]=4.2
+merged_restaurant_data[371,35]=4.6
+merged_restaurant_data[374,35]=5.0
+merged_restaurant_data[375,35]=3.9
+merged_restaurant_data[376,35]=3.9
+merged_restaurant_data[379,35]=3.8
+merged_restaurant_data[382,35]=3.9
+merged_restaurant_data[383,35]=5.0
+merged_restaurant_data[384,35]=4.6
+merged_restaurant_data[385,35]=4.6
+merged_restaurant_data[387,35]=4.3
+merged_restaurant_data[389,35]=4.9
+merged_restaurant_data[391,35]=4.2
+merged_restaurant_data[394,35]=4.5
+merged_restaurant_data[395,35]=4.5
+merged_restaurant_data[397,35]=4.8
+merged_restaurant_data[404,35]=4.4
+merged_restaurant_data[406,35]=4.5
+merged_restaurant_data[408,35]=4.4
+merged_restaurant_data[410,35]=3.8
+merged_restaurant_data[411,35]=4.8
+merged_restaurant_data[414,35]=3.9
+merged_restaurant_data[416,35]=4.9
+merged_restaurant_data[420,35]=4.6
+merged_restaurant_data[422,35]=4.0
+merged_restaurant_data[427,35]=4.8
+merged_restaurant_data[433,35]=4.7
+merged_restaurant_data[436,35]=3.7
+merged_restaurant_data[437,35]=4.3
+merged_restaurant_data[438,35]=4.6
+merged_restaurant_data[440,35]=4.6
+merged_restaurant_data[446,35]=4.7
+merged_restaurant_data[452,35]=4.1
+merged_restaurant_data[453,35]=4.3
+merged_restaurant_data[454,35]=5.0
+merged_restaurant_data[458,35]=4.3
+merged_restaurant_data[459,35]=3.9
+merged_restaurant_data[463,35]=4.0
+merged_restaurant_data[467,35]=4.9
+merged_restaurant_data[470,35]=4.0
+merged_restaurant_data[471,35]=4.1
+merged_restaurant_data[472,35]=4.0
+merged_restaurant_data[486,35]=4.3
+merged_restaurant_data[489,35]=5.0
+merged_restaurant_data[494,35]=5.0
+merged_restaurant_data[495,35]=4.9
+merged_restaurant_data[496,35]=4.3
+merged_restaurant_data[497,35]=4.2
+merged_restaurant_data[501,35]=5.0
+merged_restaurant_data[502,35]=4.1
+merged_restaurant_data[506,35]=4.6
+merged_restaurant_data[507,35]=4.6
+merged_restaurant_data[509,35]=4.7
+merged_restaurant_data[511,35]=4.5
+merged_restaurant_data[512,35]=4.5
+merged_restaurant_data[513,35]=3.3
+merged_restaurant_data[515,35]=4.9
+merged_restaurant_data[519,35]=4.8
+merged_restaurant_data[520,35]=4.5
+merged_restaurant_data[522,35]=4.9
+merged_restaurant_data[523,35]=4.8
+merged_restaurant_data[528,35]=4.9
+merged_restaurant_data[533,35]=4.3
+merged_restaurant_data[543,35]=4.6
+merged_restaurant_data[546,35]=4.0
+merged_restaurant_data[550,35]=4.8
+merged_restaurant_data[552,35]=4.3
+merged_restaurant_data[554,35]=3.7
+merged_restaurant_data[555,35]=2.1
+merged_restaurant_data[556,35]=4.7
+merged_restaurant_data[557,35]=4.5
+merged_restaurant_data[558,35]=5.0
+merged_restaurant_data[562,35]=4.1
+merged_restaurant_data[563,35]=4.3
+merged_restaurant_data[566,35]=4.3
+merged_restaurant_data[567,35]=4.5
+merged_restaurant_data[568,35]=4.9
+merged_restaurant_data[570,35]=4.3
+merged_restaurant_data[573,35]=4.6
+merged_restaurant_data[574,35]=4.1
+merged_restaurant_data[575,35]=4.8
+merged_restaurant_data[578,35]=4.4
+merged_restaurant_data[581,35]=4.0
+merged_restaurant_data[590,35]=4.1
+merged_restaurant_data[592,35]=5.0
+merged_restaurant_data[598,35]=3.9
+merged_restaurant_data[601,35]=4.2
+merged_restaurant_data[605,35]=4.6
+merged_restaurant_data[608,35]=4.1
+merged_restaurant_data[610,35]=4.1
+merged_restaurant_data[613,35]=4.9
+merged_restaurant_data[617,35]=4.4
+merged_restaurant_data[622,35]=4.3
+merged_restaurant_data[624,35]=4.0
+merged_restaurant_data[625,35]=5.0
+merged_restaurant_data[632,35]=4.4
+merged_restaurant_data[633,35]=4.6
+merged_restaurant_data[638,35]=4.2
+merged_restaurant_data[640,35]=4.6
+merged_restaurant_data[645,35]=4.6
+merged_restaurant_data[647,35]=4.5
+merged_restaurant_data[651,35]=4.9
+merged_restaurant_data[660,35]=5.0
+merged_restaurant_data[661,35]=4.7
+merged_restaurant_data[662,35]=3.9
+merged_restaurant_data[663,35]=4.0
+merged_restaurant_data[664,35]=4.4
+merged_restaurant_data[666,35]=4.3
+merged_restaurant_data[677,35]=4.2
+merged_restaurant_data[683,35]=4.5
+merged_restaurant_data[686,35]=4.3
+merged_restaurant_data[688,35]=4.8
+merged_restaurant_data[689,35]=4.9
+merged_restaurant_data[692,35]=4.9
+merged_restaurant_data[693,35]=3.8
+merged_restaurant_data[697,35]=4.9
+merged_restaurant_data[700,35]=4.0
+merged_restaurant_data[702,35]=4.8
+merged_restaurant_data[714,35]=4.6
+merged_restaurant_data[718,35]=4.6
+merged_restaurant_data[719,35]=4.5
+merged_restaurant_data[725,35]=4.5
+merged_restaurant_data[728,35]=4.7
+merged_restaurant_data[729,35]=4.8
+merged_restaurant_data[731,35]=4.7
+merged_restaurant_data[732,35]=4.2
+merged_restaurant_data[733,35]=4.4
+merged_restaurant_data[734,35]=3.8
+merged_restaurant_data[735,35]=4.5
+merged_restaurant_data[737,35]=4.5
+merged_restaurant_data[738,35]=4.6
+merged_restaurant_data[741,35]=3.8
+merged_restaurant_data[744,35]=4.9
+merged_restaurant_data[746,35]=4.3
+merged_restaurant_data[747,35]=4.2
+merged_restaurant_data[752,35]=3.7
+merged_restaurant_data[755,35]=4.5
+merged_restaurant_data[759,35]=4.0
+merged_restaurant_data[762,35]=4.8
+merged_restaurant_data[764,35]=4.3
+merged_restaurant_data[767,35]=4.4
+merged_restaurant_data[769,35]=4.3
+merged_restaurant_data[770,35]=4.9
+merged_restaurant_data[772,35]=4.0
+merged_restaurant_data[774,35]=4.9
+merged_restaurant_data[777,35]=4.8
+merged_restaurant_data[779,35]=4.1
+merged_restaurant_data[780,35]=4.4
+merged_restaurant_data[782,35]=4.6
+merged_restaurant_data[784,35]=4.1
+merged_restaurant_data[785,35]=5.0
+merged_restaurant_data[787,35]=4.1
+merged_restaurant_data[788,35]=4.8
+merged_restaurant_data[790,35]=4.1
+merged_restaurant_data[791,35]=3.8
+merged_restaurant_data[793,35]=4.4
+merged_restaurant_data[796,35]=4.6
+merged_restaurant_data[799,35]=5.0
+merged_restaurant_data[802,35]=4.3
+merged_restaurant_data[807,35]=4.2
+merged_restaurant_data[809,35]=4.3
+merged_restaurant_data[810,35]=3.9
+merged_restaurant_data[811,35]=4.4
+merged_restaurant_data[812,35]=4.5
+merged_restaurant_data[816,35]=5.0
+merged_restaurant_data[820,35]=4.6
+merged_restaurant_data[825,35]=4.9
+merged_restaurant_data[827,35]=4.8
+merged_restaurant_data[828,35]=5.0
+merged_restaurant_data[830,35]=4.5
+merged_restaurant_data[834,35]=4.4
+merged_restaurant_data[837,35]=4.3
+merged_restaurant_data[838,35]=5.0
+merged_restaurant_data[839,35]=3.0
+merged_restaurant_data[841,35]=3.0
+merged_restaurant_data[842,35]=4.6
+merged_restaurant_data[852,35]=5.0
+merged_restaurant_data[855,35]=4.9
+merged_restaurant_data[856,35]=4.1
+merged_restaurant_data[859,35]=4.5
+merged_restaurant_data[861,35]=4.8
+merged_restaurant_data[865,35]=4.6
+merged_restaurant_data[868,35]=4.8
+merged_restaurant_data[869,35]=5.0
+merged_restaurant_data[870,35]=4.6
+merged_restaurant_data[871,35]=4.1
+merged_restaurant_data[872,35]=4.4
+merged_restaurant_data[878,35]=4.4
+merged_restaurant_data[883,35]=4.6
+merged_restaurant_data[884,35]=4.3
+merged_restaurant_data[889,35]=4.6
+merged_restaurant_data[891,35]=4.4
+merged_restaurant_data[893,35]=4.5
+merged_restaurant_data[894,35]=4.5
+merged_restaurant_data[896,35]=3.2
+merged_restaurant_data[897,35]=3.8
+merged_restaurant_data[899,35]=3.8
+merged_restaurant_data[901,35]=4.6
+merged_restaurant_data[902,35]=4.1
+merged_restaurant_data[905,35]=3.7
+merged_restaurant_data[906,35]=4.6
+merged_restaurant_data[907,35]=4.5
+merged_restaurant_data[909,35]=4.9
+merged_restaurant_data[910,35]=4.1
+merged_restaurant_data[913,35]=3.0
+merged_restaurant_data[916,35]=4.8
+merged_restaurant_data[920,35]=4.2
+merged_restaurant_data[921,35]=4.3
+merged_restaurant_data[924,35]=4.9
+merged_restaurant_data[925,35]=5.0
+merged_restaurant_data[929,35]=3.5
+merged_restaurant_data[930,35]=4.8
+merged_restaurant_data[933,35]=3.8
+merged_restaurant_data[936,35]=4.4
+merged_restaurant_data[939,35]=4.4
+merged_restaurant_data[940,35]=4.3
+merged_restaurant_data[941,35]=4.6
+merged_restaurant_data[942,35]=4.6
+merged_restaurant_data[943,35]=4.2
+merged_restaurant_data[945,35]=3.8
+merged_restaurant_data[946,35]=4.6
+merged_restaurant_data[948,35]=4.6
+merged_restaurant_data[951,35]=3.4
+merged_restaurant_data[953,35]=4.9
+merged_restaurant_data[954,35]=4.3
+merged_restaurant_data[955,35]=3.2
+merged_restaurant_data[957,35]=4.5
+merged_restaurant_data[961,35]=4.5
+merged_restaurant_data[962,35]=4.9
+merged_restaurant_data[965,35]=4.4
+merged_restaurant_data[968,35]=4.1
+merged_restaurant_data[970,35]=4.4
+merged_restaurant_data[971,35]=4.7
+merged_restaurant_data[972,35]=4.6
+merged_restaurant_data[974,35]=3.5
+merged_restaurant_data[975,35]=4.5
+merged_restaurant_data[977,35]=4.7
+merged_restaurant_data[979,35]=4.2
+merged_restaurant_data[981,35]=4.8
+merged_restaurant_data[982,35]=4.4
+merged_restaurant_data[984,35]=4.4
+merged_restaurant_data[986,35]=4.3
+merged_restaurant_data[987,35]=4.3
+merged_restaurant_data[988,35]=4.6
+merged_restaurant_data[989,35]=2.7
+merged_restaurant_data[991,35]=4.7
+merged_restaurant_data[992,35]=4.3
+merged_restaurant_data[993,35]=4.1
+merged_restaurant_data[997,35]=4.8
+merged_restaurant_data[998,35]=4.8
+merged_restaurant_data[999,35]=4.4
+```
+
+## Deleting Restaurants Without Rating from Google
+
+Now, we are going to delete restaurants that do not include a Google rating. First we are going to check how many NA's there are (which was 539) and then delete them.
+
+```{r}
+sum(is.na(merged_restaurant_data$Rating))
+
+merged_restaurant_data<- merged_restaurant_data %>%
+  filter(!is.na(Rating))
+```
+
+We are left with 646 restaurants!
+
+## Merging "dba" and "name" Columns
+
+In the "restaurant_data" set, the restaurants names are under the **dba Column**. In the "restaurant_rating_data" set, the restaurants names are under the **Name Column**. I am going to go ahead and clean up the columns and then merge the columns.
+
+```{r}
+merged_restaurant_data$dba<- str_to_title(merged_restaurant_data$dba)
+
+merged_restaurant_data$Restaurant_Name <-
+  paste(
+    coalesce(merged_restaurant_data$dba, ""),
+    coalesce(merged_restaurant_data$Name, "")
+  )
+```
+
+## Deleting Unnecessary Columns in "merged_restaurant_data" Set
+
+Finally, I am going to delete columns that are not necessary for this particular project.
+
+```{r}
+merged_restaurant_data <- merged_restaurant_data %>% select(-dba, -boro, -building, -street, -zipcode, -phone, -council_district, -census_tract, -bbl, -nta, -`:@computed_region_f5dn_yrer`, -`:@computed_region_yeji_bk3q`, -`:@computed_region_sbqj_enih`, -`:@computed_region_92fq_4b7q`, -cuisine_description, -bin, -grade, -grade_date, -URL, -Name, -`Rating Count`, -`Detailed Ratings`, -`Price Category`, -Address, -ZipCode)
+```
+
+I am also going to combine the columns longitude and latitude in case we need it in the future. I first combined "Lat" and "latitude" into "Latitude" and deleted the two columns.
+
+```{r}
+str(merged_restaurant_data$Lat)
+
+str(merged_restaurant_data$latitude)
+
+merged_restaurant_data$latitude<-as.numeric(merged_restaurant_data$latitude)
+
+merged_restaurant_data$Lat<-as.numeric(merged_restaurant_data$Lat)
+
+merged_restaurant_data$Latitude <-
+  coalesce(
+    merged_restaurant_data$latitude, merged_restaurant_data$Lat
+  )
+
+merged_restaurant_data <- merged_restaurant_data %>% select(-Lat, -latitude)
+```
+
+Secondly, I combined "longitude" and "Lon" into "Longitude" and deleted the two columns.
+
+```{r}
+str(merged_restaurant_data$Lon)
+
+str(merged_restaurant_data$longitude)
+
+merged_restaurant_data$Lon<-as.numeric(merged_restaurant_data$Lon)
+
+merged_restaurant_data$longitude<-as.numeric(merged_restaurant_data$longitude)
+
+merged_restaurant_data$Longitude <-
+  coalesce(
+    merged_restaurant_data$longitude, merged_restaurant_data$Lon
+  )
+
+merged_restaurant_data <- merged_restaurant_data %>% select(-Lon, -longitude)
+```
+
+Instead of having 44 columns, which was making our data really messy, we now have 16 columns in our "merged_restaurant_data" set! Yippee!!
+
+## Cleaning "museum_data" Set
+
+For the **"museum_data"** set, everything is cleaned up. The only thing I will do is delete some columns to make it a smaller data set.
+
+```{r}
+museum_data<- museum_data %>%
+  select(-tel, -url, -adress1, -address2)
+```
+
+Now we have 5 columns instead of 9 columns.
+
+Next, I will be creating a longitude and latitude column by separating the "the_geom.coordinates". After I do this, I will be making "Longitude" and "Latitude" numeric.
+
+```{r}
+museum_data<- museum_data %>%
+  mutate(
+    cleaned_geom_coordinates = gsub("c\\(|\\)|\"", "", the_geom.coordinates)
+    )
+
+museum_data<-museum_data %>%
+  separate(
+    col = cleaned_geom_coordinates,
+    into = c("Longitude", "Latitude"),
+    sep = ","
+  )
+
+museum_data$Longitude<- as.numeric(museum_data$Longitude)
+
+museum_data$Latitude<- 
+  as.numeric(museum_data$Latitude)
+```
+
+::: {style="text-align: center;"}
+## Goal 1: Statistical analysis (higher ratings)
+:::
+
+In this section, I will be exploring whether restaurants near art museums are more likely to have higher ratings than restaurants not close to museums. I will be using a chi-square test for this. But first, before we get to the chi-square test, we must do a few more steps.
+
+## Creating New Column
+
+In this section, I will be creating a new blank column titled "Near_Museum".
+
+```{r}
+merged_restaurant_data$Near_Museum<- ""
+```
+
+## Typing "Yes" or "No"
+
+Next I will manually input "Yes" if a restaurant is nearby a museum and input "No" if a restaurant is **not** nearby.
+
+```{r}
+merged_restaurant_data[,18]="No"
+merged_restaurant_data[14,18]="Yes"
+merged_restaurant_data[629,18]="Yes"
+merged_restaurant_data[458,18]="Yes"
+merged_restaurant_data[389,18]="Yes"
+merged_restaurant_data[490,18]="Yes"
+merged_restaurant_data[550,18]="Yes"
+merged_restaurant_data[48,18]="Yes"
+merged_restaurant_data[411,18]="Yes"
+merged_restaurant_data[361,18]="Yes"
+merged_restaurant_data[471,18]="Yes"
+merged_restaurant_data[456,18]="Yes"
+merged_restaurant_data[553,18]="Yes"
+merged_restaurant_data[404,18]="Yes"
+merged_restaurant_data[562,18]="Yes"
+merged_restaurant_data[288,18]="Yes"
+merged_restaurant_data[487,18]="Yes"
+merged_restaurant_data[460,18]="Yes"
+merged_restaurant_data[579,18]="Yes"
+merged_restaurant_data[620,18]="Yes"
+merged_restaurant_data[309,18]="Yes"
+merged_restaurant_data[244,18]="Yes"
+merged_restaurant_data[439,18]="Yes"
+merged_restaurant_data[507,18]="Yes"
+merged_restaurant_data[381,18]="Yes"
+merged_restaurant_data[355,18]="Yes"
+merged_restaurant_data[433,18]="Yes"
+merged_restaurant_data[513,18]="Yes"
+merged_restaurant_data[238,18]="Yes"
+merged_restaurant_data[590,18]="Yes"
+merged_restaurant_data[120,18]="Yes"
+merged_restaurant_data[143,18]="Yes"
+merged_restaurant_data[259,18]="Yes"
+merged_restaurant_data[118,18]="Yes"
+merged_restaurant_data[43,18]="Yes"
+merged_restaurant_data[289,18]="Yes"
+merged_restaurant_data[202,18]="Yes"
+merged_restaurant_data[388,18]="Yes"
+merged_restaurant_data[280,18]="Yes"
+merged_restaurant_data[516,18]="Yes"
+merged_restaurant_data[369,18]="Yes"
+merged_restaurant_data[346,18]="Yes"
+merged_restaurant_data[91,18]="Yes"
+merged_restaurant_data[604,18]="Yes"
+merged_restaurant_data[353,18]="Yes"
+merged_restaurant_data[123,18]="Yes"
+merged_restaurant_data[538,18]="Yes"
+merged_restaurant_data[611,18]="Yes"
+merged_restaurant_data[82,18]="Yes"
+merged_restaurant_data[642,18]="Yes"
+merged_restaurant_data[473,18]="Yes"
+merged_restaurant_data[61,18]="Yes"
+merged_restaurant_data[247,18]="Yes"
+merged_restaurant_data[24,18]="Yes"
+merged_restaurant_data[127,18]="Yes"
+merged_restaurant_data[186,18]="Yes"
+merged_restaurant_data[624,18]="Yes"
+merged_restaurant_data[59,18]="Yes"
+merged_restaurant_data[64,18]="Yes"
+merged_restaurant_data[176,18]="Yes"
+merged_restaurant_data[89,18]="Yes"
+merged_restaurant_data[256,18]="Yes"
+merged_restaurant_data[141,18]="Yes"
+merged_restaurant_data[410,18]="Yes"
+merged_restaurant_data[497,18]="Yes"
+merged_restaurant_data[394,18]="Yes"
+merged_restaurant_data[221,18]="Yes"
+merged_restaurant_data[210,18]="Yes"
+merged_restaurant_data[436,18]="Yes"
+merged_restaurant_data[135,18]="Yes"
+merged_restaurant_data[332,18]="Yes"
+merged_restaurant_data[85,18]="Yes"
+merged_restaurant_data[571,18]="Yes"
+merged_restaurant_data[526,18]="Yes"
+merged_restaurant_data[18,18]="Yes"
+merged_restaurant_data[51,18]="Yes"
+merged_restaurant_data[172,18]="Yes"
+merged_restaurant_data[49,18]="Yes"
+merged_restaurant_data[212,18]="Yes"
+merged_restaurant_data[262,18]="Yes"
+merged_restaurant_data[328,18]="Yes"
+merged_restaurant_data[34,18]="Yes"
+merged_restaurant_data[131,18]="Yes"
+merged_restaurant_data[246,18]="Yes"
+merged_restaurant_data[155,18]="Yes"
+merged_restaurant_data[600,18]="Yes"
+```
+
+There are a total of 85 restaurants near museums and 562 restaurants **not** near museums.
+
+## Binning ratings into Groups
+
+Next, I will be making the ratings into groups such as low, medium, and high.
+
+```{r}
+merged_restaurant_data<- merged_restaurant_data %>%
+  mutate(Rating_Group = case_when(
+    Rating <= 3.9 ~ "Low",
+    Rating >= 4.0 & Rating <= 4.5 ~ "Average",
+    Rating >= 4.6 ~ "High"
+    )
+  )
+```
+
+## Contingency Table
+
+Next, we will make a contingency table
+
+```{r}
+contingency_table <- xtabs(~Rating_Group+Near_Museum, data=merged_restaurant_data)
+contingency_table
+
+contingency_table_check<- merged_restaurant_data %>%
+  tabyl(Rating_Group, Near_Museum) %>%
+  adorn_totals("row") %>%
+  adorn_percentages("row") %>%
+  adorn_pct_formatting(digits = 1) %>%
+  adorn_ns()
+contingency_table_check
+```
+
+## Visualizing our Data
+
+Next, we will create a bar graph to visually see our data better.
+
+```{r}
+Visual_1<- ggplot(merged_restaurant_data, aes(x = Near_Museum, fill = Rating_Group)) +
+  geom_bar(position = "fill") + 
+  labs(
+    title = "Proportion of Rating Groups by if Restaurants are Near Museums",
+    y = "Proportion of rating Groups ",
+    x = "Near Museum?"
+  ) +
+  theme_solarized()
+Visual_1
+```
+
+We are visualizing the proportion of rating groups (high, medium, low) by if restaurants are near museums (yes,no).
+
+We can see here that there is not much difference. But we will discover this through statistical analysis.
+
+## Chi-Square Test
+
+```{r}
+chi_square_test<- chisq.test(contingency_table)
+chi_square_test
+
+cramerV(contingency_table)
+```
+
+### Chi=Square Interpretation
+
+-   The chi-square test shows X\^2 = 0.64691 (0.65), df = 2, p = 0.7236 (0.72)
+
+-   There is **not** a statistically significant relationship between restaurants being near museums and rating.
+
+-   Cramer's V tells us that the relationship is weak in strength.
+
+-   Conclusion: There is no significant difference between restaurants being near museums or not near museums based on their rating category (low, medium, and high).
+
+::: {style="text-align: center;"}
+## Goal 2: Statistical analysis (Restaurant Violations)
+:::
+
+In this section, I will be exploring whether restaurants near museums are less likely to have no violation citations than restaurants not close to museums. I will be using independent sample t-Test for this. But first, before we get to the independent samples t-Test, we must do a few more steps.
+
+## Creating New Column
+
+In this section, I will be creating a new blank column titled "Restaurant_Violation".
+
+```{r}
+merged_restaurant_data$Restaurant_Violation<- ""
+```
+
+## Typing "None" or "Critical"
+
+Next I will manually input "Critical" if a restaurant has ever had a restaurant violation and input "No" if a restaurant does**not** have a violation.
+
+```{r}
+merged_restaurant_data[,20]="None"
+merged_restaurant_data[40,20]="Critical"
+merged_restaurant_data[49,20]="Critical"
+merged_restaurant_data[55,20]="Critical"
+merged_restaurant_data[56,20]="Critical"
+merged_restaurant_data[67,20]="Critical"
+merged_restaurant_data[95,20]="Critical"
+merged_restaurant_data[98,20]="Critical"
+merged_restaurant_data[99,20]="Critical"
+merged_restaurant_data[106,20]="Critical"
+merged_restaurant_data[157,20]="Critical"
+merged_restaurant_data[160,20]="Critical"
+merged_restaurant_data[167,20]="Critical"
+merged_restaurant_data[170,20]="Critical"
+merged_restaurant_data[171,20]="Critical"
+merged_restaurant_data[172,20]="Critical"
+merged_restaurant_data[213,20]="Critical"
+merged_restaurant_data[214,20]="Critical"
+merged_restaurant_data[220,20]="Critical"
+merged_restaurant_data[221,20]="Critical"
+merged_restaurant_data[224,20]="Critical"
+merged_restaurant_data[230,20]="Critical"
+merged_restaurant_data[236,20]="Critical"
+merged_restaurant_data[238,20]="Critical"
+merged_restaurant_data[239,20]="Critical"
+merged_restaurant_data[275,20]="Critical"
+merged_restaurant_data[278,20]="Critical"
+merged_restaurant_data[279,20]="Critical"
+merged_restaurant_data[289,20]="Critical"
+merged_restaurant_data[291,20]="Critical"
+merged_restaurant_data[301,20]="Critical"
+merged_restaurant_data[305,20]="Critical"
+merged_restaurant_data[306,20]="Critical"
+merged_restaurant_data[307,20]="Critical"
+merged_restaurant_data[308,20]="Critical"
+merged_restaurant_data[310,20]="Critical"
+```
+
+## Contingency Table
+
+Next, we will make a contingency table
+
+```{r}
+contingency_table_2 <- xtabs(~Restaurant_Violation+Near_Museum, data=merged_restaurant_data)
+contingency_table_2
+
+contingency_table_check_2<- merged_restaurant_data %>%
+  tabyl(Restaurant_Violation, Near_Museum) %>%
+  adorn_totals("row") %>%
+  adorn_percentages("row") %>%
+  adorn_pct_formatting(digits = 1) %>%
+  adorn_ns()
+contingency_table_check_2
+```
+
+## Visualizing our Data
+
+Next, we will create a bar graph to visually see our data better.
+
+```{r}
+Visual_2<- ggplot(merged_restaurant_data, aes(x = Near_Museum, fill = Restaurant_Violation)) +
+  geom_bar(position = "fill") + 
+  labs(
+    title = "Proportion of Restaurant Violations by Restaurants Near Museums",
+    y = "Proportion of if Restaurant had Violations ",
+    x = "Near Museum?"
+  ) +
+  theme_solarized()
+Visual_2
+```
+
+We are visualizing the proportion of if a restaurant ever had violations (None, Critical) by if restaurants are near museums (yes,no).
+
+We can see here that there is not much difference. But we will discover this through statistical analysis.
+
+## Chi-Square Test
+
+```{r}
+chi_square_test<- chisq.test(contingency_table_2)
+chi_square_test
+
+chisq.test(contingency_table_2)$expected
+
+cramerV(contingency_table_2)
+```
+
+### Interpretation
+
+-   A chi-square test with Yates' continuity correction (thanks to R) was conducted to examine the restaurant rating category and if the restaurants are near any museums.
+
+-   The chi-square test shows X\^2 = 6.2237e-30, df = 2, p = 1
+
+-   Cramer's V tells us that the relationship is very weak in strength (0.008128).
+
+-   There is **not** a statistically significant relationship between restaurants being near museums and restaurant violation.
+
+-   Although a chi-square test with Yates' correction was conducted, I decided to do a fisher's exact test.
+
+## Fisher's Exact Test
+
+```{r}
+fisher.test(contingency_table_2)
+```
+
+### Interpretation
+
+-   p value is 0.7975, which is still **not** a statistically significant relationship between restaurants being near museums and restaurant violations.
+
+::: {style="text-align: center;"}
+## Goal 3: Creating an interactive Map
+:::
+
+In this section, I used leaflet to create an interactive map based on museums and restaurants.
+
+These are the steps I took to create this map thanks to [This Video](https://youtu.be/w5U62wUki3E?si=NVk6fT64Bpwbmczv) and [this website](https://www.drdataking.com/post/how-to-add-multiple-lines-label-on-a-leaflet-map/#:~:text=+%E2%88%92-,Leaflet%20%7C%20%C2%A9%20OpenStreetMap%20contributors%2C%20CC%2DBY%2DSA,labels%20with%20multiple%20lines%20text.).
+
+-   I created a "labels" value which include having the output to be the restaurant name and rating. The labels would be for the restaurants that will look like for example "Restaurant: Joyce's Bakery. Rating:5.0" :)
+
+-   I created a "Labels" value which include having the output to be the museum. The Label wouls be for the museum that will look like, for example, "Museum: Joyce Museum"
+
+-   Next I created a value called "merged_restaurant_data\$color". The reason I did this was because I wanted restaurants to be different color based on if they are considered high, medium, or low rating. I tried to use colorFactor just like the post [here](https://stackoverflow.com/questions/41533583/r-leaflet-adding-colors-for-character-variables) showed, but it was not working. The colors were randomly assignment so a restaurant with a 4.7 rating would be red! I fixed this by goggling how to do this without colorFactor and found I can do it the old fashion way using dplyr's cases_when.
+
+-   Next I created the map. I first set the view to be NYC coordinates because I wanted the map to just focus on NYC and ignore other states. Next, in "addCircleMarkers", I basically added the restaurant name data based on their rating color. In the next "addCircleMarkers" I added the museum data and made the museum points black to be easier to view.
+
+-   I created an interactive map! Check it out! You can zoom in and out and hoover over any point you want. Remember that black points are museums, dark blue is restaurants with high ratings, purple is restaurants with medium level ratings, and dark red is restaurants with low ratings.
+
+```{r}
+merged_restaurant_data$labels<- paste( "Restaurant:", merged_restaurant_data$Restaurant_Name, ".",
+                "Rating:", merged_restaurant_data$Rating) %>%
+                 lapply(HTML)
+               
+
+
+museum_data$Labels<-paste("Museum:", museum_data$name) %>%
+  lapply(HTML)
+
+
+merged_restaurant_data$color<- case_when(
+  merged_restaurant_data$Rating_Group == "Low"~"red",
+  merged_restaurant_data$Rating_Group == "Average"~"purple",
+  merged_restaurant_data$Rating_Group == "High"~"darkblue"
+)
+
+
+leaflet(data=merged_restaurant_data) %>%
+  addTiles() %>%
+  setView(lng = -74.0060, lat = 40.7128, zoom = 11
+          ) %>%
+  addCircleMarkers(lng = ~Longitude,
+             lat = ~Latitude,
+             label = ~labels,
+             radius = 5,
+             color = ~color,
+             weight = 2, 
+             opacity= 1
+             ) %>%
+  addCircleMarkers(
+    data = museum_data,
+    lng = ~Longitude, 
+    lat = ~Latitude,
+    label = ~Labels,
+    radius = 5,
+    color = "black",
+    weight = 2,
+    opacity = 1
+  )
+```
+
+::: {style="text-align: center;"}
+## Conclusion
+:::
+
+Both of our analysis were not statistically significant. Our first analysis was to explore whether restaurants near art museums are more likely to have higher ratings than restaurants not close to museums using a chi-square test. It was not statistically significant meaning that restaurants near art museums are not likely to have higher ratings than restaurants not close to museums. Our second analysis was to explore whether restaurants near museums are less likely to have no violation citations than restaurants not close to museums. It was not statistically significant meaning that restaurants near art museums are not likely to have no violation citations if they are near museums than restaurants not near museums.
+
+In my project, I believe that this project is relevant to New Yorkers who like to go to museums or restaurants and would like to plan an outing for a nice museum day in NYC. These types of New Yorkers would care about this type of project because they no longer have to rely on using Google to search each individual museum and instead have a map that is accessible and easy to use.
+
+What I hope to do different for my presentation in the future for NYC open data week conference is be able to have more time inputting more restaurants and doing research on each restaurant to see if they ever had any restaurant violations and what their Google rating is.
+
+There are limitations to this project. The first one is I used two data sets with restaurant data and although we had over 600 restaurants to work with, there was many missing! This could have explained why our statistical analysis sections were not significant. Also, the cleaned data, less than 100 restaurants had restaurant violations and not all restaurants were researched beforehand to confirm this.
+
+::: {style="text-align: center;"}
+## References
+:::
+
+-   NYC Open Data data set "DOHMH New York City Restaurant Inspection Results". Data Set: <https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j/about_data>
+
+-   NYC Open Data data set "MUSEUM" by the Department of Information Technology & Telecommuncations (DoITT). Data Set:<https://data.cityofnewyork.us/Recreation/MUSEUM/fn6f-htvy/about_data>
+
+-   Kaggle Open Data sets " NYC Restaurants" by BERIDZEG45. Data Set: <https://www.kaggle.com/datasets/beridzeg45/nyc-restaurants>
+
+-   Jiwei, W. (2022, February 23). How to add multiple lines label on a leaflet map. Dr.Data.King. <https://www.drdataking.com/post/how-to-add-multiple-lines-label-on-a-leaflet-map/#:~:text=+%E2%88%92-,Leaflet%20%7C%20%C2%A9%20OpenStreetMap%20contributors%2C%20CC%2DBY%2DSA,labels%20with%20multiple%20lines%20text.>
+
+-   Lendway, L. (2020b). YouTube. <https://youtu.be/w5U62wUki3E?si=NVk6fT64Bpwbmczv>

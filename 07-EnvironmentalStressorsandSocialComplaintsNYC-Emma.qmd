@@ -1,0 +1,244 @@
+---
+title: "Environmental Stressors and Social Complaints in New York City"
+author: "Emma Valentina"
+---
+
+# Environmental Stressors and Social Complaints in New York City {#sec-emma}
+
+Climate change increasingly affects urban environments through flooding, extreme weather, and infrastructure strain. Beyond physical impacts, environmental stressors may influence psychological well-being and social behavior, particularly in dense urban settings such as New York City. Environmental stress theory suggests that chronic exposure to environmental risk can heighten stress, frustration, and conflict within communities.
+
+This project investigates whether **environmental risk exposure**, measured through flooding-related complaints, is associated with **social indicators of anxiety**, operationalized as noise complaints across New York City. By utilizing publicly available NYC Open Data, this project demonstrates how open civic data can be used to explore psychological and behavioral patterns at the community level in a reproducible way.
+
+This analysis is framed as a proposal suitable for submission to NYC Open Data Week 2026 and emphasizes transparency, reproducibility, and civic relevance.
+
+## Research Question
+
+How does exposure to environmental risk (measured by flooding complaints) relate to social indicators of anxiety (measured by noise complaints) across New York City boroughs?
+
+## Data Sources
+
+This project uses four datasets from the NYC Open Data Portal:
+
+1.  311 Service Requests (Noise Complaints subset)
+2.  311 Service Requests (Flooding-related complaints subset)
+3.  E-Designations
+4.  Hazard Mitigation Plan - Mitigation Actions Database
+
+Due to the size of the full 311 Service Requests dataset, noise complaint data were accessed via the NYC Open Data API. Smaller supporting datasets were downloaded and imported as Excel files. This mixed-format approach improves efficiency while maintaining transparency and reproducibility.
+
+## Reproducible Workflow
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: true
+library(tidyverse)
+library(lubridate)
+library(readxl)
+library(httr)
+library(jsonlite)
+library(knitr)
+```
+
+## Loading Downloaded Excel Datasets
+
+```{r}
+#| label: load-data
+#| message: false
+#| warning: true
+
+library(arrow)
+edesignation <- read_parquet(
+  "E-Designations.parquet",
+  na = c("N/A", "NA", "")
+)
+
+hazard_mitigation <- read_parquet(
+  "Hazard_Mitigation_Plan.parquet",
+  na = c("N/A", "NA", "")
+)
+
+street_flooding <- read_parquet(
+  "Street_Flooding_Complaints.parquet",
+  na = c("N/A", "NA", "")
+)
+```
+
+## Accessing NYC Open Data via API (311 Noise Complaints)
+
+To avoid downloading the full 311 dataset, noise complaints were retrieved using the NYC Open Data API. Only relevant variables and records were requested.
+
+```{r api-helper}
+#| label: api-helper
+#| message: false
+#| warning: true
+get_nyc_data <- function(url) {
+  response <- GET(url)
+  content(response, as = "text", encoding = "UTF-8") |>
+    fromJSON(flatten = TRUE) |>
+    as_tibble()
+}
+```
+
+```{r}
+#| label: load-noise
+#| message: false
+#| warning: true
+noise_url <- URLencode(paste0(
+  "https://data.cityofnewyork.us/resource/erm2-nwe9.json?",
+  "$select=unique_key,created_date,complaint_type,borough,city,",
+  "x_coordinate_state_plane,y_coordinate_state_plane&",
+  "$where=complaint_type LIKE 'Noise%' ",
+  "AND created_date >= '2018-01-01T00:00:00'&",
+  "$limit=50000"
+))
+
+noise <- get_nyc_data(noise_url)
+```
+
+## Data Cleaning and Preparation
+
+Data were cleaned to ensure consistent borough labeling and proper date formatting. Complaint counts were aggregated at the borough-year level to allow comparisons across time and location.
+
+```{r}
+#| label: clean-data
+#| message: false
+#| warning: true
+noise_clean <- noise |>
+  filter(!is.na(borough)) |>
+  mutate(
+    created_date = as.POSIXct(created_date),
+    year = year(created_date),
+    Borough = borough
+  ) |>
+  group_by(Borough, year) |>
+  summarise(
+    noise_complaints = n(),
+    .groups = "drop"
+  )
+
+flood_clean <- street_flooding |>
+  filter(!is.na(Borough)) |>
+  mutate(
+    created_date = as.POSIXct(`Created Date`),
+    year = year(created_date)
+  ) |>
+  group_by(Borough, year) |>
+  summarise(
+    flood_complaints = n(),
+    .groups = "drop"
+  )
+```
+
+## Merging Datasets
+
+```{r merge}
+#| label: merge
+#| message: false
+#| warning: true
+complaints <- left_join(
+  flood_clean,
+  noise_clean,
+  by = c("Borough", "year")
+)
+```
+
+## Descriptive Statistics
+
+```{r}
+#| label: tbl-descriptives
+#| message: false
+#| warning: true
+kable(
+  summary(complaints),
+  caption = "Descriptive summary of borough-year flooding complaints and noise complaints (after merging datasets)."
+)
+```
+
+This summary provides an overview of variation in environmental risk exposure and social complaint behavior across boroughs and years.
+
+## Visualization 1: Flooding Complaints by Borough
+
+```{r}
+#| label: fig-plot-flood
+#| message: false
+#| warning: true
+#| fig-cap: "Street flooding complaints by borough (borough-year totals)."
+#| fig-alt: "Bar chart comparing the total number of street flooding complaints across NYC boroughs. Bar heights show which boroughs report more or fewer flooding complaints."
+
+ggplot(flood_clean, aes(x = Borough, y = flood_complaints)) +
+  geom_col(fill = "#2a9d8f") +
+  labs(
+    title = "Street Flooding Complaints by Borough",
+    x = "Borough",
+    y = "Number of Flooding Complaints"
+  ) +
+  theme_minimal()
+```
+
+## Visualization 2: Flooding and Noise Complaints
+
+```{r}
+#| label: complaints-borough
+#| message: false
+#| warning: true
+complaints <- complaints %>%
+  mutate(Borough = toupper(trimws(Borough)))
+```
+
+```{r}
+#| label: fig-plot-relationship
+#| message: false
+#| warning: true
+#| fig-cap: "Relationship between flooding complaints and noise complaints across borough-years."
+#| fig-alt: "Scatter plot of borough-year observations with flooding complaints on the x-axis and noise complaints on the y-axis. Points are colored by borough, and a fitted linear trend line summarizes the overall association."
+ggplot(complaints, aes(x = flood_complaints, y = noise_complaints, color = Borough)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", se = TRUE, color = "black") +
+  scale_color_manual(values = c(
+    "MANHATTAN" = "#2a9d8f",
+    "BROOKLYN" = "#264653",
+    "BRONX" = "#8ac926",
+    "QUEENS" = "#56c596",
+    "STATEN ISLAND" = "steelblue"
+  )) + 
+  labs(
+    title = "Relationship Between Flooding and Noise Complaints",
+    x = "Flooding Complaints",
+    y = "Noise Complaints"
+  ) +
+  theme_minimal()
+```
+
+## Statistical Analysis
+
+```{r}
+#| label: regression
+#| message: false
+#| warning: true
+model <- lm(noise_complaints ~ flood_complaints, data = complaints)
+
+summary(model)
+```
+
+## Results
+
+The regression analysis evaluates whether higher levels of flooding complaints are associated with increased noise complaints. A positive relationship would align with environmental stress theory, suggesting that climate-related disruptions may be linked to heightened social tension and anxiety-related behaviors.
+
+## Discussion
+
+This project demonstrates how climate-related environmental stressors may influence social behavior in urban environments. Flooding represents a tangible, recurring disruption, while noise complaints may reflect increased frustration or conflict within communities. Together, these indicators provide insight into how climate risk may shape everyday social experiences in New York City.
+
+By integrating psychological theory with open civic data, this analysis highlights the value of interdisciplinary approaches to understanding climate impacts.
+
+## Limitations and Future Directions
+
+311 complaint data reflect reporting behavior rather than direct psychological measurement and may vary by access to city services or trust in government. Future work could incorporate demographic or spatial analyses, examine temporal patterns around extreme weather events, or integrate measures of pro-environmental behavior and peer influence.
+
+## Connection to Open Data
+
+This project emphasizes transparency and reproducibility by combining downloaded open datasets with API-based data access. NYC Open Data enables researchers and communities to explore complex environmental and social issues using publicly accessible information, supporting informed decision-making and civic engagement.
+
+## Conclusion
+
+Environmental stressors associated with climate change may have meaningful social and psychological consequences in urban settings. Using NYC Open Data, this project provides a reproducible framework for examining how environmental risk relates to social indicators of anxiety across New York City. These findings underscore the importance of incorporating psychological perspectives into climate resilience planning.

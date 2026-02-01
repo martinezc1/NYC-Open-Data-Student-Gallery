@@ -1,0 +1,14 @@
+name: quarto_nyc_book
+title: Quarto_NYC_Book
+username: martinezc1
+account: martinezc1
+server: connect.posit.cloud
+hostUrl: https://api.connect.posit.cloud/v1
+appId: 019c16f9-a7f2-9ab4-3a45-01dbd4a4e55a
+bundleId:
+url:
+version: 1
+quarto_version: 1.8.25
+quarto_engines: markdown, knitr
+asMultiple: FALSE
+asStatic: FALSE

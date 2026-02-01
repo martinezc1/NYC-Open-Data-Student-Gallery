@@ -1,0 +1,68 @@
+# About {-}
+
+During the Fall 2025 semester, students in the M.S. program in Psychological Research at Brooklyn College completed the inaugural offering of *Reproducible Psychological Research*. Using the R programming language, students developed weekly R Markdown documents to solve simulated real-world analytical problems using authentic datasets, with an emphasis on transparency, documentation, and reproducibility.
+
+For their final projects, students were tasked with conducting independent, original research using open data related to New York City. Rather than working with pre-cleaned or artificial datasets, students engaged directly with messy, real-world data and were responsible for every step of the analytical workflow—from data acquisition and cleaning to analysis, visualization, and interpretation. A majority of projects utilized data from the [NYC Open Data Portal](https://opendata.cityofnewyork.us/), though students were encouraged to explore any open NYC-based data source that aligned with their research questions.
+
+Each project in this volume represents a complete, reproducible research artifact. Students were required to meet the following criteria:
+
+1.  The data must be openly available\
+2.  The data must meaningfully relate to New York City\
+3.  The research question, analysis, and interpretation must be original
+
+Collectively, these projects demonstrate not only technical proficiency in R, but also the ability to ask meaningful questions about the city students live in, evaluate real-world data critically, and communicate findings in a clear, reproducible manner. This volume serves both as a showcase of student growth and as an example of how open data and open-source tools can be used to conduct rigorous, socially relevant research.
+
+Chapters are organized in alphabetical order of the student's last names.
+
+## How to Use This Book
+
+This volume is designed for students, educators, and practitioners interested in applied data analysis, reproducible research, and open data. Each chapter represents an independent research project and can be read on its own. Readers are encouraged to explore the accompanying code, reproduce analyses, and adapt methods for their own work.
+
+## Companion Textbook
+
+This volume is designed to accompany the open-access textbook *Reproducible Research in R*, which provides the conceptual foundations, worked examples, and technical instruction used throughout the course.
+
+The textbook is freely available online at:
+
+<https://martinezc1-reproducible-research-in-r.share.connect.posit.cloud/>
+
+Readers new to reproducible research or the R programming language are encouraged to consult the textbook alongside this volume. While the projects in this book stand on their own, the textbook offers additional context on methodology, statistical reasoning, and reproducible workflows.
+
+## Instructor Note
+
+This volume was developed as part of a graduate-level course emphasizing reproducible research practices, open-source tools, and applied data analysis. Students were encouraged to take intellectual risks, work with imperfect data, and document their analytical decisions transparently. The goal was not perfection, but clarity, rigor, and reproducibility.
+
+Through this project, students aimed to:
+
+-   Formulate original research questions using open data\
+-   Apply reproducible workflows in R and R Markdown\
+-   Critically evaluate real-world data limitations\
+-   Communicate findings clearly to a public audience
+
+## Why NYC Open Data?
+
+New York City’s open data ecosystem provides a unique opportunity to study real-world phenomena at scale. By working with publicly available city data, students were able to connect statistical methods to the communities, systems, and policies that shape daily life in New York City. To support not only these projects, but also broader public access to NYC Open Data, the `nycOpenData` package was created.
+
+## Contributors
+
+The following students contributed original research projects to this volume as part of the Fall 2025 offering of *Reproducible Psychological Research*. Links are provided for completed chapters included in this edition.
+
+-   Crystal Adote - @sec-crystal
+-   Jonah Dratfield - @sec-jonah
+-   Joyce Escatel Flores - *(chapter forthcoming)*
+-   Robert Hutto - @sec-robert
+-   Isley Jean-Pierre - @sec-isley
+-   Shannon Joyce - @sec-shannon
+-   Emma Valentina Tupone - @sec-emma
+-   Xinru Wang - @sec-xinru
+-   Laura Werner - *(chapter forthcoming)*
+
+## Acknowledgments
+
+Special thanks to the Brooklyn College Open Educational Resources (OER) team for their support throughout the development of this project. Their dedication to open education and student-centered learning helped make this volume possible.
+
+## How to Cite This Volume
+
+If you use or reference this volume, please cite it as:
+
+> Martinez, C. A. (Ed.). (2025). *NYC Open Data: Student Research Projects in Reproducible Psychological Research*. Brooklyn College, CUNY. Open-access textbook.

@@ -1,0 +1,450 @@
+---
+title: "Beating Around the Bush: Uncovering the Hidden Link Between Urban Trees and Wildlife Activity"
+author: "Xinru Wang"
+---
+
+## Beating Around the Bush: Uncovering the Hidden Link Between Urban Trees and Wildlife Activity {#sec-xinru}
+
+Urban trees play an important role in shaping city environments. Beyond improving air quality and adding color to city streets, street trees can also provide shelter, food sources, and movement pathways for wildlife living in urban areas. At the same time, cities are fragmented environments where wildlife often comes into contact with human infrastructure, increasing the risk of injury or the need for human intervention.
+
+The diversity of New York City provides an insightful setting for analyzing these dynamics, as each borough differs in tree coverage, wildlife presence, and urban structure. Some boroughs have more street trees and larger parks, while others are more densely developed. This variation allows for comparisons between tree distribution and reported wildlife incidents across the city.
+
+Using NYC Open Data from the [2015 NYC Street Tree Census](https://data.cityofnewyork.us/Environment/2015-Street-Tree-Census-Tree-Data/uvpi-gqnh/about_data){target="_blank"} and the [Urban Park Ranger Animal Condition Response](https://data.cityofnewyork.us/Environment/Urban-Park-Ranger-Animal-Condition-Response/fuhs-xmg2/about_data){target="_blank"} dataset, this project explores the relationship between street trees and wildlife incidents across New York City boroughs. Specifically, this analysis asks:
+
+(1) how street trees are distributed across boroughs
+(2) how wildlife incidents vary by borough
+(3) whether borough-level tree characteristics are associated with wildlife incident patterns
+
+This project uses descriptive and exploratory analyses to examine how urban trees and wildlife activity coexist within a large metropolitan city such as New York City.
+
+## Required Packages
+
+For this project, I used the following R packages to clean, analyze, and visualize the data.
+
+```{r}
+#| label: libraries
+#| message: false
+#| warning: true
+library(tidyverse)
+library(janitor)
+library(skimr)
+library(ggplot2)
+library(knitr)
+library(supernova)
+library(rcompanion)
+library(arrow)
+```
+
+## Data and Methods
+
+### Data Sources
+
+This analysis uses two publicly available datasets from NYC Open Data. The first dataset is the `2015 NYC Street Tree Census`, which documents the location and characteristics of street trees across New York City. For this study, the Street Tree Census was used to calculate the total number of street trees in each borough, serving as a borough-level measure of street tree abundance.
+
+The second dataset is the `Urban Park Ranger Animal Condition Response` dataset, which records requests for wildlife assistance, relocation, and rescue responded to by NYC Park Rangers. This dataset was used to calculate the total number of wildlife-related incidents in each borough, serving as a proxy measure of wildlife activity.
+
+Although the two datasets capture different aspects of the urban environment—street trees located primarily along streets and wildlife incidents occurring primarily within park properties—they were analyzed together at the borough level to explore broader spatial patterns in urban ecology across New York City. All analyses were conducted using aggregated borough-level summaries.
+
+I began by downloading publicly available datasets from NYC Open Data and importing them into R as CSV files for data cleaning, analysis, and visualization.
+
+```{r}
+#| label: csv-import
+#| message: false
+#| warning: true
+# Import NYC Open Data CSV files
+tree_data <- read_parquet("2015_Street_Tree_Census.parquet")
+animal_data <- read_parquet("Urban_Park_Ranger_Animal_Condition_Response.parquet")
+```
+
+### Data Cleaning and Preparation
+
+Before analysis, I cleaned and prepared the data by selecting relevant variables, addressing missing values, and ensuring consistent formatting across datasets.
+
+```{r}
+#| label: data-cleaning
+#| message: false
+#| warning: true
+# Standardize column names
+tree_data <- tree_data %>% clean_names()
+animal_data <- animal_data %>% clean_names()
+
+# Select variables needed for tree-level analysis
+tree_clean <- tree_data %>%
+  select(borough, health, tree_dbh, latitude, longitude)
+
+# Select variables needed for wildlife incident analysis
+animal_clean <- animal_data %>%
+  select(borough, species_description, animal_class, animal_condition, property)
+
+# Check for missing borough values
+sum(is.na(tree_data$borough))
+sum(is.na(animal_data$borough))
+
+# Convert key categorical variables to factors and clean missing values
+tree_clean <- tree_clean %>%
+  mutate(
+    health = factor(health, levels = c("Poor", "Fair", "Good"))
+  )
+
+animal_clean <- animal_clean %>%
+  mutate(
+    animal_condition = na_if(animal_condition, "N/A"),
+    animal_condition = factor(animal_condition),
+    animal_class = factor(animal_class)
+  )
+```
+
+## Descriptive Analysis (Plots)
+
+To describe how street trees and wildlife incidents vary across New York City, I summarized the total number of urban trees and reported wildlife incidents in each borough and visualized these counts using a bar chart.
+
+### Street Tree Distribution Across Boroughs (**Bar chart**)
+
+```{r}
+#| label: fig-tree-summary
+#| message: false
+#| warning: true
+#| fig-cap: "Total number of street trees recorded in the 2015 NYC Street Tree Census, summarized by borough."
+#| fig-alt: "Bar chart of total street trees by NYC borough from the 2015 Street Tree Census, with boroughs ordered from highest to lowest tree count."
+
+tree_summary <- tree_clean %>%
+  group_by(borough) %>%
+  summarise(
+    total_trees = n(),
+    pct_good_health = mean(health == "Good", na.rm = TRUE),
+    avg_dbh = mean(tree_dbh, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+ggplot(tree_summary,
+       aes(x = reorder(borough, -total_trees),
+           y = total_trees)) +
+  geom_col(fill = "chartreuse4") +
+  labs(
+    title = "Total Street Trees by Borough",
+    x = "Borough",
+    y = "Total Street Trees"
+  ) +
+  theme_minimal(base_size = 12) +
+    theme(plot.title = element_text(size = 17, family = "serif", face = "bold"),
+        axis.title.x = element_text(size = 12, family = "serif"),
+        axis.title.y = element_text(size = 12, family = "serif"))
+```
+
+#### Interpretation
+
+The bar chart shows the total number of street trees in each New York City borough. **Queens** has the **largest number** of **street trees**, followed by Brooklyn. **Manhattan** has the **fewest** street trees among the five boroughs. Overall, the distribution highlights substantial differences in street tree availability across boroughs, reflecting variation in land area, residential density, and urban structure.
+
+### Wildlife Incidents Across Boroughs (**Bar chart**)
+
+```{r}
+#| label: fig-animal-summary
+#| message: false
+#| warning: true
+#| fig-cap: "Total number of reported wildlife incidents across NYC boroughs."
+#| fig-alt: "Bar chart of total reported wildlife incidents by NYC borough from the Urban Park Ranger Animal Condition Response dataset, with boroughs ordered from highest to lowest incident count."
+
+animal_summary <- animal_clean %>%
+  group_by(borough) %>%
+  summarise(
+    total_incidents = n(),
+    pct_injured = mean(animal_condition == "Injured", na.rm = TRUE),
+    .groups = "drop"
+  )
+
+ggplot(animal_summary,
+       aes(x = reorder(borough, -total_incidents),
+           y = total_incidents)) +
+  geom_col(fill = "salmon4") +
+  labs(
+    title = "Wildlife Incidents by Borough",
+    x = "Borough",
+    y = "Total Incidents"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(plot.title = element_text(size = 17, family = "serif", face = "bold"),
+        axis.title.x = element_text(size = 12, family = "serif"),
+        axis.title.y = element_text(size = 12, family = "serif"))
+```
+
+#### Interpretation
+
+The bar chart displays the total number of reported wildlife incidents across New York City boroughs. **Manhattan** reports the **highest** number of **incidents**, followed by Queens and Brooklyn. The Bronx and Staten Island report fewer incidents overall. These differences highlight variation in reported wildlife activity across boroughs, which may reflect differences in park usage, population density, and reporting patterns.
+
+### Combining Tree and Wildlife Data at the Borough Level (**Table**)
+
+After examining street trees and wildlife incidents separately, I combined the two borough-level summaries to explore how tree abundance and wildlife incidents relate to one another. By merging the tree and wildlife datasets by borough, this analysis allows for direct comparison between the number of street trees and the frequency of reported wildlife incidents across New York City.
+
+```{r}
+#| label: tbl-borough-summary
+#| message: false
+#| warning: true
+borough_summary <- left_join(tree_summary, animal_summary, by = "borough")
+
+kable(borough_summary, caption = "Borough-level summary of street tree characteristics and wildlife incident counts across New York City.")
+```
+
+### Wildlife Incidents Relative to Street Tree Availability (**Standardized bar chart / rate per 10,000 trees**)
+
+To account for differences in street tree availability across boroughs, wildlife incidents were standardized by tree count and expressed as incidents per 10,000 street trees.
+
+```{r}
+#| label: fig-incident-per-tree
+#| message: false
+#| warning: true
+#| fig-cap: "Number of wildlife incidents per 10,000 street trees in each New York City borough."
+#| fig-alt: "Bar chart of wildlife incidents per 10,000 street trees for each NYC borough, comparing incident rates standardized by borough tree totals."
+
+borough_summary <- borough_summary %>%
+  mutate(incidents_per_10k_trees = total_incidents / total_trees * 10000)
+
+ggplot(borough_summary,
+       aes(x = borough, y = incidents_per_10k_trees)) +
+  geom_col(fill = "dodgerblue4") +
+  labs(
+    title = "Wildlife Incidents per 10,000 Street Trees by Borough",
+    x = "Borough",
+    y = "Incidents per 10,000 Street Trees"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(plot.title = element_text(size = 17, family = "serif", face = "bold"),
+        axis.title.x = element_text(size = 12, family = "serif"),
+        axis.title.y = element_text(size = 12, family = "serif"))
+```
+
+#### Interpretation
+
+The bar chart shows the number of wildlife incidents per 10,000 street trees in each borough. Manhattan has the highest rate of incidents per tree, even though it has fewer street trees overall. In contrast, Queens has the lowest rate of incidents per tree despite having the most street trees. This suggests that **wildlife incidents are more concentrated in boroughs with fewer street trees** and more spread out in boroughs with higher street-tree density.
+
+### Spatial Distribution of Street Trees (**Binned spatial density plot / heatmap**)
+
+In addition to borough-level summaries, I examined the spatial distribution of street trees across New York City to better understand how trees are physically distributed throughout the city. Mapping tree density provides context for borough-level patterns and highlights areas where street trees are more concentrated or sparse.
+
+```{r}
+#| label: fig-binned-map
+#| message: false
+#| warning: true
+#| fig-cap: "Spatial density of street trees across New York City. Each grid cell represents the concentration of street trees based on latitude and longitude, with yellow indicating higher tree density."
+#| fig-alt: "Binned heatmap of street tree locations across NYC using longitude and latitude. Color intensity shows higher versus lower concentrations of trees across the city map."
+
+ggplot(tree_clean, aes(x = longitude, y = latitude)) +
+  geom_bin2d(bins = 50) +
+  scale_fill_viridis_c(
+    option = "plasma",
+    name = "Street Tree Density"
+  ) +
+  coord_fixed() +
+  labs(
+    title = "Street Tree Density Across New York City",
+    subtitle = "Higher values indicate greater concentration of street trees",
+    x = "Longitude",
+    y = "Latitude"
+  ) +
+    theme_minimal(base_size = 12) +
+  theme(plot.title = element_text(size = 17, family = "serif", face = "bold"),
+        axis.title.x = element_text(size = 12, family = "serif"),
+        axis.title.y = element_text(size = 12, family = "serif"))
+```
+
+#### Interpretation
+
+In this spatial density binned map areas shown in **yellow** represent **higher concentrations** of **street trees**, while areas shown in purple indicate lower tree density. Higher-density regions are visible across much of Queens and Brooklyn, whereas Manhattan and Staten Island display more fragmented patterns with fewer high-density clusters. Overall, this visualization highlights substantial spatial variation in street tree density across the city, reflecting differences in urban form, land use, and available green space.
+
+### Park-Level Patterns in Wildlife Incidents (**Faceted horizontal bar chart**)
+
+To further explore where wildlife incidents occur within each borough, I examined park-level patterns by identifying the parks with the highest number of reported wildlife incidents. This allows for a more localized view of wildlife activity within urban green spaces.
+
+```{r}
+#| label: fig-top-3-park-incident
+#| message: false
+#| warning: true
+#| fig-cap: "Top three parks with the highest wildlife incident counts in each borough."
+#| fig-alt: "Faceted horizontal bar charts showing the top three park properties with the highest wildlife incident counts in each NYC borough."
+
+animal_clean %>%
+  count(borough, property) %>%
+  slice_max(n, n = 3, by = borough) %>%
+  ggplot(aes(x = reorder(property, n), y = n)) +
+  geom_col(fill = "springgreen4") +
+  coord_flip() +
+  facet_wrap(~ borough, scales = "free_y") +
+    theme_minimal(base_size = 10) +
+  theme(plot.title = element_text(size = 17, family = "serif", face = "bold"),
+        axis.title.x = element_text(size = 12, family = "serif"),
+        axis.title.y = element_text(size = 12, family = "serif")) +
+  labs(
+    title = "Most Frequent Parks for Wildlife Incidents by Borough",
+    x = "Park",
+    y = "Incident Count"
+  )
+```
+
+#### Interpretation
+
+Across boroughs, **wildlife incidents** are concentrated in a small number of major parks. Van Cortlandt Park stands out in the Bronx with the highest number of reported wildlife incidents, while **Central Park** shows the **highest counts** in Manhattan. Prospect Park in Brooklyn also exhibits elevated incident levels relative to other parks in the borough. In contrast, parks in Queens and Staten Island show lower incident counts overall. These patterns suggest that larger parks with extensive natural areas may experience more wildlife activity and a greater likelihood of reported human–wildlife interactions.
+
+### Species Involved in Wildlife Incidents (**Faceted horizontal bar chart**)
+
+To better understand wildlife incident patterns, I examined which animal species are most frequently involved in reported incidents within each borough.
+
+```{r}
+#| label: fig-species
+#| message: false
+#| warning: true
+#| fig-cap: "Most common wildlife species involved in reported incidents across NYC boroughs. Bars represent the number of incidents involving each species, with panels shown separately for each borough."
+#| fig-alt: "Faceted horizontal bar charts showing the five most frequently reported wildlife species in each NYC borough, with bar length representing incident counts."
+
+top_species <- animal_clean %>%
+  count(borough, species_description) %>%
+  group_by(borough) %>%
+  slice_max(n, n = 5) %>%
+  ungroup()
+
+ggplot(top_species,
+       aes(x = reorder(species_description, n), y = n)) +
+  geom_col(fill = "mistyrose4") +
+  coord_flip() +
+  facet_wrap(~ borough, scales = "free_y") +
+  labs(
+    title = "Most Common Wildlife Species Involved in Incidents by Borough",
+    x = "Species",
+    y = "Number of Incidents"
+  ) +
+    theme_minimal(base_size = 10) +
+  theme(plot.title = element_text(size = 17, family = "serif", face = "bold"),
+        axis.title.x = element_text(size = 12, family = "serif"),
+        axis.title.y = element_text(size = 12, family = "serif"))
+```
+
+```{r}
+#| label: raccoon-image
+#| message: false
+#| warning: true
+#| fig-cap: "Two raccoons resting in a tree in Central Park shortly after dusk, illustrating the presence of adaptable urban wildlife in New York City parks. Photo credit: Chris St Lawrence"
+#| fig-alt: "Photo of two raccoons resting on a tree branch in a park setting at dusk."
+
+knitr::include_graphics("raccoon.png")
+```
+
+#### Interpretation
+
+Across all boroughs, **raccoons** are the **most frequently reported species** involved in **wildlife incidents**, suggesting they are a dominant presence in urban park environments throughout New York City. Domestic animals such as dogs and cats also appear consistently across boroughs, reflecting frequent interactions between pets, wildlife, and human-managed spaces. Some borough-specific patterns emerge, including higher involvement of red-tailed hawks in Manhattan and white-tailed deer and snapping turtles in Staten Island, which likely reflects differences in habitat type, park size, and proximity to less-developed natural areas. Overall, these patterns illustrate how urban wildlife incidents vary not only in frequency but also in species composition across boroughs.
+
+## Inferential and Exploratory Analyses
+
+Building on the descriptive patterns observed above, I conducted a series of exploratory statistical analyses to examine whether borough-level differences in urban trees and wildlife incidents were associated with measurable differences in tree characteristics or wildlife outcomes. These analyses are intended to complement the descriptive results and explore potential relationships, rather than to establish causal effects.
+
+### Differences in Average Street Tree Size Across Boroughs (**One-way ANOVA**)
+
+To examine whether street tree characteristics vary across New York City, I tested whether average tree diameter at breast height (DBH) differed by borough. A one-way ANOVA was used to compare mean tree size across the five boroughs, allowing for an assessment of whether tree size distributions are similar or distinct across urban contexts.
+
+```{r}
+#| label: anova
+#| message: false
+#| warning: true
+anova_tree <- aov(tree_dbh ~ borough, data = tree_clean)
+summary(aov(tree_dbh ~ borough, data = tree_clean))
+supernova(anova_tree)
+```
+
+#### Interpretation
+
+A one-way ANOVA revealed a **statistically significant difference in average street tree diameter (DBH) across New York City boroughs**, F(4, 683,783) = 4178.34, p \< .001. This result indicates that mean tree size varies by borough. However, the associated effect size was small (η² = 0.024), suggesting that borough-level differences account for only a small proportion of the overall variation in tree DBH. While boroughs differ in average tree size, most variability in tree diameter is likely driven by other factors such as species composition, tree age, and local environmental conditions.
+
+### Association Between Borough and Wildlife Condition (**Chi-square test of independence**)
+
+In addition to overall incident counts, I examined whether the condition of wildlife involved in reported incidents varied by borough. A chi-square test of independence was used to assess whether the distribution of animal conditions (e.g., healthy, injured, deceased) differed across boroughs, which helps identify whether certain boroughs experience different wildlife outcomes.
+
+```{r}
+#| label: chi-square
+#| message: false
+#| warning: true
+table_boro_ac <- table(animal_clean$borough, animal_clean$animal_condition)
+chisq.test(table_boro_ac)
+cramerV(table_boro_ac)
+```
+
+#### Interpretation
+
+A chi-square test of independence indicated a **statistically significant association between borough and wildlife condition**, χ²(12) = 113.65, p \< .001. This suggests that the distribution of wildlife outcomes (e.g., healthy, injured, unhealthy, DOA) varies across New York City boroughs. However, the strength of this association was small, as indicated by Cramér’s V = 0.075. This implies that while borough-level differences in wildlife condition exist, borough alone explains only a small portion of the variation in wildlife outcomes, and other factors likely play a larger role in shaping wildlife condition across the city.
+
+### Exploratory Relationship Between Street Tree Abundance and Wildlife Incidents (**Simple linear regression**)
+
+Because this analysis is exploratory and based on a small number of borough-level observations, I first examined the relationship visually using a scatter plot. This allows for an intuitive assessment of whether total street tree abundance appears related to wildlife incident counts.
+
+```{r}
+#| label: simple-reg
+#| message: false
+#| echo: false
+#| warning: true
+simple_regression <- lm(total_incidents ~ total_trees, data = borough_summary)
+summary(simple_regression)
+r2 <- summary(simple_regression)$r.squared
+```
+
+```{r}
+#| label: fig-scatterplot
+#| message: false
+#| warning: true
+#| fig-cap: "Scatter plot showing the relationship between total street trees and total reported wildlife incidents across New York City boroughs. Each point represents a borough. No clear linear trend is observed, consistent with the results of the exploratory linear regression."
+#| fig-alt: "Scatter plot with one point per NYC borough showing total street trees on the x-axis and total wildlife incidents on the y-axis, with a fitted linear trend line and borough labels."
+
+ggplot(borough_summary,
+       aes(x = total_trees, y = total_incidents, label = borough)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_text(vjust = -0.8) +
+  annotate(
+  "text",
+  x = 225000,
+  y = 1250,
+  label = paste0("R² = ", round(r2, 2)),
+  size = 3.5,
+  family = "serif") +
+  labs(
+    title = "Street Tree Abundance and Wildlife Incidents by Borough",
+    x = "Total Street Trees",
+    y = "Total Wildlife Incidents"
+  ) +
+    theme_minimal(base_size = 9) +
+  theme(plot.title = element_text(size = 17, family = "serif", face = "bold"),
+        axis.title.x = element_text(size = 12, family = "serif"),
+        axis.title.y = element_text(size = 12, family = "serif"))
+```
+
+Finally, a simple linear regression was used to examine the relationship between total street trees and total wildlife incidents across boroughs, treating this analysis as exploratory given the small number of observational units.
+
+```{r}
+#| label: sim-reg
+#| message: false
+#| warning: true
+
+simple_regression <- lm(total_incidents ~ total_trees, data = borough_summary)
+summary(simple_regression)
+
+r2 <- summary(simple_regression)$r.squared
+```
+
+#### Interpretation
+
+As shown in the scatter plot, there is **no clear linear relationship** between street tree abundance and wildlife incidents across boroughs. This visual pattern is supported by the regression analysis, which found **no significant association** between **total street trees and total wildlife incidents** (β = 0.00083, p = .76, R² = .04). Boroughs with high tree counts, such as Queens, did not consistently report higher numbers of incidents, while Manhattan exhibited a high incident count despite having fewer street trees. Together, these findings suggest that street tree abundance alone does not explain borough-level variation in wildlife incidents.
+
+## Discussion and Implications
+
+### Conclusion
+
+Overall, this analysis helps show how street trees and wildlife incidents are distributed across New York City and how these patterns differ by borough. The descriptive results highlighted clear differences in tree counts, wildlife incident totals, and the species and park locations most often involved. When wildlife incidents were adjusted based on tree availability, differences across boroughs became even clearer, suggesting that the total number of street trees alone does not explain where incidents happen.
+
+The exploratory statistical analyses supported this pattern. Although average street tree size differed across boroughs, there was no strong or statistically significant relationship between the total number of street trees and wildlife incidents. Wildlife condition also varied by borough, but the small effect size suggests these differences should be interpreted carefully. Taken together, these findings suggest that wildlife activity in urban environments is influenced by many factors beyond street tree abundance, such as park characteristics, land use, and human activity.
+
+### Audience & Relevance
+
+These findings are relevant to New Yorkers, urban planners, policymakers, community organizations, and wildlife management agencies interested in how green infrastructure and wildlife interact in dense urban environments. Knowing where wildlife incidents occur most often, and how they relate to tree distribution and park locations, can help support decisions around urban greening, park management, and public education.
+
+For residents, these findings provide insight into how wildlife interactions vary across neighborhoods. For policymakers and planners, the results underscore the importance of considering ecological context and spatial patterns, rather than relying solely on broad measures such as total tree counts, when designing interventions aimed at improving both human and wildlife well-being in cities.
+
+### Connection to Open Data
+
+This project was completed using publicly available datasets from NYC Open Data, including the `2015 NYC Street Tree Census` and the `Urban Park Ranger Animal Condition Response` dataset. Access to these open datasets allows students, researchers, and community members to independently explore real-world urban and environmental questions.
+
+By bringing together multiple open datasets, this analysis shows how open data can be used to examine the relationship between urban trees and wildlife activity. This project shows how publicly accessible data can be used in a transparent and reproducible way to explore environmental questions and connect them to urban planning and policy discussions.

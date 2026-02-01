@@ -1,0 +1,36 @@
+project:
+  type: book
+
+book:
+  title: "NYC Open Data Student Gallery - Brooklyn College"
+  author: "Christian Martinez"
+  date: "2026-01-29"
+  chapters:
+    - index.qmd
+    - 01-Final-Project-Crystal.qmd
+    - 02-Final-Social-Infrastructure-and-Well-Being-Jonah.qmd
+    - 04-MSG-effect-Robert.qmd
+    - 05-Final-Project-Isley.qmd
+    - 06-ToxicHomes-Shannon.qmd
+    - 07-EnvironmentalStressorsandSocialComplaintsNYC-Emma.qmd
+    - 08-Beating-Around-the-Bush--Uncovering-the-Hidden-Link-Between-Urban-Trees-and-Wildlife-Activity-Xinru.qmd
+  cover-image: cover-trying.png
+
+execute:
+  freeze: auto
+
+bibliography: references.bib
+
+website:
+  search: false
+
+format:
+  html:
+    theme:
+      - cosmo
+      - brand
+    code-fold: true
+    code-summary: "Show the code"
+    code-copy: true
+  pdf:
+    documentclass: scrreprt

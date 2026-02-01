@@ -1,0 +1,296 @@
+---
+title: "Social Infrastructure & Well-Being"
+author: "Jonah Dratfield"
+---
+
+## Social Infrastructure & Well-Being {#sec-jonah}
+
+NYC Open Data provides numerous datasets about the city “as part of an initiative to improve the accessibility, transparency, and accountability of City government.” My presentation focuses on how public data can help ordinary citizens better understand—and potentially improve—the quality of life in New York City. While my analysis centers around two pre-existing data sets and a relationship between them, it focuses, as much, on how future data collection can be improved to better address the aforementioned goal of holistic improvement.
+
+Many NYC Open Data datasets, such as 311 service request logs, provide valuable information for policymakers, administrators, or individuals with substantial financial or political power. However, these datasets are often difficult for ordinary residents to act upon. The majority of New Yorkers, for example, do not have the capacity to meaningfully influence the housing market.
+
+That said, there are certain types of information that (i) can be directly acted upon by individuals and (ii) can be translated into concrete, low-barrier actions. The field of positive psychology, which consistently finds that strong social relationships are the most reliable predictors of well-being, provides one such framework for identifying this information. One, when considering this area of research, might ask the following:
+
+> Can publicly available data be used to explore the conditions that best facilitate social connectedness, and thereby, most enhance quality of life?
+
+The answer, at the moment, is a tentative yes. At present, NYC Open Data does not include the validated measures psychologists typically use to assess metrics like social connectedness and well-being. Instead, researchers and citizens must rely on rough proxies — such as economic metrics. However, over time, the number of resources amenable to the type of analysis I propose can be expanded.
+
+In this exploratory analysis, I examine whether the number of permitted events in a community district (i.e., gatherings, such as street fairs, that require city permits) predicts the number of monthly SNAP recipients in a community district (i.e., low-income individuals who receive benefits that can be used to purchase food). *(Note: The acronym SNAP stands for Supplemental Nutrition Assistance Program)*. I conceptualize permitted events as a rough measure of social connectedness and number of SNAP recipients per month as a rough measure of economic health and, thereby, overall well-being. Yet, rather than treat these variables as definitive measures, I use them as an opportunity to demonstrate how lucrative this mode of research can be. I conclude, also, with a number of suggestions as to how data collection in this field can best be facilitated.
+
+## Libraries Used
+
+```{r}
+#| label: loading-libraries
+#| message: false
+#| warning: false
+library(tidyverse)
+library(nycOpenData)
+library(dplyr)
+library(stringr)
+```
+
+## Data Loading
+
+First, I loaded records of NYC permitted events and NYC borough community reports using the NYC Open Data package that my professor (Christian Martinez) created.
+
+```{r}
+#| label: tbl-loading-events
+Events <- nyc_permit_events_historic(limit = 10000, filters = list())
+
+knitr::kable(
+  head(Events, 25),
+  caption = "First 25 rows of Events"
+)
+```
+
+```{r}
+#| label: tbl-loading-bororeport
+BoroReport <- nyc_borough_community_report(limit = 10000, filters = list())
+
+knitr::kable(
+  head(BoroReport, 25),
+  caption = "First 25 rows of BoroReport"
+)
+```
+
+
+## Cleaning
+
+### Basic Events Cleaning
+
+After this, I removed all non-numeric characters from the community board listings in events and made the community board listings numeric.
+
+Community boards refer to community districts within the five boroughs (and, as a result, function as geographical subdivisions of New York City). There are 59 community boards, as well as a number of so-called "joint-interest areas." I removed non-numeric characters -- such as letters, commas and quotation marks -- to standardize the community board notation in the dataset.
+
+```{r}
+#| label: standardizing
+eventscleaner <- Events %>%
+  mutate(
+    cd_id =
+      community_board |> 
+      str_replace_all("[^0-9]", "") |>  
+      as.numeric()                       
+  )
+```
+
+### BoroReport Cleaning
+
+In the borough report, I separated the community district field into a borough identifier and a numeric community board. I then recoded the borough identifiers as numeric prefixes and combined these with the community board numbers to create a standardized community district ID. The goal of this transformation was to make the notation in the BoroReport dataset equivalent to that in the Events dataset.
+
+```{r}
+#| label: boro-report
+BoroReport <- BoroReport %>%
+  
+  mutate(
+    snap_borough = str_extract(community_district, "^[A-Za-z]") |> str_to_upper(),
+    snap_cb      = str_extract(community_district, "[0-9]+") |> as.numeric()
+  ) %>%
+  
+  mutate(
+    snap_borough_num = case_when(
+      snap_borough == "M" ~ 100,  # Manhattan
+      snap_borough == "B" ~ 200,  # Bronx
+      snap_borough == "K" ~ 300,  # Brooklyn
+      snap_borough == "Q" ~ 400,  # Queens
+      snap_borough == "S" ~ 500,  # Staten Island
+      TRUE ~ NA_real_
+    ),
+    
+    cd_id = snap_borough_num + snap_cb
+  )
+```
+
+### Final Events Cleaning
+
+Finally, I applied this same numbering pattern to the events data sheet. I replaced the borough names with numbers and added these numbers to the community districts.
+
+```{r}
+#| label: final-cleaning
+eventscleaner <- eventscleaner %>%
+  
+  mutate(
+    borough_num = case_when(
+      event_borough == "Manhattan"     ~ 100,
+      event_borough == "Bronx"         ~ 200,
+      event_borough == "Brooklyn"      ~ 300,
+      event_borough == "Queens"        ~ 400,
+      event_borough == "Staten_Island" ~ 500,
+      event_borough == "Staten Island" ~ 500,  
+      TRUE ~ NA_real_
+    ),
+    
+   
+    cd_id = borough_num + cd_id
+  )
+```
+
+## Events Count
+
+After this, I glanced at the number of events per community district -- just to garner a better understanding of the data.
+
+```{r}
+#| label: tbl-events-per-cd
+events_cd <- eventscleaner %>%
+  count(cd_id, name = "n_events")
+
+knitr::kable(
+  head(events_cd, 30),
+  caption = "Number of Events Per CD"
+)
+```
+
+Across community districts, the mean number of permitted events was `r round(mean(events_cd$n_events, na.rm = TRUE), 1)`, with a median of `r median(events_cd$n_events, na.rm = TRUE)`. (*Note: The right skew in the data was due to the number of events in joint-interest areas. These were dropped from the later analysis, due to the lack of SNAP recipients in those areas).*
+
+I then created a graph to display the number of events per district, in descending order:
+
+-   Community district numbers correspond to the final two digits shown on the y-axis.
+-   District numbers starting with **1** indicate Manhattan.
+-   District numbers starting with **2** indicate the Bronx.
+-   District numbers starting with **3** indicate Brooklyn.
+-   District numbers starting with **4** indicate Queens.
+-   District numbers starting with **5** indicate Staten Island.
+-   New York City has **59 community districts** in total:
+    -   Manhattan: 12 districts\
+    -   The Bronx: 12 districts\
+    -   Brooklyn: 18 districts\
+    -   Queens: 14 districts\
+    -   Staten Island: 3 districts
+-   District numbers that do not follow this schema (for example, **55** and **64**) refer to *joint-interest areas* rather than standard community districts.
+    -   District **55** corresponds to Prospect Park.
+    -   District **64** corresponds to Central Park.
+
+A full list of community districts and joint-interest areas is available [here](https://www.nyc.gov/content/planning/pages/resources/datasets/community-districts).
+
+```{r}
+#| label: fig-25eventscount
+#| fig-cap: "*Number of permitted events by community district, ordered from highest to lowest for the top 25. Each horizontal bar represents a distinct community district. Community district identifiers are displayed on the y-axis and event counts are displayed on the x-axis.*"
+#| fig-alt: "Number of permitted events by community district, ordered from highest to lowest for the top 25. Each horizontal bar represents a distinct community district. Community district identifiers are displayed on the y-axis and event counts are displayed on the x-axis."
+
+events_cd %>%
+  slice_max(n_events, n = 25) %>%
+  ggplot(aes(x = reorder(cd_id, n_events), y = n_events)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(
+    title = "Number of Events by Community District (Top 25)",
+    x = "Community District",
+    y = "Number of Events"
+  ) +
+  theme_minimal()
+
+```
+
+## SNAP Benefits Count
+
+I also looked over the number of SNAP recipients per district.
+
+The table below shows the mean number of SNAP recipients per month per community district. *(Note: There are not necessarily equal amounts of people per community district, so number of SNAP recipients within a given district is not a de facto indication of the proportional amount of poverty in the area. That said, it still functions as a meaningful snapshot of poverty rates)*.
+
+```{r}
+#| label: fig-25SNAPcount
+#| fig-cap: "*Mean number of SNAP recipients by community district, ordered from highest to lowest for the top 25. Each horizontal bar represents a distinct community district. Community district identifiers are displayed on the y-axis and SNAP recipients are displayed on the x-axis.*"
+#| fig-alt: "Mean number of SNAP recipients by community district, ordered from highest to lowest for the top 25. Each horizontal bar represents a distinct community district. Community district identifiers are displayed on the y-axis and SNAP recipients are displayed on the x-axis."
+BoroReport <- BoroReport %>%
+  mutate(
+    bc_snap_recipients = as.numeric(bc_snap_recipients)
+  )
+
+snap_plot_data <- BoroReport %>%
+  group_by(cd_id) %>%
+  summarise(
+    bc_snap_recipients = mean(bc_snap_recipients,na.rm = TRUE),
+    .groups = "drop"
+  )
+
+snap_plot_data %>%
+  slice_max(bc_snap_recipients, n = 25) %>%
+  ggplot(
+    aes(
+      x = reorder(cd_id, bc_snap_recipients),
+      y = bc_snap_recipients
+    )
+  ) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(
+    title = "SNAP Recipients by Community District (Top 25)",
+    x = "Community District",
+    y = "SNAP Recipients"
+  ) +
+  theme_minimal()
+
+
+```
+
+Across community districts, the mean number of SNAP recipients per month was `r format(round(mean(BoroReport[["bc_snap_recipients"]], na.rm = TRUE), 0), scientific = FALSE)`, with a median of `r format(round(median(BoroReport[["bc_snap_recipients"]], na.rm = TRUE), 0), scientific = FALSE)`.
+
+## Merging
+
+Finally, I merged the two datasheets using the community district names I created earlier.
+
+```{r}
+#| label: tbl-first-25
+merged <- BoroReport %>%
+  left_join(events_cd, by = "cd_id")
+
+knitr::kable(
+  head(merged, 25),
+  caption = "First 25 rows of merged"
+)
+
+```
+
+## Linear Regression
+
+I then conducted a linear regression to determine whether number of permitted events predicts number of SNAP recipients. The model was statistically significant, F(1, 723) = 45.34, p \< .001, and explained approximately 6% of the variance in SNAP recipients (R² = .059). The number of events was a significant negative predictor of SNAP recipients, b = −21.30, SE = 3.16, t(723) = −6.73, p \< .001.
+
+*(Note: The model dropped all rows with missing event counts. This means that all joint-interest areas were dropped from the analysis, as well as any months for which there was no event count data)*
+
+```{r}
+model1 <- lm(bc_snap_recipients ~ n_events, data = merged)
+summary(model1)
+```
+
+```{r}
+#| label: fig-LMScatterPlot
+#| fig-cap: "*Relationship between permitted events and SNAP recipients by community district. Each point represents a distinct community district, and the line shows the linear association between event counts and SNAP recipients.*"
+#| fig-alt: "Relationship between permitted events and SNAP recipients by community district. Each point represents a distinct community district, and the line shows the linear association between event counts and SNAP recipients."
+
+ggplot(
+  merged,
+  aes(
+    x = n_events,
+    y = bc_snap_recipients
+  )
+) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = TRUE, color = "red") +
+  labs(
+    title = "Permitted Events and SNAP Recipients by Community District",
+    x = "Permitted Events",
+    y = "SNAP Recipients"
+  ) +
+  theme_minimal()
+```
+
+## Conclusion
+
+Despite the significant p-value of this analysis, there are a number of limitations. As mentioned in the introduction, the number of SNAP recipients is an imperfect measure of economic well-being (not to mention holistic well-being). Likewise, permitted events are an imperfect indicator of social gatherings in an area. At a more granular level, community districts are not normalized by population size, and major hubs of social activity—such as parks—are excluded from the regression.
+
+However, these limitations point to ways in which data collection could be improved. Below, I outline several possibilities for instantiating such improvements:
+
+**Better Dependent Variables**
+
+To meaningfully assess quality of life in NYC, future datasets should include more varied indicators of well-being and capture outcomes across the income distribution. Ideally, validated population-level measures of well-being and social connectedness would be available for use as dependent variables. In addition, economic proxies for well-being (such as median income) should be collected. Diverse datasets of this sort would provide a more complete picture of the psychological and economic well-being of NYC residents.
+
+**More Information about Social Gatherings**
+
+Currently, NYC Open Data has information about permitted events. Yet, there are countless other social gatherings that could be quantified as well. These include volunteer opportunities, Meetup groups, Eventbrite activities, Reddit meetups, and more. While an exhaustive catalog of social gatherings is not feasible, expanded coverage of accessible, low-barrier events would strengthen any analyses of social life in the city. It would also allow analysts to subdivide events in meaningful ways.
+
+**Geographic Information**
+
+Community districts provide a useful organizational unit, but many NYC datasets lack this data. In addition, even more detailed neighborhood-level data on events might provide information about areas with a shortage (or surplus) of social activity. Identifying such areas might support more strategic intervention. Finally, knowledge of individuals’ willingness (or lack of willingness) to travel might provide yet more valuable information. The prominence of parks in the event data suggests that social life is often organized around specific hubs. The practical accessibility of these hubs is yet another concept worth exploring.
+
+**Concrete Suggestions**
+
+There is no “control New York City.” As such, causality cannot be established through the analyses I describe. Nevertheless, if evidence were to suggest that certain types of social activities were associated with positive psychological outcomes, it would then be possible to recommend concrete actions to citizens who wished to improve civic and social life in New York. In this way, improved data infrastructure could help foster a stronger sense of civic autonomy among New Yorkers – as well as a happier, healthier New York City.
