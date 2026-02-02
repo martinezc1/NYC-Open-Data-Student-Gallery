@@ -21,6 +21,7 @@ library(readxl)
 library(ggplot2)
 library(knitr)
 library(lubridate)
+library(arrow)
 
 causes_of_death<- read_parquet("New_York_City_Leading_Causes_of_Death_data.parquet")
 indoor_complaints<- read_parquet("Indoor_Environmental_Complaints_data.parquet")
