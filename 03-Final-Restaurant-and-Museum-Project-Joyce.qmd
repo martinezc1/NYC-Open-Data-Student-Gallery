@@ -7,30 +7,22 @@ author: "Joyce Escatel Flores"
 
 Hello and welcome to my PSYC 7750G course final project. I will be using **two** NYC data sets. The first one is called "DOHMH New York City Restaurant Inspection results" which you can find [here](https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j/about_data). I called this data set "restaurant_data". The second one is called "MUSEUM", which you can find [here](https://data.cityofnewyork.us/Recreation/MUSEUM/fn6f-htvy/about_data). I called this data set "museum_data". The third data set is a Kaggle open data set created by **Beridzeg45** called "NYC Restaurants", which you can find [here](https://www.kaggle.com/datasets/beridzeg45/nyc-restaurants). I called this data set "restaurant_rating_data".
 
-I had 3 goals for this project which include:
+I had 3 goals for this project which include: 
 
--   Explore whether restaurants near art museums are more likely to have higher ratings than restaurants not close to museums.
+- Explore whether restaurants near art museums are more likely to have higher ratings than restaurants not close to museums.
 
--   Explore whether restaurants near museums are less likely to have no violation citations than restaurants not close to museums.
+- Explore whether restaurants near museums are less likely to have no violation citations than restaurants not close to museums.
 
--   Creating an interactive map that pinpoints restaurants that are nearby museums so that people who want to go to a museum and go to eat before or after are able to explore this map freely!
+- Creating an interactive map that pinpoints restaurants that are nearby museums so that people who want to go to a museum and go to eat before or after are able to explore this map freely!
 
-::: {style="text-align: center;"}
 ## Packages
-:::
 
 In this piece of code, I am putting all the packages used for this project.
-
-```{r message=FALSE, warning=FALSE}
+```{r}
+#| label: packages
 #| message: false
-#| warning: true
-library(readr)
-library(tidyr)
-library(dplyr)
-library(stats)
+#| warning: false
 library(tidyverse)
-library(stringr)
-library(readxl)
 library(janitor)
 library(ggthemes)
 library(rcompanion)
@@ -38,86 +30,89 @@ library(leaflet)
 library(leaflet.extras)
 library(leaflet.providers)
 library(htmltools)
+library(knitr)
+library(nycOpenData)
+library(arrow)
 ```
 
-::: {style="text-align: center;"}
+
 ## Data Loading, Cleaning, and Merging
-:::
 
-## Loading Data
-
+### Loading Data
 In this section, I simply loaded the data and previewed the data in order to start working on it.
 
 ```{r}
-#| label: loading-data
-endpoint<- "https://data.cityofnewyork.us/resource/fn6f-htvy.json"
-resp <- httr::GET(endpoint)
-museum_data <- jsonlite::fromJSON(httr::content(resp, as = "text"), flatten = TRUE)
+#| label: loading_data
+museum_data <- as.data.frame(nyc_museum_locations())
 
+restaurant_data <- as.data.frame(nyc_restaurant_inspection_results())
 
-endpoint_1<-"https://data.cityofnewyork.us/resource/43nn-pn8j.json"
-resp1 <- httr::GET(endpoint_1)
-restaurant_data <- jsonlite::fromJSON(httr::content(resp1, as = "text"), flatten = TRUE)
-
-restaurant_rating_data <- read_csv("restaurant rating data.csv", show_col_types = FALSE)
+restaurant_rating_data <- read_parquet("restaurant_rating_data.parquet", show_col_types = FALSE)
 ```
 
-## Cleaning and Merging Data Sets
+### Cleaning and Merging Data Sets
 
 In this section, what we are going to do is first work on cleaning the data sets individually. We will work on the *"restaurant_rating_data"* **FIRST**.
 
-### Cleaning "restaurant_rating_data" Set
+#### Cleaning "restaurant_rating_data" Set
 
 We will be working on the data set called "restaurant_rating_data". What I did was create a new column for latitude called "lat_new" because i need to give it quotation marks. I also created a new column for longitude called "lon_new" because I need to give it quotation marks. Lastly, I used the paste function to format my column "location_coordinates" so that this column exactly matches the column found in the "restaurant_data" set.
 
 ```{r}
+#| label: cleaning-restaurant-rating
 restaurant_rating_data$lat_new<- shQuote(restaurant_rating_data$Lat)
 restaurant_rating_data$lon_new<- shQuote(restaurant_rating_data$Lon)
 restaurant_rating_data$location.coordinates<- paste("c", "(", restaurant_rating_data$lon_new, ",", restaurant_rating_data$lat_new, ")", sep = "")
 ```
 
-Next, for the "restaurant_rating_data", we are going to delete rows that include New Jersey restaurants manually. We are left with **339 restaurants**.
+Next, for the "restaurant_rating_data", we are going to delete rows that include New Jersey restaurants manually. We are left with **339 restaurants**. 
 
 ```{r}
+#| label: deleting-rows
 restaurant_rating_data <- restaurant_rating_data[-c(1, 2, 4, 5, 6, 8, 10, 11, 12, 15, 16, 26, 28, 32, 33,37, 38, 42, 45, 46, 47, 48, 50, 51, 57, 58, 61, 62, 63, 66, 68, 69, 74, 75, 79, 82, 85, 86, 89, 90, 93, 94, 95, 96, 97, 98, 99, 100, 103, 104, 105, 110, 111, 113, 117, 118, 119, 120, 128, 131, 133, 134, 138, 140, 144, 147, 151, 152, 153, 160, 165, 168, 174, 175, 176, 178, 179, 182, 183, 184, 186, 190, 192, 193, 195, 197, 198, 203, 204, 206, 208, 209, 212, 216, 218, 220, 223, 224, 225, 231, 232, 234, 236, 241, 244, 247, 249, 251, 254, 256, 265, 267, 268, 271, 274, 277, 283, 284, 285, 288, 289, 292, 294, 295, 297, 298, 299, 300, 301, 304, 305, 308, 310, 312, 315, 318, 320, 321, 322, 323, 325, 326, 328, 330, 331, 332, 334, 335, 337, 338, 339, 340, 341, 343, 345, 346, 348, 349, 350, 351, 353, 355, 356, 357, 359, 362, 363, 365, 366, 367, 370, 375, 376, 377, 378, 379, 380, 388, 389, 390, 391, 392, 393, 396, 399, 403, 406, 411, 415, 416, 417, 418, 420, 422, 423, 424, 425, 427, 429, 430, 432, 433, 435, 438, 439, 441, 442, 443, 444, 447, 449, 451, 454, 455, 457, 461, 463, 467, 469, 470, 472, 473, 474, 477, 478, 479, 483, 484, 488, 489, 491, 495, 497, 499, 500, 501, 506, 507, 508, 509, 510, 513, 514, 516, 520, 521, 522, 523, 525, 527, 528, 529, 532, 533, 537, 538, 539, 540, 543, 544, 546, 547, 549, 550, 552, 553, 554, 555, 556, 558, 560, 561, 562, 566, 567, 568, 569, 570, 571, 572, 575, 577, 578, 579, 580, 581, 582, 587, 589, 590, 591, 592, 595, 598, 599, 600, 607, 608, 610, 611, 612, 613, 614, 615, 618, 620, 621, 622, 624, 625, 626, 627, 631, 633, 635, 636, 637, 638, 640, 641, 646, 648, 653, 655, 657, 658, 660, 661, 663, 669, 670), ]
 
 ```
 
-## Cleaning "restaurant_data" Set
+###  Cleaning "restaurant_data" Set
 
-Next, we will be working on the "restaurant_data" set **Next**.
+Next, we will be working on the "restaurant_data" set **Next**. 
 
 We find that the "location.coordinates" column is a list and NOT character. So we go ahead and fix that with the mutate function.
 
 ```{r}
+#| label: cleaning-restaurant-data
 is.character(restaurant_data$location.coordinates)
 restaurant_data<- restaurant_data %>% mutate(location.coordinates = as.character(location.coordinates))
 ```
 
-## Merging Data Sets
+
+### Merging Data Sets
 
 We can now merge both data sets together through the "location_coordinates" column.
 
 ```{r}
+#| label: merging-data
 merged_restaurant_data<- full_join(restaurant_data, restaurant_rating_data, by = "location.coordinates")
 ```
 
 This leaves us with 1,339 rows, meaning that the restaurants in both data sets do not have duplicates. Next, we are going to delete restaurants rows with missing data in the "location.coordinates" column. Since our column data, "location.coordinates" has literal "NULL" written in the rows with missing data, we go ahead and delete those with the below code (I found this thanks to Reddit!).
 
 ```{r}
+#| label: deleting-restaurant-data
 sum(merged_restaurant_data$location.coordinates == "NULL", na.rm = TRUE)
 
 merged_restaurant_data <-merged_restaurant_data[merged_restaurant_data$location.coordinates != "NULL", ]
 
 ```
 
-We are left with 1,139 restaurants.
+We are left with 1,139 restaurants. 
 
-## Inputting Ratings for EACH Restaurant
+### Inputting Ratings for EACH Restaurant
 
 Since I want to explore whether restaurants near art museums are more likely to have higher ratings than restaurants not close to museums, then I need to input ratings from Google to restaurants that do not have any ratings. Below is what I did manually. I looked at the "restaurant_data" set because it does not have rating. There were a lot of "restaurants" that unfortunately had to be deleted because they were not categorized as restaurants. That left us with 383 restaurants in total in the "restaurant_data" set.
 
 ```{r}
+#| label: inputting-rating
 merged_restaurant_data[2,35]=4.7
 merged_restaurant_data[3,35]=4.8
 merged_restaurant_data[4,35]=4.0
@@ -504,11 +499,12 @@ merged_restaurant_data[998,35]=4.8
 merged_restaurant_data[999,35]=4.4
 ```
 
-## Deleting Restaurants Without Rating from Google
+### Deleting Restaurants Without Rating from Google
 
-Now, we are going to delete restaurants that do not include a Google rating. First we are going to check how many NA's there are (which was 539) and then delete them.
+Now, we are going to delete restaurants that do not include a Google rating. First we are going to check how many NA's there are (which was 539) and then delete them. 
 
 ```{r}
+#| label: non-google
 sum(is.na(merged_restaurant_data$Rating))
 
 merged_restaurant_data<- merged_restaurant_data %>%
@@ -517,11 +513,12 @@ merged_restaurant_data<- merged_restaurant_data %>%
 
 We are left with 646 restaurants!
 
-## Merging "dba" and "name" Columns
+### Merging "dba" and "name" Columns
 
-In the "restaurant_data" set, the restaurants names are under the **dba Column**. In the "restaurant_rating_data" set, the restaurants names are under the **Name Column**. I am going to go ahead and clean up the columns and then merge the columns.
+In the "restaurant_data" set, the restaurants names are under the **dba Column**. In the "restaurant_rating_data" set, the restaurants names are under the **Name Column**. I am going to go ahead and clean up the columns and then merge the columns. 
 
 ```{r}
+#| label: merging-dba-name
 merged_restaurant_data$dba<- str_to_title(merged_restaurant_data$dba)
 
 merged_restaurant_data$Restaurant_Name <-
@@ -531,17 +528,30 @@ merged_restaurant_data$Restaurant_Name <-
   )
 ```
 
-## Deleting Unnecessary Columns in "merged_restaurant_data" Set
+### Deleting Unnecessary Columns in "merged_restaurant_data" Set
 
 Finally, I am going to delete columns that are not necessary for this particular project.
 
 ```{r}
-merged_restaurant_data <- merged_restaurant_data %>% select(-dba, -boro, -building, -street, -zipcode, -phone, -council_district, -census_tract, -bbl, -nta, -`:@computed_region_f5dn_yrer`, -`:@computed_region_yeji_bk3q`, -`:@computed_region_sbqj_enih`, -`:@computed_region_92fq_4b7q`, -cuisine_description, -bin, -grade, -grade_date, -URL, -Name, -`Rating Count`, -`Detailed Ratings`, -`Price Category`, -Address, -ZipCode)
+#| label: deleting-columns-merged-res
+cols_to_drop <- c(
+  "dba","boro","building","street","zipcode","phone",
+  "community_board","council_district","census_tract","bbl","nta",
+  ":@computed_region_f5dn_yrer",":@computed_region_yeji_bk3q",
+  ":@computed_region_sbqj_enih",":@computed_region_92fq_4b7q",
+  "cuisine_description","bin","grade","grade_date",
+  "URL","Name","Rating Count","Detailed Ratings","Price Category",
+  "Address","ZipCode"
+)
+
+merged_restaurant_data <- merged_restaurant_data %>%
+  select(-any_of(cols_to_drop))
 ```
 
 I am also going to combine the columns longitude and latitude in case we need it in the future. I first combined "Lat" and "latitude" into "Latitude" and deleted the two columns.
 
 ```{r}
+#| label: combine-lat-long
 str(merged_restaurant_data$Lat)
 
 str(merged_restaurant_data$latitude)
@@ -558,9 +568,10 @@ merged_restaurant_data$Latitude <-
 merged_restaurant_data <- merged_restaurant_data %>% select(-Lat, -latitude)
 ```
 
-Secondly, I combined "longitude" and "Lon" into "Longitude" and deleted the two columns.
+Secondly, I combined "longitude" and "Lon" into "Longitude" and deleted the two columns. 
 
 ```{r}
+#| label: delete-lat-long
 str(merged_restaurant_data$Lon)
 
 str(merged_restaurant_data$longitude)
@@ -579,20 +590,22 @@ merged_restaurant_data <- merged_restaurant_data %>% select(-Lon, -longitude)
 
 Instead of having 44 columns, which was making our data really messy, we now have 16 columns in our "merged_restaurant_data" set! Yippee!!
 
-## Cleaning "museum_data" Set
+### Cleaning "museum_data" Set
 
 For the **"museum_data"** set, everything is cleaned up. The only thing I will do is delete some columns to make it a smaller data set.
 
 ```{r}
+#| label: cleaning-museum-data
 museum_data<- museum_data %>%
   select(-tel, -url, -adress1, -address2)
 ```
 
 Now we have 5 columns instead of 9 columns.
 
-Next, I will be creating a longitude and latitude column by separating the "the_geom.coordinates". After I do this, I will be making "Longitude" and "Latitude" numeric.
+Next, I will be creating a longitude and latitude column by separating the "the_geom.coordinates". After I do this, I will be making "Longitude" and "Latitude" numeric. 
 
 ```{r}
+#| label: long-lat-numeric
 museum_data<- museum_data %>%
   mutate(
     cleaned_geom_coordinates = gsub("c\\(|\\)|\"", "", the_geom.coordinates)
@@ -611,25 +624,24 @@ museum_data$Latitude<-
   as.numeric(museum_data$Latitude)
 ```
 
-::: {style="text-align: center;"}
 ## Goal 1: Statistical analysis (higher ratings)
-:::
 
 In this section, I will be exploring whether restaurants near art museums are more likely to have higher ratings than restaurants not close to museums. I will be using a chi-square test for this. But first, before we get to the chi-square test, we must do a few more steps.
 
-## Creating New Column
+### Creating New Column 
 
 In this section, I will be creating a new blank column titled "Near_Museum".
 
 ```{r}
+#| label: near-museum
 merged_restaurant_data$Near_Museum<- ""
 ```
 
-## Typing "Yes" or "No"
-
-Next I will manually input "Yes" if a restaurant is nearby a museum and input "No" if a restaurant is **not** nearby.
+### Typing "Yes" or "No"
+Next I will manually input "Yes" if a restaurant is nearby a museum and input "No" if a restaurant is **not** nearby. 
 
 ```{r}
+#| label: yes-no
 merged_restaurant_data[,18]="No"
 merged_restaurant_data[14,18]="Yes"
 merged_restaurant_data[629,18]="Yes"
@@ -720,11 +732,12 @@ merged_restaurant_data[600,18]="Yes"
 
 There are a total of 85 restaurants near museums and 562 restaurants **not** near museums.
 
-## Binning ratings into Groups
+### Binning ratings into Groups
 
-Next, I will be making the ratings into groups such as low, medium, and high.
+Next, I will be making the ratings into groups such as low, medium, and high. 
 
 ```{r}
+#| label: rating-category
 merged_restaurant_data<- merged_restaurant_data %>%
   mutate(Rating_Group = case_when(
     Rating <= 3.9 ~ "Low",
@@ -734,28 +747,45 @@ merged_restaurant_data<- merged_restaurant_data %>%
   )
 ```
 
-## Contingency Table
+### Contingency Table 
 
 Next, we will make a contingency table
 
 ```{r}
+#| label: tbl-contingency
 contingency_table <- xtabs(~Rating_Group+Near_Museum, data=merged_restaurant_data)
-contingency_table
+kable(
+  contingency_table,
+  caption = "Contingency table of restaurant rating group by whether the restaurant is near a museum."
+)
 
+```
+
+```{r}
+#| label: tbl-contingency-check
 contingency_table_check<- merged_restaurant_data %>%
   tabyl(Rating_Group, Near_Museum) %>%
   adorn_totals("row") %>%
   adorn_percentages("row") %>%
   adorn_pct_formatting(digits = 1) %>%
   adorn_ns()
-contingency_table_check
+
+kable(
+  contingency_table_check,
+  caption = "Row percentages and counts for rating group by museum proximity."
+)
+
 ```
 
-## Visualizing our Data
+### Visualizing our Data
 
 Next, we will create a bar graph to visually see our data better.
 
 ```{r}
+#| label: fig-bar
+#| fig-cap: "Proportion of restaurant rating groups (Low, Average, High) by whether the restaurant is near a museum."
+#| fig-alt: "Stacked bar chart showing the share of Low, Average, and High ratings for restaurants near museums versus not near museums."
+
 Visual_1<- ggplot(merged_restaurant_data, aes(x = Near_Museum, fill = Rating_Group)) +
   geom_bar(position = "fill") + 
   labs(
@@ -764,51 +794,52 @@ Visual_1<- ggplot(merged_restaurant_data, aes(x = Near_Museum, fill = Rating_Gro
     x = "Near Museum?"
   ) +
   theme_solarized()
+
 Visual_1
 ```
 
-We are visualizing the proportion of rating groups (high, medium, low) by if restaurants are near museums (yes,no).
+We are visualizing the proportion of rating groups (high, medium, low) by if restaurants are near museums (yes,no). 
 
 We can see here that there is not much difference. But we will discover this through statistical analysis.
 
-## Chi-Square Test
+### Chi-Square Test
 
 ```{r}
+#| label: chi-square-test
 chi_square_test<- chisq.test(contingency_table)
 chi_square_test
 
 cramerV(contingency_table)
 ```
 
-### Chi=Square Interpretation
+#### Chi-square Interpretation
+ 
+- The chi-square test shows X^2 = 0.64691 (0.65), df = 2, p = 0.7236 (0.72)
 
--   The chi-square test shows X\^2 = 0.64691 (0.65), df = 2, p = 0.7236 (0.72)
+- There is **not** a statistically significant relationship between restaurants being near museums and rating. 
 
--   There is **not** a statistically significant relationship between restaurants being near museums and rating.
+- Cramer's V tells us that the relationship is weak in strength.
 
--   Cramer's V tells us that the relationship is weak in strength.
+- Conclusion: There is no significant difference between restaurants being near museums or not near museums based on their rating category (low, medium, and high).
 
--   Conclusion: There is no significant difference between restaurants being near museums or not near museums based on their rating category (low, medium, and high).
-
-::: {style="text-align: center;"}
 ## Goal 2: Statistical analysis (Restaurant Violations)
-:::
 
-In this section, I will be exploring whether restaurants near museums are less likely to have no violation citations than restaurants not close to museums. I will be using independent sample t-Test for this. But first, before we get to the independent samples t-Test, we must do a few more steps.
+In this section, I will be exploring whether restaurants near museums are less likely to have no violation citations than restaurants not close to museums. will be using a chi-square test (and Fisher’s exact test as a backup) for this. But first, we must do a few more steps.
 
-## Creating New Column
+### Creating New Column 
 
 In this section, I will be creating a new blank column titled "Restaurant_Violation".
 
 ```{r}
+#| label: restaurant-violation
 merged_restaurant_data$Restaurant_Violation<- ""
 ```
 
-## Typing "None" or "Critical"
-
-Next I will manually input "Critical" if a restaurant has ever had a restaurant violation and input "No" if a restaurant does**not** have a violation.
+### Typing "None" or "Critical"
+Next I will manually input "Critical" if a restaurant has ever had a restaurant violation and input "No" if a restaurant does**not** have a violation. 
 
 ```{r}
+#| label: none-critical
 merged_restaurant_data[,20]="None"
 merged_restaurant_data[40,20]="Critical"
 merged_restaurant_data[49,20]="Critical"
@@ -847,28 +878,44 @@ merged_restaurant_data[308,20]="Critical"
 merged_restaurant_data[310,20]="Critical"
 ```
 
-## Contingency Table
+### Contingency Table 
 
 Next, we will make a contingency table
 
 ```{r}
+#| label: tbl-contingency-2
 contingency_table_2 <- xtabs(~Restaurant_Violation+Near_Museum, data=merged_restaurant_data)
-contingency_table_2
+kable(
+  contingency_table_2,
+  caption = "Table 3. Contingency table of restaurant violation status by whether the restaurant is near a museum."
+)
 
+```
+
+```{r}
+#| label: tbl-contingency-2-check
 contingency_table_check_2<- merged_restaurant_data %>%
   tabyl(Restaurant_Violation, Near_Museum) %>%
   adorn_totals("row") %>%
   adorn_percentages("row") %>%
   adorn_pct_formatting(digits = 1) %>%
   adorn_ns()
-contingency_table_check_2
+kable(
+  contingency_table_check_2,
+  caption = "Table 4. Row percentages and counts for restaurant violation status by museum proximity."
+)
 ```
 
-## Visualizing our Data
+
+### Visualizing our Data
 
 Next, we will create a bar graph to visually see our data better.
 
 ```{r}
+#| label: fig-bar-merged
+#| fig-cap: "Proportion of restaurants with and without critical violations by whether the restaurant is near a museum."
+#| fig-alt: "Stacked bar chart comparing the proportions of restaurants labeled None versus Critical for those near museums and those not near museums."
+
 Visual_2<- ggplot(merged_restaurant_data, aes(x = Near_Museum, fill = Restaurant_Violation)) +
   geom_bar(position = "fill") + 
   labs(
@@ -880,13 +927,14 @@ Visual_2<- ggplot(merged_restaurant_data, aes(x = Near_Museum, fill = Restaurant
 Visual_2
 ```
 
-We are visualizing the proportion of if a restaurant ever had violations (None, Critical) by if restaurants are near museums (yes,no).
+We are visualizing the proportion of if a restaurant ever had violations  (None, Critical) by if restaurants are near museums (yes,no). 
 
 We can see here that there is not much difference. But we will discover this through statistical analysis.
 
-## Chi-Square Test
+### Chi-Square Test
 
 ```{r}
+#| label: chi-square-table-2
 chi_square_test<- chisq.test(contingency_table_2)
 chi_square_test
 
@@ -895,47 +943,50 @@ chisq.test(contingency_table_2)$expected
 cramerV(contingency_table_2)
 ```
 
-### Interpretation
+#### Interpretation 
 
--   A chi-square test with Yates' continuity correction (thanks to R) was conducted to examine the restaurant rating category and if the restaurants are near any museums.
+- A chi-square test with Yates' continuity correction (thanks to R) was conducted to examine the restaurant rating category and if the restaurants are near any museums. 
 
--   The chi-square test shows X\^2 = 6.2237e-30, df = 2, p = 1
+- The chi-square test shows X^2 = 6.2237e-30, df = 2, p = 1
 
--   Cramer's V tells us that the relationship is very weak in strength (0.008128).
+- Cramer's V tells us that the relationship is very weak in strength (0.008128).
 
--   There is **not** a statistically significant relationship between restaurants being near museums and restaurant violation.
+- There is **not** a statistically significant relationship between restaurants being near museums and restaurant violation.
 
--   Although a chi-square test with Yates' correction was conducted, I decided to do a fisher's exact test.
+- Although a chi-square test with Yates' correction was conducted, I decided to do a fisher's exact test.
 
-## Fisher's Exact Test
+### Fisher's Exact Test
 
 ```{r}
+#| label: fisher
 fisher.test(contingency_table_2)
 ```
 
-### Interpretation
+#### Interpretation 
 
--   p value is 0.7975, which is still **not** a statistically significant relationship between restaurants being near museums and restaurant violations.
+- p value is 0.7975, which is still **not** a statistically significant relationship between restaurants being near museums and restaurant violations.
 
-::: {style="text-align: center;"}
 ## Goal 3: Creating an interactive Map
-:::
 
-In this section, I used leaflet to create an interactive map based on museums and restaurants.
+In this section, I used leaflet to create an interactive map based on museums and restaurants. 
 
 These are the steps I took to create this map thanks to [This Video](https://youtu.be/w5U62wUki3E?si=NVk6fT64Bpwbmczv) and [this website](https://www.drdataking.com/post/how-to-add-multiple-lines-label-on-a-leaflet-map/#:~:text=+%E2%88%92-,Leaflet%20%7C%20%C2%A9%20OpenStreetMap%20contributors%2C%20CC%2DBY%2DSA,labels%20with%20multiple%20lines%20text.).
 
--   I created a "labels" value which include having the output to be the restaurant name and rating. The labels would be for the restaurants that will look like for example "Restaurant: Joyce's Bakery. Rating:5.0" :)
+- I created a "labels" value which include having the output to be the restaurant name and rating. The labels would be for the restaurants that will look like for example "Restaurant: Joyce's Bakery. Rating:5.0" :)
 
--   I created a "Labels" value which include having the output to be the museum. The Label wouls be for the museum that will look like, for example, "Museum: Joyce Museum"
+- I created a "Labels" value which include having the output to be the museum. The Label wouls be for the museum that will look like, for example, "Museum: Joyce Museum" 
 
--   Next I created a value called "merged_restaurant_data\$color". The reason I did this was because I wanted restaurants to be different color based on if they are considered high, medium, or low rating. I tried to use colorFactor just like the post [here](https://stackoverflow.com/questions/41533583/r-leaflet-adding-colors-for-character-variables) showed, but it was not working. The colors were randomly assignment so a restaurant with a 4.7 rating would be red! I fixed this by goggling how to do this without colorFactor and found I can do it the old fashion way using dplyr's cases_when.
+- Next I created a value called "merged_restaurant_data$color". The reason I did this was because I wanted restaurants to be different color based on if they are considered high, medium, or low rating. I tried to use colorFactor just like the post [here](https://stackoverflow.com/questions/41533583/r-leaflet-adding-colors-for-character-variables) showed, but it was not working. The colors were randomly assignment so a restaurant with a 4.7 rating would be red! I fixed this by goggling how to do this without colorFactor and found I can do it the old fashion way using dplyr's cases_when.
 
--   Next I created the map. I first set the view to be NYC coordinates because I wanted the map to just focus on NYC and ignore other states. Next, in "addCircleMarkers", I basically added the restaurant name data based on their rating color. In the next "addCircleMarkers" I added the museum data and made the museum points black to be easier to view.
+- Next I created the map. I first set the view to be NYC coordinates because I wanted the map to just focus on NYC and ignore other states. Next, in "addCircleMarkers", I basically added the restaurant name data based on their rating color. In the next "addCircleMarkers" I added the museum data and made the museum points black to be easier to view. 
 
--   I created an interactive map! Check it out! You can zoom in and out and hoover over any point you want. Remember that black points are museums, dark blue is restaurants with high ratings, purple is restaurants with medium level ratings, and dark red is restaurants with low ratings.
+- I created an interactive map! Check it out! You can zoom in and out and hoover over any point you want. Remember that black points are museums, dark blue is restaurants with high ratings, purple is restaurants with medium level ratings, and dark red is restaurants with low ratings.
 
 ```{r}
+#| label: fig-interactive-map
+#| fig-cap: "Interactive map of NYC museums and restaurants, with restaurants colored by rating group."
+#| fig-alt: "Interactive NYC map with museum markers and restaurant markers; restaurants are color-coded by rating group (Low, Average, High) and labels display restaurant name and rating."
+
 merged_restaurant_data$labels<- paste( "Restaurant:", merged_restaurant_data$Restaurant_Name, ".",
                 "Rating:", merged_restaurant_data$Rating) %>%
                  lapply(HTML)
@@ -977,28 +1028,26 @@ leaflet(data=merged_restaurant_data) %>%
   )
 ```
 
-::: {style="text-align: center;"}
 ## Conclusion
-:::
 
 Both of our analysis were not statistically significant. Our first analysis was to explore whether restaurants near art museums are more likely to have higher ratings than restaurants not close to museums using a chi-square test. It was not statistically significant meaning that restaurants near art museums are not likely to have higher ratings than restaurants not close to museums. Our second analysis was to explore whether restaurants near museums are less likely to have no violation citations than restaurants not close to museums. It was not statistically significant meaning that restaurants near art museums are not likely to have no violation citations if they are near museums than restaurants not near museums.
 
-In my project, I believe that this project is relevant to New Yorkers who like to go to museums or restaurants and would like to plan an outing for a nice museum day in NYC. These types of New Yorkers would care about this type of project because they no longer have to rely on using Google to search each individual museum and instead have a map that is accessible and easy to use.
+In my project, I believe that this project is relevant to New Yorkers who like to go to museums or restaurants and would like to plan an outing for a nice museum day in NYC. These types of New Yorkers would care about this type of project because they no longer have to rely on using Google to search each individual museum and instead have a map that is accessible and easy to use. 
 
-What I hope to do different for my presentation in the future for NYC open data week conference is be able to have more time inputting more restaurants and doing research on each restaurant to see if they ever had any restaurant violations and what their Google rating is.
+What I hope to do different for my presentation in the future for NYC open data week conference is be able to have more time inputting more restaurants and doing research on each restaurant to see if they ever had any restaurant violations and what their Google rating is. 
 
-There are limitations to this project. The first one is I used two data sets with restaurant data and although we had over 600 restaurants to work with, there was many missing! This could have explained why our statistical analysis sections were not significant. Also, the cleaned data, less than 100 restaurants had restaurant violations and not all restaurants were researched beforehand to confirm this.
+There are limitations to this project. The first one is I used two data sets with restaurant data and although we had over 600 restaurants to work with, there was many missing! This could have explained why our statistical analysis sections were not significant. Also, the cleaned data, less than 100 restaurants had restaurant violations and not all restaurants were researched beforehand to confirm this. 
 
-::: {style="text-align: center;"}
 ## References
-:::
 
--   NYC Open Data data set "DOHMH New York City Restaurant Inspection Results". Data Set: <https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j/about_data>
+- NYC Open Data data set "DOHMH New York City Restaurant Inspection Results". Data Set: https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j/about_data
 
--   NYC Open Data data set "MUSEUM" by the Department of Information Technology & Telecommuncations (DoITT). Data Set:<https://data.cityofnewyork.us/Recreation/MUSEUM/fn6f-htvy/about_data>
+- NYC Open Data data set "MUSEUM" by the Department of Information Technology & Telecommuncations (DoITT). Data Set:https://data.cityofnewyork.us/Recreation/MUSEUM/fn6f-htvy/about_data
 
--   Kaggle Open Data sets " NYC Restaurants" by BERIDZEG45. Data Set: <https://www.kaggle.com/datasets/beridzeg45/nyc-restaurants>
+- Kaggle Open Data sets " NYC Restaurants" by BERIDZEG45. Data Set: https://www.kaggle.com/datasets/beridzeg45/nyc-restaurants
 
--   Jiwei, W. (2022, February 23). How to add multiple lines label on a leaflet map. Dr.Data.King. <https://www.drdataking.com/post/how-to-add-multiple-lines-label-on-a-leaflet-map/#:~:text=+%E2%88%92-,Leaflet%20%7C%20%C2%A9%20OpenStreetMap%20contributors%2C%20CC%2DBY%2DSA,labels%20with%20multiple%20lines%20text.>
+- Jiwei, W. (2022, February 23). How to add multiple lines label on a leaflet map. Dr.Data.King. https://www.drdataking.com/post/how-to-add-multiple-lines-label-on-a-leaflet-map/#:~:text=+%E2%88%92-,Leaflet%20%7C%20%C2%A9%20OpenStreetMap%20contributors%2C%20CC%2DBY%2DSA,labels%20with%20multiple%20lines%20text. 
 
--   Lendway, L. (2020b). YouTube. <https://youtu.be/w5U62wUki3E?si=NVk6fT64Bpwbmczv>
+- Lendway, L. (2020b). YouTube. https://youtu.be/w5U62wUki3E?si=NVk6fT64Bpwbmczv 
+
+

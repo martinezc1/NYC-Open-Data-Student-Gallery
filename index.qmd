@@ -49,7 +49,7 @@ The following students contributed original research projects to this volume as 
 
 -   Crystal Adote - @sec-crystal
 -   Jonah Dratfield - @sec-jonah
--   Joyce Escatel Flores - *(chapter forthcoming)*
+-   Joyce Escatel Flores - @sec-joyce
 -   Robert Hutto - @sec-robert
 -   Isley Jean-Pierre - @sec-isley
 -   Shannon Joyce - @sec-shannon
