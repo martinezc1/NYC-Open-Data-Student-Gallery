@@ -33,5 +33,3 @@ format:
     code-fold: true
     code-summary: "Show the code"
     code-copy: true
-  pdf:
-    documentclass: scrreprt
