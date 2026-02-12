@@ -24,7 +24,7 @@ This volume is designed to accompany the open-access textbook *Reproducible Rese
 
 The textbook is freely available online at:
 
-<https://martinezc1-reproducible-research-in-r.share.connect.posit.cloud/>
+<https://martinezc1-reproducible-research-using-r.share.connect.posit.cloud/>
 
 Readers new to reproducible research or the R programming language are encouraged to consult the textbook alongside this volume. While the projects in this book stand on their own, the textbook offers additional context on methodology, statistical reasoning, and reproducible workflows.
 
