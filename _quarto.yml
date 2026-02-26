@@ -22,7 +22,7 @@ book:
 execute:
   freeze: auto
 
-bibliography: packages.bib
+bibliography: bibliography/packages.bib
 link-citations: true
 number-sections: true
 
