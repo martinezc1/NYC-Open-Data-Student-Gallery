@@ -27,6 +27,7 @@ library(mosaic)
 library(AICcmodavg)
 library(knitr)
 library(arrow)
+library(here)
 ```
 
 ```{r}
@@ -34,8 +35,10 @@ library(arrow)
 #| message: false
 #| warning: false
 #| cache: true
-mold_data <- read_parquet("data/raw/311_Service_Requests_from_2010_to_Present_20251215.parquet")
-dv_data <- read_parquet("data/rawNYPD_Complaint_Data_Historic_20251218.parquet")
+mold_data <- read_parquet(
+  here("data", "raw","311_Service_Requests_from_2010_to_Present_20251215.parquet"))
+dv_data <- read_parquet(
+  here("data", "raw","data/rawNYPD_Complaint_Data_Historic_20251218.parquet"))
 ```
 
 ```{r}

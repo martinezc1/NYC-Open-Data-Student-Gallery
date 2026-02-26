@@ -40,6 +40,7 @@ library(httr)
 library(jsonlite)
 library(knitr)
 library(arrow)
+library(here)
 ```
 
 ## Loading Downloaded Excel Datasets
@@ -50,19 +51,19 @@ library(arrow)
 #| warning: true
 
 edesignation <- read_parquet(
-  "data/raw/E-Designations.parquet",
+  here("data", "raw", "E-Designations.parquet",
   na = c("N/A", "NA", "")
-)
+))
 
 hazard_mitigation <- read_parquet(
-  "data/raw/Hazard_Mitigation_Plan.parquet",
+  here("data", "raw","Hazard_Mitigation_Plan.parquet",
   na = c("N/A", "NA", "")
-)
+))
 
 street_flooding <- read_parquet(
-  "data/raw/Street_Flooding_Complaints.parquet",
+  here("data", "raw","Street_Flooding_Complaints.parquet",
   na = c("N/A", "NA", "")
-)
+))
 ```
 
 ## Accessing NYC Open Data via API (311 Noise Complaints)

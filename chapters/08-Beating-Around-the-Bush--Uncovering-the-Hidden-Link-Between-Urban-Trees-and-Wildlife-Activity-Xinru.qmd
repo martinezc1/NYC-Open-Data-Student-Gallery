@@ -35,6 +35,7 @@ library(knitr)
 library(supernova)
 library(rcompanion)
 library(arrow)
+library(here)
 ```
 
 ## Data and Methods
@@ -54,8 +55,10 @@ I began by downloading publicly available datasets from NYC Open Data and import
 #| message: false
 #| warning: true
 # Import NYC Open Data CSV files
-tree_data <- read_parquet("data/raw/2015_Street_Tree_Census.parquet")
-animal_data <- read_parquet("data/raw/Urban_Park_Ranger_Animal_Condition_Response.parquet")
+tree_data <- read_parquet(
+  here("data", "raw","2015_Street_Tree_Census.parquet"))
+animal_data <- read_parquet(
+  here("data", "raw","Urban_Park_Ranger_Animal_Condition_Response.parquet"))
 ```
 
 ### Data Cleaning and Preparation
