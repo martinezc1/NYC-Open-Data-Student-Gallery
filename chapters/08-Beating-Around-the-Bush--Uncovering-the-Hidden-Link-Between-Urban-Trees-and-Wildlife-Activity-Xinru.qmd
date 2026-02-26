@@ -328,7 +328,7 @@ ggplot(top_species,
 #| fig-cap: "Two raccoons resting in a tree in Central Park shortly after dusk, illustrating the presence of adaptable urban wildlife in New York City parks. Photo credit: Chris St Lawrence"
 #| fig-alt: "Photo of two raccoons resting on a tree branch in a park setting at dusk."
 
-knitr::include_graphics("images/raccoon.png")
+knitr::include_graphics(here("images", "raccoon.png"))
 ```
 
 #### Interpretation
