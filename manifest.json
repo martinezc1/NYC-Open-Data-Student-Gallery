@@ -2790,26 +2790,26 @@
       "description": {
         "Package": "httr",
         "Title": "Tools for Working with URLs and HTTP",
-        "Version": "1.4.7",
-        "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = c(\"aut\", \"cre\")),\n    person(\"Posit, PBC\", role = c(\"cph\", \"fnd\"))\n  )",
+        "Version": "1.4.8",
+        "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = c(\"aut\", \"cre\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"))\n  )",
         "Description": "Useful tools for working with HTTP organised by HTTP verbs\n    (GET(), POST(), etc). Configuration functions make it easy to control\n    additional request components (authenticate(), add_headers() and so\n    on).",
         "License": "MIT + file LICENSE",
         "URL": "https://httr.r-lib.org/, https://github.com/r-lib/httr",
         "BugReports": "https://github.com/r-lib/httr/issues",
-        "Depends": "R (>= 3.5)",
-        "Imports": "curl (>= 5.0.2), jsonlite, mime, openssl (>= 0.8), R6",
+        "Depends": "R (>= 3.6)",
+        "Imports": "curl (>= 5.1.0), jsonlite, mime, openssl (>= 0.8), R6",
         "Suggests": "covr, httpuv, jpeg, knitr, png, readr, rmarkdown, testthat\n(>= 0.8.0), xml2",
         "VignetteBuilder": "knitr",
         "Config/Needs/website": "tidyverse/tidytemplate",
         "Encoding": "UTF-8",
-        "RoxygenNote": "7.2.3",
+        "RoxygenNote": "7.3.3",
         "NeedsCompilation": "no",
-        "Packaged": "2023-08-15 02:56:56 UTC; hadleywickham",
-        "Author": "Hadley Wickham [aut, cre],\n  Posit, PBC [cph, fnd]",
+        "Packaged": "2026-02-13 13:25:45 UTC; hadleywickham",
+        "Author": "Hadley Wickham [aut, cre],\n  Posit Software, PBC [cph, fnd]",
         "Maintainer": "Hadley Wickham <hadley@posit.co>",
         "Repository": "CRAN",
-        "Date/Publication": "2023-08-15 09:00:02 UTC",
-        "Built": "R 4.5.0; ; 2025-04-01 15:55:58 UTC; unix"
+        "Date/Publication": "2026-02-13 16:20:15 UTC",
+        "Built": "R 4.5.2; ; 2026-02-13 18:18:17 UTC; unix"
       }
     },
     "httr2": {
@@ -3208,7 +3208,7 @@
     },
     "leaflet.extras": {
       "Source": "CRAN",
-      "Repository": "https://cran.rstudio.com",
+      "Repository": null,
       "description": {
         "Package": "leaflet.extras",
         "Type": "Package",
@@ -3311,27 +3311,27 @@
       "description": {
         "Package": "lifecycle",
         "Title": "Manage the Life Cycle of your Package Functions",
-        "Version": "1.0.4",
+        "Version": "1.0.5",
         "Authors@R": "c(\n    person(\"Lionel\", \"Henry\", , \"lionel@posit.co\", role = c(\"aut\", \"cre\")),\n    person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"aut\",\n           comment = c(ORCID = \"0000-0003-4757-117X\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"))\n  )",
         "Description": "Manage the life cycle of your exported functions with shared\n    conventions, documentation badges, and user-friendly deprecation\n    warnings.",
         "License": "MIT + file LICENSE",
         "URL": "https://lifecycle.r-lib.org/, https://github.com/r-lib/lifecycle",
         "BugReports": "https://github.com/r-lib/lifecycle/issues",
         "Depends": "R (>= 3.6)",
-        "Imports": "cli (>= 3.4.0), glue, rlang (>= 1.1.0)",
-        "Suggests": "covr, crayon, knitr, lintr, rmarkdown, testthat (>= 3.0.1),\ntibble, tidyverse, tools, vctrs, withr",
+        "Imports": "cli (>= 3.4.0), rlang (>= 1.1.0)",
+        "Suggests": "covr, knitr, lintr (>= 3.1.0), rmarkdown, testthat (>=\n3.0.1), tibble, tidyverse, tools, vctrs, withr, xml2",
         "VignetteBuilder": "knitr",
         "Config/Needs/website": "tidyverse/tidytemplate, usethis",
         "Config/testthat/edition": "3",
         "Encoding": "UTF-8",
-        "RoxygenNote": "7.2.1",
+        "RoxygenNote": "7.3.3",
         "NeedsCompilation": "no",
-        "Packaged": "2023-11-06 16:07:36 UTC; lionel",
-        "Author": "Lionel Henry [aut, cre],\n  Hadley Wickham [aut] (<https://orcid.org/0000-0003-4757-117X>),\n  Posit Software, PBC [cph, fnd]",
+        "Packaged": "2026-01-07 15:00:49 UTC; lionel",
+        "Author": "Lionel Henry [aut, cre],\n  Hadley Wickham [aut] (ORCID: <https://orcid.org/0000-0003-4757-117X>),\n  Posit Software, PBC [cph, fnd]",
         "Maintainer": "Lionel Henry <lionel@posit.co>",
         "Repository": "CRAN",
-        "Date/Publication": "2023-11-07 10:10:10 UTC",
-        "Built": "R 4.5.0; ; 2025-04-01 06:31:31 UTC; unix"
+        "Date/Publication": "2026-01-08 08:00:02 UTC",
+        "Built": "R 4.5.2; ; 2026-01-08 12:03:10 UTC; unix"
       }
     },
     "listenv": {
@@ -3901,34 +3901,39 @@
       }
     },
     "nycOpenData": {
-      "Source": "CRAN",
-      "Repository": "https://cran.rstudio.com",
+      "Source": "github",
+      "Repository": null,
       "description": {
         "Package": "nycOpenData",
         "Type": "Package",
         "Title": "Convenient Access to NYC Open Data API Endpoints",
-        "Version": "0.1.3",
-        "Authors@R": "\n    person(\"Christian\", \"Martinez\", \n           email = \"c.martinez0@outlook.com\", \n           role = c(\"aut\", \"cre\"))",
-        "Description": "Provides a unified set of helper functions to access datasets \n    from the NYC Open Data platform <https://opendata.cityofnewyork.us/>. \n    Functions return results as tidy tibbles and support optional filtering, \n    sorting, and row limits via the Socrata API. The package includes endpoints \n    for 311 service requests, DOB job applications, juvenile justice metrics, \n    school safety, environmental data, event permitting, and additional \n    citywide datasets.",
+        "Version": "0.1.6",
+        "Authors@R": "\n    c(\n      person(\"Christian\", \"Martinez\", \n             email = \"c.martinez0@outlook.com\", \n             role = c(\"aut\", \"cre\"),\n             comment = c(\n               GitHub = \"martinezc1\",\n               ORCID = \"0009-0005-6026-6454\"\n             )),\n      person(\"Crystal\", \"Adote\",\n             role = \"ctb\",\n             comment = c(GitHub = \"crystalna20\")),\n      person(\"Jonah\", \"Dratfield\", \n             role = \"ctb\",\n             comment = c(GitHub = \"jdratfield38\")),\n      person(\"Joyce\", \"Escatel-Flores\",\n             role = \"ctb\",\n             comment = c(GitHub = \"JoyceEscatel\")),\n      person(\"Rob\", \"Hutto\", \n             role = \"ctb\",\n             comment = c(GitHub = \"robhutto\")),\n      person(\"Isley\", \"Jean-Pierre\",\n             role = \"ctb\",\n             comment = c(GitHub = \"ijpier\")),\n      person(\"Shannon\", \"Joyce\",\n             role = \"ctb\",\n             comment = c(GitHub = \"shannonjoyce\")),\n      person(\"Laura\", \"Rose-Werner\",\n             role = \"ctb\",\n             comment = c(GitHub = \"laurarosewerner\")),\n      person(\"Emma\", \"Tupone\",\n             role = \"ctb\",\n             comment = c(GitHub = \"emmatup0205\")),\n      person(\"Xinru\", \"Wang\",\n             role = \"ctb\",\n             comment = c(GitHub = \"xrwangxr\"))\n    )",
+        "Description": "Provides a unified set of helper functions to access datasets \n    from the NYC Open Data platform <https://opendata.cityofnewyork.us/>. \n    Functions return results as tidy tibbles and support optional filtering, \n    sorting, and row limits via the Socrata API. The package includes endpoints \n    for 311 service requests, DOB job applications, juvenile justice metrics, \n    school safety, environmental data, event permitting, and additional citywide datasets.",
         "License": "MIT + file LICENSE",
         "Encoding": "UTF-8",
         "RoxygenNote": "7.3.3",
-        "Imports": "httr, jsonlite, tibble",
-        "Suggests": "knitr, rmarkdown",
-        "URL": "https://github.com/martinezc1/nycOpenData",
+        "Imports": "httr, jsonlite, tibble, curl",
+        "Suggests": "dplyr, ggplot2, knitr, rmarkdown, scales, testthat (>=\n3.0.0), tidyr, vcr (>= 0.6.0), webmockr",
+        "URL": "https://martinezc1.github.io/nycOpenData/,\nhttps://github.com/martinezc1/nycOpenData",
         "BugReports": "https://github.com/martinezc1/nycOpenData/issues",
+        "VignetteBuilder": "knitr",
+        "Config/testthat/edition": "3",
+        "RemoteType": "github",
+        "RemoteHost": "api.github.com",
+        "RemoteRepo": "nycOpenData",
+        "RemoteUsername": "martinezc1",
+        "RemoteRef": "HEAD",
+        "RemoteSha": "22524c04d7c954000869d8814d10c805b5b8efa9",
+        "GithubRepo": "nycOpenData",
+        "GithubUsername": "martinezc1",
+        "GithubRef": "HEAD",
+        "GithubSHA1": "22524c04d7c954000869d8814d10c805b5b8efa9",
         "NeedsCompilation": "no",
-        "Packaged": "2026-01-10 03:23:40 UTC; christianmartinez",
-        "Author": "Christian Martinez [aut, cre]",
+        "Packaged": "2026-02-19 15:19:25 UTC; christianmartinez",
+        "Author": "Christian Martinez [aut, cre] (GitHub: martinezc1, ORCID:\n    <https://orcid.org/0009-0005-6026-6454>),\n  Crystal Adote [ctb] (GitHub: crystalna20),\n  Jonah Dratfield [ctb] (GitHub: jdratfield38),\n  Joyce Escatel-Flores [ctb] (GitHub: JoyceEscatel),\n  Rob Hutto [ctb] (GitHub: robhutto),\n  Isley Jean-Pierre [ctb] (GitHub: ijpier),\n  Shannon Joyce [ctb] (GitHub: shannonjoyce),\n  Laura Rose-Werner [ctb] (GitHub: laurarosewerner),\n  Emma Tupone [ctb] (GitHub: emmatup0205),\n  Xinru Wang [ctb] (GitHub: xrwangxr)",
         "Maintainer": "Christian Martinez <c.martinez0@outlook.com>",
-        "Repository": "CRAN",
-        "Date/Publication": "2026-01-10 03:40:02 UTC",
-        "Built": "R 4.5.2; ; 2026-01-10 07:05:34 UTC; unix",
-        "RemoteType": "standard",
-        "RemotePkgRef": "nycOpenData",
-        "RemoteRef": "nycOpenData",
-        "RemoteRepos": "https://cran.rstudio.com",
-        "RemoteSha": "0.1.3"
+        "Built": "R 4.5.1; ; 2026-02-19 15:19:26 UTC; unix"
       }
     },
     "openssl": {
@@ -4685,31 +4690,31 @@
       "Repository": "https://cran.rstudio.com",
       "description": {
         "Package": "rlang",
-        "Version": "1.1.6",
+        "Version": "1.1.7",
         "Title": "Functions for Base Types and Core R and 'Tidyverse' Features",
         "Description": "A toolbox for working with base types, core R features\n  like the condition system, and core 'Tidyverse' features like tidy\n  evaluation.",
         "Authors@R": "c(\n    person(\"Lionel\", \"Henry\", ,\"lionel@posit.co\", c(\"aut\", \"cre\")),\n    person(\"Hadley\", \"Wickham\", ,\"hadley@posit.co\", \"aut\"),\n    person(given = \"mikefc\",\n           email = \"mikefc@coolbutuseless.com\",\n           role = \"cph\",\n           comment = \"Hash implementation based on Mike's xxhashlite\"),\n    person(given = \"Yann\",\n           family = \"Collet\",\n           role = \"cph\",\n           comment = \"Author of the embedded xxHash library\"),\n    person(given = \"Posit, PBC\", role = c(\"cph\", \"fnd\"))\n    )",
         "License": "MIT + file LICENSE",
         "ByteCompile": "true",
         "Biarch": "true",
-        "Depends": "R (>= 3.5.0)",
+        "Depends": "R (>= 4.0.0)",
         "Imports": "utils",
         "Suggests": "cli (>= 3.1.0), covr, crayon, desc, fs, glue, knitr,\nmagrittr, methods, pillar, pkgload, rmarkdown, stats, testthat\n(>= 3.2.0), tibble, usethis, vctrs (>= 0.2.3), withr",
         "Enhances": "winch",
         "Encoding": "UTF-8",
-        "RoxygenNote": "7.3.2",
+        "RoxygenNote": "7.3.3",
         "URL": "https://rlang.r-lib.org, https://github.com/r-lib/rlang",
         "BugReports": "https://github.com/r-lib/rlang/issues",
         "Config/build/compilation-database": "true",
         "Config/testthat/edition": "3",
         "Config/Needs/website": "dplyr, tidyverse/tidytemplate",
         "NeedsCompilation": "yes",
-        "Packaged": "2025-04-10 09:25:27 UTC; lionel",
+        "Packaged": "2026-01-08 10:35:58 UTC; lionel",
         "Author": "Lionel Henry [aut, cre],\n  Hadley Wickham [aut],\n  mikefc [cph] (Hash implementation based on Mike's xxhashlite),\n  Yann Collet [cph] (Author of the embedded xxHash library),\n  Posit, PBC [cph, fnd]",
         "Maintainer": "Lionel Henry <lionel@posit.co>",
         "Repository": "CRAN",
-        "Date/Publication": "2025-04-11 08:40:10 UTC",
-        "Built": "R 4.5.0; aarch64-apple-darwin20; 2025-04-11 09:43:26 UTC; unix",
+        "Date/Publication": "2026-01-09 12:10:02 UTC",
+        "Built": "R 4.5.2; aarch64-apple-darwin20; 2026-01-09 16:51:14 UTC; unix",
         "Archs": "rlang.so.dSYM"
       }
     },
@@ -5437,9 +5442,9 @@
       "description": {
         "Package": "tibble",
         "Title": "Simple Data Frames",
-        "Version": "3.3.0",
-        "Authors@R": "\n    c(person(given = \"Kirill\",\n             family = \"M\\u00fcller\",\n             role = c(\"aut\", \"cre\"),\n             email = \"kirill@cynkra.com\",\n             comment = c(ORCID = \"0000-0002-1416-3412\")),\n      person(given = \"Hadley\",\n             family = \"Wickham\",\n             role = \"aut\",\n             email = \"hadley@rstudio.com\"),\n      person(given = \"Romain\",\n             family = \"Francois\",\n             role = \"ctb\",\n             email = \"romain@r-enthusiasts.com\"),\n      person(given = \"Jennifer\",\n             family = \"Bryan\",\n             role = \"ctb\",\n             email = \"jenny@rstudio.com\"),\n      person(given = \"RStudio\",\n             role = c(\"cph\", \"fnd\")))",
-        "Description": "Provides a 'tbl_df' class (the 'tibble') with stricter checking and better formatting than the traditional\n    data frame.",
+        "Version": "3.3.1",
+        "Authors@R": "c(\n    person(\"Kirill\", \"Müller\", , \"kirill@cynkra.com\", role = c(\"aut\", \"cre\"),\n           comment = c(ORCID = \"0000-0002-1416-3412\")),\n    person(\"Hadley\", \"Wickham\", , \"hadley@rstudio.com\", role = \"aut\"),\n    person(\"Romain\", \"Francois\", , \"romain@r-enthusiasts.com\", role = \"ctb\"),\n    person(\"Jennifer\", \"Bryan\", , \"jenny@rstudio.com\", role = \"ctb\"),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"),\n           comment = c(ROR = \"03wc8by49\"))\n  )",
+        "Description": "Provides a 'tbl_df' class (the 'tibble') with stricter\n    checking and better formatting than the traditional data frame.",
         "License": "MIT + file LICENSE",
         "URL": "https://tibble.tidyverse.org/, https://github.com/tidyverse/tibble",
         "BugReports": "https://github.com/tidyverse/tibble/issues",
@@ -5447,22 +5452,23 @@
         "Imports": "cli, lifecycle (>= 1.0.0), magrittr, methods, pillar (>=\n1.8.1), pkgconfig, rlang (>= 1.0.2), utils, vctrs (>= 0.5.0)",
         "Suggests": "bench, bit64, blob, brio, callr, DiagrammeR, dplyr, evaluate,\nformattable, ggplot2, here, hms, htmltools, knitr, lubridate,\nnycflights13, pkgload, purrr, rmarkdown, stringi, testthat (>=\n3.0.2), tidyr, withr",
         "VignetteBuilder": "knitr",
-        "Encoding": "UTF-8",
-        "RoxygenNote": "7.3.2.9000",
+        "Config/autostyle/rmd": "false",
+        "Config/autostyle/scope": "line_breaks",
+        "Config/autostyle/strict": "true",
+        "Config/Needs/website": "tidyverse/tidytemplate",
         "Config/testthat/edition": "3",
         "Config/testthat/parallel": "true",
         "Config/testthat/start-first": "vignette-formats, as_tibble, add,\ninvariants",
-        "Config/autostyle/scope": "line_breaks",
-        "Config/autostyle/strict": "true",
-        "Config/autostyle/rmd": "false",
-        "Config/Needs/website": "tidyverse/tidytemplate",
+        "Config/usethis/last-upkeep": "2025-06-07",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.3.3.9000",
         "NeedsCompilation": "yes",
-        "Packaged": "2025-06-07 08:54:33 UTC; kirill",
-        "Author": "Kirill Müller [aut, cre] (ORCID:\n    <https://orcid.org/0000-0002-1416-3412>),\n  Hadley Wickham [aut],\n  Romain Francois [ctb],\n  Jennifer Bryan [ctb],\n  RStudio [cph, fnd]",
+        "Packaged": "2026-01-10 18:28:47 UTC; kirill",
+        "Author": "Kirill Müller [aut, cre] (ORCID:\n    <https://orcid.org/0000-0002-1416-3412>),\n  Hadley Wickham [aut],\n  Romain Francois [ctb],\n  Jennifer Bryan [ctb],\n  Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
         "Maintainer": "Kirill Müller <kirill@cynkra.com>",
         "Repository": "CRAN",
-        "Date/Publication": "2025-06-08 12:10:02 UTC",
-        "Built": "R 4.5.0; aarch64-apple-darwin20; 2025-06-08 13:50:10 UTC; unix",
+        "Date/Publication": "2026-01-11 10:10:02 UTC",
+        "Built": "R 4.5.2; aarch64-apple-darwin20; 2026-01-11 11:35:41 UTC; unix",
         "Archs": "tibble.so.dSYM"
       }
     },
@@ -5808,28 +5814,30 @@
       "description": {
         "Package": "vctrs",
         "Title": "Vector Helpers",
-        "Version": "0.6.5",
+        "Version": "0.7.1",
         "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"aut\"),\n    person(\"Lionel\", \"Henry\", , \"lionel@posit.co\", role = \"aut\"),\n    person(\"Davis\", \"Vaughan\", , \"davis@posit.co\", role = c(\"aut\", \"cre\")),\n    person(\"data.table team\", role = \"cph\",\n           comment = \"Radix sort based on data.table's forder() and their contribution to R's order()\"),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"))\n  )",
         "Description": "Defines new notions of prototype and size that are used to\n    provide tools for consistent and well-founded type-coercion and\n    size-recycling, and are in turn connected to ideas of type- and\n    size-stability useful for analysing function interfaces.",
         "License": "MIT + file LICENSE",
         "URL": "https://vctrs.r-lib.org/, https://github.com/r-lib/vctrs",
         "BugReports": "https://github.com/r-lib/vctrs/issues",
-        "Depends": "R (>= 3.5.0)",
-        "Imports": "cli (>= 3.4.0), glue, lifecycle (>= 1.0.3), rlang (>= 1.1.0)",
+        "Depends": "R (>= 4.0.0)",
+        "Imports": "cli (>= 3.4.0), glue, lifecycle (>= 1.0.3), rlang (>= 1.1.7)",
         "Suggests": "bit64, covr, crayon, dplyr (>= 0.8.5), generics, knitr,\npillar (>= 1.4.4), pkgdown (>= 2.0.1), rmarkdown, testthat (>=\n3.0.0), tibble (>= 3.1.3), waldo (>= 0.2.0), withr, xml2,\nzeallot",
         "VignetteBuilder": "knitr",
+        "Config/build/compilation-database": "true",
         "Config/Needs/website": "tidyverse/tidytemplate",
         "Config/testthat/edition": "3",
+        "Config/testthat/parallel": "true",
         "Encoding": "UTF-8",
         "Language": "en-GB",
-        "RoxygenNote": "7.2.3",
+        "RoxygenNote": "7.3.3",
         "NeedsCompilation": "yes",
-        "Packaged": "2023-12-01 16:27:12 UTC; davis",
+        "Packaged": "2026-01-22 13:56:47 UTC; davis",
         "Author": "Hadley Wickham [aut],\n  Lionel Henry [aut],\n  Davis Vaughan [aut, cre],\n  data.table team [cph] (Radix sort based on data.table's forder() and\n    their contribution to R's order()),\n  Posit Software, PBC [cph, fnd]",
         "Maintainer": "Davis Vaughan <davis@posit.co>",
         "Repository": "CRAN",
-        "Date/Publication": "2023-12-01 23:50:02 UTC",
-        "Built": "R 4.5.0; aarch64-apple-darwin20; 2025-04-01 11:51:16 UTC; unix",
+        "Date/Publication": "2026-01-23 18:50:02 UTC",
+        "Built": "R 4.5.2; aarch64-apple-darwin20; 2026-01-23 22:37:24 UTC; unix",
         "Archs": "vctrs.so.dSYM"
       }
     },
@@ -5987,12 +5995,12 @@
         "Package": "xfun",
         "Type": "Package",
         "Title": "Supporting Functions for Packages Maintained by 'Yihui Xie'",
-        "Version": "0.54",
+        "Version": "0.56",
         "Authors@R": "c(\n  person(\"Yihui\", \"Xie\", role = c(\"aut\", \"cre\", \"cph\"), email = \"xie@yihui.name\", comment = c(ORCID = \"0000-0003-0645-5666\", URL = \"https://yihui.org\")),\n  person(\"Wush\", \"Wu\", role = \"ctb\"),\n  person(\"Daijiang\", \"Li\", role = \"ctb\"),\n  person(\"Xianying\", \"Tan\", role = \"ctb\"),\n  person(\"Salim\", \"Brüggemann\", role = \"ctb\", email = \"salim-b@pm.me\", comment = c(ORCID = \"0000-0002-5329-5987\")),\n  person(\"Christophe\", \"Dervieux\", role = \"ctb\"),\n  person()\n  )",
         "Description": "Miscellaneous functions commonly used in other packages maintained by 'Yihui Xie'.",
         "Depends": "R (>= 3.2.0)",
         "Imports": "grDevices, stats, tools",
-        "Suggests": "testit, parallel, codetools, methods, rstudioapi, tinytex (>=\n0.30), mime, litedown (>= 0.6), commonmark, knitr (>= 1.50),\nremotes, pak, curl, xml2, jsonlite, magick, yaml, data.table,\nqs",
+        "Suggests": "testit, parallel, codetools, methods, rstudioapi, tinytex (>=\n0.30), mime, litedown (>= 0.6), commonmark, knitr (>= 1.50),\nremotes, pak, curl, xml2, jsonlite, magick, yaml, data.table,\nqs2",
         "License": "MIT + file LICENSE",
         "URL": "https://github.com/yihui/xfun",
         "BugReports": "https://github.com/yihui/xfun/issues",
@@ -6000,13 +6008,18 @@
         "RoxygenNote": "7.3.3",
         "VignetteBuilder": "litedown",
         "NeedsCompilation": "yes",
-        "Packaged": "2025-10-30 16:52:28 UTC; yihui",
+        "Packaged": "2026-01-18 04:03:19 UTC; yihui",
         "Author": "Yihui Xie [aut, cre, cph] (ORCID:\n    <https://orcid.org/0000-0003-0645-5666>, URL: https://yihui.org),\n  Wush Wu [ctb],\n  Daijiang Li [ctb],\n  Xianying Tan [ctb],\n  Salim Brüggemann [ctb] (ORCID: <https://orcid.org/0000-0002-5329-5987>),\n  Christophe Dervieux [ctb]",
         "Maintainer": "Yihui Xie <xie@yihui.name>",
         "Repository": "CRAN",
-        "Date/Publication": "2025-10-30 17:40:02 UTC",
-        "Built": "R 4.5.0; aarch64-apple-darwin20; 2025-10-30 19:09:56 UTC; unix",
-        "Archs": "xfun.so.dSYM"
+        "Date/Publication": "2026-01-18 06:10:03 UTC",
+        "Built": "R 4.5.2; aarch64-apple-darwin20; 2026-01-18 06:33:20 UTC; unix",
+        "Archs": "xfun.so.dSYM",
+        "RemoteType": "standard",
+        "RemotePkgRef": "xfun",
+        "RemoteRef": "xfun",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemoteSha": "0.56"
       }
     },
     "xml2": {
@@ -6171,7 +6184,7 @@
       "checksum": "59d27fabc514784b0a17016c3060acc7"
     },
     "_book/01-Final-Project-Crystal.html": {
-      "checksum": "a00c0a42ad05e3ab8bace9a70e1f38e7"
+      "checksum": "12e39777b9433a9f01a13d5aa6d51da5"
     },
     "_book/02-Final-Social-Infrastructure-and-Well-Being-Jonah_files/figure-html/fig-25eventscount-1.png": {
       "checksum": "68acc6b69daacfc85f3d6fd0413ab53b"
@@ -6182,8 +6195,125 @@
     "_book/02-Final-Social-Infrastructure-and-Well-Being-Jonah_files/figure-html/fig-LMScatterPlot-1.png": {
       "checksum": "8b81c4615c74487b7e17744c4d31f0b2"
     },
+    "_book/02-Final-Social-Infrastructure-and-Well-Being-Jonah_files/figure-pdf/fig-25eventscount-1.pdf": {
+      "checksum": "1f02332a7534670153a04e904615b770"
+    },
+    "_book/02-Final-Social-Infrastructure-and-Well-Being-Jonah_files/figure-pdf/fig-25SNAPcount-1.pdf": {
+      "checksum": "6d4e3e56c15a36d99789a38bddac964e"
+    },
+    "_book/02-Final-Social-Infrastructure-and-Well-Being-Jonah_files/figure-pdf/fig-LMScatterPlot-1.pdf": {
+      "checksum": "f6198b6f08f00eafe28fd99935436296"
+    },
     "_book/02-Final-Social-Infrastructure-and-Well-Being-Jonah.html": {
-      "checksum": "2d8b186a1c2570d25940d96d9ca93407"
+      "checksum": "c13a957e892891a4943db2c4308299c3"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/figure-html/fig-bar-1.png": {
+      "checksum": "c401f05424c16b9a1d01ca38e0894ddd"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/figure-html/fig-bar-merged-1.png": {
+      "checksum": "923de54e4996d614dd9d9b5bc107a9ad"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/figure-html/unnamed-chunk-20-1.png": {
+      "checksum": "b8dda4792e0cb1b6d984799883692378"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/figure-html/unnamed-chunk-25-1.png": {
+      "checksum": "574b283e4c0d049fe36ff0ccbb9ab132"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/bootstrap/bootstrap-d6a003b94517c951b2d65075d42fb01b.min.css": {
+      "checksum": "d6a003b94517c951b2d65075d42fb01b"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/bootstrap/bootstrap-icons.css": {
+      "checksum": "886da841d7421705f715f600c5ff11bb"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/bootstrap/bootstrap-icons.woff": {
+      "checksum": "efe54401ef52214fd3b701e23ff88c5f"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/bootstrap/bootstrap.min.js": {
+      "checksum": "e2b09c06f0e714b6144a6788a28e3950"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/clipboard/clipboard.min.js": {
+      "checksum": "15f52a1ee547f2bdd46e56747332ca2d"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/htmltools-fill-0.5.8.1/fill.css": {
+      "checksum": "0c307b2ce7a3fa7f260a0451457c809f"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/htmlwidgets-1.6.4/htmlwidgets.js": {
+      "checksum": "237f59bc086ccf24f39be55311023b91"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/jquery-3.6.0/jquery-3.6.0.js": {
+      "checksum": "2849239b95f5a9a2aea3f6ed9420bb88"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/jquery-3.6.0/jquery-3.6.0.min.js": {
+      "checksum": "8fb8fee4fcc3cc86ff6c724154c49c42"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/jquery-3.6.0/jquery-3.6.0.min.map": {
+      "checksum": "6efc5d663aaacac2024153fa0d4bafcd"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/leaflet-1.3.1/images/layers-2x.png": {
+      "checksum": "4f0283c6ce28e888000e978e537a6a56"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/leaflet-1.3.1/images/layers.png": {
+      "checksum": "a6137456ed160d7606981aa57c559898"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/leaflet-1.3.1/images/marker-icon-2x.png": {
+      "checksum": "401d815dc206b8dc1b17cd0e37695975"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/leaflet-1.3.1/images/marker-icon.png": {
+      "checksum": "2273e3d8ad9264b7daa5bdbf8e6b47f8"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/leaflet-1.3.1/images/marker-shadow.png": {
+      "checksum": "44a526eed258222515aa21eaffd14a96"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/leaflet-1.3.1/leaflet.css": {
+      "checksum": "58da535d4980b4c71b74a41bbee8a510"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/leaflet-1.3.1/leaflet.js": {
+      "checksum": "af438f3b0ec09c81bc8fb9959de88155"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/leaflet-binding-2.2.3/leaflet.js": {
+      "checksum": "7b0d68b050b79c5699a9f361b697b6ef"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/leafletfix-1.0.0/leafletfix.css": {
+      "checksum": "6a38c873de948d8a1458ec0429aa0063"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/proj4-2.6.2/proj4.min.js": {
+      "checksum": "4c6ef5a940694e1acc5c9ef66572fa79"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/Proj4Leaflet-1.0.1/proj4leaflet.js": {
+      "checksum": "4c72a5a790e066510f9eb68541280646"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/quarto-html/anchor.min.js": {
+      "checksum": "91bcf6cd1fd88fec3f109811e5fc3546"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/quarto-html/axe/axe-check.js": {
+      "checksum": "b4f6a44157bfe20b68b69aabf2f8125d"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/quarto-html/popper.min.js": {
+      "checksum": "3a4a291ccf3f1ea0f82b641542fd3827"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css": {
+      "checksum": "7b89279ff1a6dce999919e0e67d4d9ec"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/quarto-html/quarto.js": {
+      "checksum": "a65a7780c10232b6515cdfb8beaaa221"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/quarto-html/tabsets/tabsets.js": {
+      "checksum": "e8d6a8862b33ccc461f8fd532e05b365"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/quarto-html/tippy.css": {
+      "checksum": "ebd6f8ce46a677e1a4f5f8a8317109a9"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/quarto-html/tippy.umd.min.js": {
+      "checksum": "d828775275749701b48bd9d958814111"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/rstudio_leaflet-1.3.1/images/1px.png": {
+      "checksum": "978c1bee49d7ad5fc1a4d81099b13e18"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce_files/libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css": {
+      "checksum": "49b23a276edf8677e7bb779525d2be7d"
+    },
+    "_book/03-Final-Restaurant-and-Museum-Project-Joyce.html": {
+      "checksum": "68538144692362f34725eadfb5e482d3"
     },
     "_book/04-MSG-effect-Robert_files/figure-html/fig-barplot-1.png": {
       "checksum": "c2dd1e86ada974894f2c6e51c9da15ad"
@@ -6237,13 +6367,13 @@
       "checksum": "642907c7fb5db3afd521737fbb734a89"
     },
     "_book/06-ToxicHomes-Shannon.html": {
-      "checksum": "5c15ac662bfef2a8ca70b1d6668a3bc8"
+      "checksum": "2d5536d93354f222dd5f7fcb7176b8d5"
     },
     "_book/07-EnvironmentalStressorsandSocialComplaintsNYC-Emma_files/figure-html/fig-plot-flood-1.png": {
       "checksum": "04a6da853b4f64ed3cdbcdddc9b91a7e"
     },
     "_book/07-EnvironmentalStressorsandSocialComplaintsNYC-Emma_files/figure-html/fig-plot-relationship-1.png": {
-      "checksum": "015ffdbb03e56066745aa7946d6a971a"
+      "checksum": "de0c93106ae9277bc7e62289984d1238"
     },
     "_book/07-EnvironmentalStressorsandSocialComplaintsNYC-Emma_files/figure-pdf/fig-plot-flood-1.pdf": {
       "checksum": "e04b96b2e19f197259a0eafea7ebcc5a"
@@ -6252,7 +6382,7 @@
       "checksum": "360a03f7283a387deb2f1c599eed87b1"
     },
     "_book/07-EnvironmentalStressorsandSocialComplaintsNYC-Emma.html": {
-      "checksum": "07bff74430b96051b32369cd0d9cce9d"
+      "checksum": "af812e11c0bb80f620f14290bc344397"
     },
     "_book/08-Beating-Around-the-Bush--Uncovering-the-Hidden-Link-Between-Urban-Trees-and-Wildlife-Activity-Xinru_files/figure-html/fig-animal-summary-1.png": {
       "checksum": "11082a026cd16151da85fb84d849ea41"
@@ -6297,13 +6427,13 @@
       "checksum": "a496038b8fb48d95245694184b87346c"
     },
     "_book/08-Beating-Around-the-Bush--Uncovering-the-Hidden-Link-Between-Urban-Trees-and-Wildlife-Activity-Xinru.html": {
-      "checksum": "134ae771e3d812fdca2d0a3cf5903dc9"
+      "checksum": "f6b14f4cacb32eccd7195413a1c39900"
     },
     "_book/cover-trying.png": {
       "checksum": "eb75aa493a2665e46ba784bfcd93e602"
     },
     "_book/index.html": {
-      "checksum": "36586e44b610887c10ccbd58088dfcf9"
+      "checksum": "6ad65c3b52fb1d40f30208e6645b33b8"
     },
     "_book/NYC-Open-Data-Student-Gallery---Brooklyn-College.pdf": {
       "checksum": "a9602c924a3207efaea60f2f3a0b4772"
@@ -6312,7 +6442,7 @@
       "checksum": "0477e293630085fcd0c2b327bece7267"
     },
     "_book/search.json": {
-      "checksum": "a0fe6689a368d85c3eb0d318a806d14b"
+      "checksum": "50b020bdf008545caa5563bf6f56b9e4"
     },
     "_book/site_libs/bootstrap/bootstrap-5ea8f22911a6df30576a2a25a24cdd7a.min.css": {
       "checksum": "5ea8f22911a6df30576a2a25a24cdd7a"
@@ -6328,6 +6458,54 @@
     },
     "_book/site_libs/clipboard/clipboard.min.js": {
       "checksum": "15f52a1ee547f2bdd46e56747332ca2d"
+    },
+    "_book/site_libs/htmltools-fill-0.5.8.1/fill.css": {
+      "checksum": "0c307b2ce7a3fa7f260a0451457c809f"
+    },
+    "_book/site_libs/htmlwidgets-1.6.4/htmlwidgets.js": {
+      "checksum": "237f59bc086ccf24f39be55311023b91"
+    },
+    "_book/site_libs/jquery-3.6.0/jquery-3.6.0.js": {
+      "checksum": "2849239b95f5a9a2aea3f6ed9420bb88"
+    },
+    "_book/site_libs/jquery-3.6.0/jquery-3.6.0.min.js": {
+      "checksum": "8fb8fee4fcc3cc86ff6c724154c49c42"
+    },
+    "_book/site_libs/jquery-3.6.0/jquery-3.6.0.min.map": {
+      "checksum": "6efc5d663aaacac2024153fa0d4bafcd"
+    },
+    "_book/site_libs/leaflet-1.3.1/images/layers-2x.png": {
+      "checksum": "4f0283c6ce28e888000e978e537a6a56"
+    },
+    "_book/site_libs/leaflet-1.3.1/images/layers.png": {
+      "checksum": "a6137456ed160d7606981aa57c559898"
+    },
+    "_book/site_libs/leaflet-1.3.1/images/marker-icon-2x.png": {
+      "checksum": "401d815dc206b8dc1b17cd0e37695975"
+    },
+    "_book/site_libs/leaflet-1.3.1/images/marker-icon.png": {
+      "checksum": "2273e3d8ad9264b7daa5bdbf8e6b47f8"
+    },
+    "_book/site_libs/leaflet-1.3.1/images/marker-shadow.png": {
+      "checksum": "44a526eed258222515aa21eaffd14a96"
+    },
+    "_book/site_libs/leaflet-1.3.1/leaflet.css": {
+      "checksum": "58da535d4980b4c71b74a41bbee8a510"
+    },
+    "_book/site_libs/leaflet-1.3.1/leaflet.js": {
+      "checksum": "af438f3b0ec09c81bc8fb9959de88155"
+    },
+    "_book/site_libs/leaflet-binding-2.2.3/leaflet.js": {
+      "checksum": "7b0d68b050b79c5699a9f361b697b6ef"
+    },
+    "_book/site_libs/leafletfix-1.0.0/leafletfix.css": {
+      "checksum": "6a38c873de948d8a1458ec0429aa0063"
+    },
+    "_book/site_libs/proj4-2.6.2/proj4.min.js": {
+      "checksum": "4c6ef5a940694e1acc5c9ef66572fa79"
+    },
+    "_book/site_libs/Proj4Leaflet-1.0.1/proj4leaflet.js": {
+      "checksum": "4c72a5a790e066510f9eb68541280646"
     },
     "_book/site_libs/quarto-html/anchor.min.js": {
       "checksum": "91bcf6cd1fd88fec3f109811e5fc3546"
@@ -6368,8 +6546,14 @@
     "_book/site_libs/quarto-search/quarto-search.js": {
       "checksum": "bb16b7e73be13eba97c99d25b2a476b3"
     },
+    "_book/site_libs/rstudio_leaflet-1.3.1/images/1px.png": {
+      "checksum": "978c1bee49d7ad5fc1a4d81099b13e18"
+    },
+    "_book/site_libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css": {
+      "checksum": "49b23a276edf8677e7bb779525d2be7d"
+    },
     "_freeze/01-Final-Project-Crystal/execute-results/html.json": {
-      "checksum": "a5446493f6d8fce2ec9e469d6df39ec5"
+      "checksum": "fe509bd34a44a15563290075ebe64ace"
     },
     "_freeze/01-Final-Project-Crystal/execute-results/tex.json": {
       "checksum": "10ffaf4cc4c9617a2c615e928db19e93"
@@ -6409,6 +6593,114 @@
     },
     "_freeze/02-Final-Social-Infrastructure-and-Well-Being-Jonah/figure-pdf/fig-LMScatterPlot-1.pdf": {
       "checksum": "f6198b6f08f00eafe28fd99935436296"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/execute-results/html.json": {
+      "checksum": "c47568155813c4fb1df650733ad4a53f"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/figure-html/fig-bar-1.png": {
+      "checksum": "c401f05424c16b9a1d01ca38e0894ddd"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/figure-html/fig-bar-merged-1.png": {
+      "checksum": "923de54e4996d614dd9d9b5bc107a9ad"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/figure-html/unnamed-chunk-20-1.png": {
+      "checksum": "b8dda4792e0cb1b6d984799883692378"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/figure-html/unnamed-chunk-25-1.png": {
+      "checksum": "574b283e4c0d049fe36ff0ccbb9ab132"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/bootstrap/bootstrap-d6a003b94517c951b2d65075d42fb01b.min.css": {
+      "checksum": "d6a003b94517c951b2d65075d42fb01b"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/bootstrap/bootstrap-icons.css": {
+      "checksum": "886da841d7421705f715f600c5ff11bb"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/bootstrap/bootstrap-icons.woff": {
+      "checksum": "efe54401ef52214fd3b701e23ff88c5f"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/bootstrap/bootstrap.min.js": {
+      "checksum": "e2b09c06f0e714b6144a6788a28e3950"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/clipboard/clipboard.min.js": {
+      "checksum": "15f52a1ee547f2bdd46e56747332ca2d"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/htmltools-fill-0.5.8.1/fill.css": {
+      "checksum": "0c307b2ce7a3fa7f260a0451457c809f"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/htmlwidgets-1.6.4/htmlwidgets.js": {
+      "checksum": "237f59bc086ccf24f39be55311023b91"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/jquery-3.6.0/jquery-3.6.0.js": {
+      "checksum": "2849239b95f5a9a2aea3f6ed9420bb88"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/jquery-3.6.0/jquery-3.6.0.min.js": {
+      "checksum": "8fb8fee4fcc3cc86ff6c724154c49c42"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/jquery-3.6.0/jquery-3.6.0.min.map": {
+      "checksum": "6efc5d663aaacac2024153fa0d4bafcd"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/leaflet-1.3.1/images/layers-2x.png": {
+      "checksum": "4f0283c6ce28e888000e978e537a6a56"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/leaflet-1.3.1/images/layers.png": {
+      "checksum": "a6137456ed160d7606981aa57c559898"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/leaflet-1.3.1/images/marker-icon-2x.png": {
+      "checksum": "401d815dc206b8dc1b17cd0e37695975"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/leaflet-1.3.1/images/marker-icon.png": {
+      "checksum": "2273e3d8ad9264b7daa5bdbf8e6b47f8"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/leaflet-1.3.1/images/marker-shadow.png": {
+      "checksum": "44a526eed258222515aa21eaffd14a96"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/leaflet-1.3.1/leaflet.css": {
+      "checksum": "58da535d4980b4c71b74a41bbee8a510"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/leaflet-1.3.1/leaflet.js": {
+      "checksum": "af438f3b0ec09c81bc8fb9959de88155"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/leaflet-binding-2.2.3/leaflet.js": {
+      "checksum": "7b0d68b050b79c5699a9f361b697b6ef"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/leafletfix-1.0.0/leafletfix.css": {
+      "checksum": "6a38c873de948d8a1458ec0429aa0063"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/proj4-2.6.2/proj4.min.js": {
+      "checksum": "4c6ef5a940694e1acc5c9ef66572fa79"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/Proj4Leaflet-1.0.1/proj4leaflet.js": {
+      "checksum": "4c72a5a790e066510f9eb68541280646"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/quarto-html/anchor.min.js": {
+      "checksum": "91bcf6cd1fd88fec3f109811e5fc3546"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/quarto-html/axe/axe-check.js": {
+      "checksum": "b4f6a44157bfe20b68b69aabf2f8125d"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/quarto-html/popper.min.js": {
+      "checksum": "3a4a291ccf3f1ea0f82b641542fd3827"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css": {
+      "checksum": "7b89279ff1a6dce999919e0e67d4d9ec"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/quarto-html/quarto.js": {
+      "checksum": "a65a7780c10232b6515cdfb8beaaa221"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/quarto-html/tabsets/tabsets.js": {
+      "checksum": "e8d6a8862b33ccc461f8fd532e05b365"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/quarto-html/tippy.css": {
+      "checksum": "ebd6f8ce46a677e1a4f5f8a8317109a9"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/quarto-html/tippy.umd.min.js": {
+      "checksum": "d828775275749701b48bd9d958814111"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/rstudio_leaflet-1.3.1/images/1px.png": {
+      "checksum": "978c1bee49d7ad5fc1a4d81099b13e18"
+    },
+    "_freeze/03-Final-Restaurant-and-Museum-Project-Joyce/libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css": {
+      "checksum": "49b23a276edf8677e7bb779525d2be7d"
     },
     "_freeze/04-MSG-effect-Robert/execute-results/html.json": {
       "checksum": "de09f93e6b6d583326a385dc40482de3"
@@ -6483,7 +6775,7 @@
       "checksum": "2b95cda46a7c4750b068e821b3540ff4"
     },
     "_freeze/06-ToxicHomes-Shannon/execute-results/html.json": {
-      "checksum": "af5ca65dce8414ecf9ec45f9f7cb5959"
+      "checksum": "c4b94a8326caf6f922fd89b159fa7e24"
     },
     "_freeze/06-ToxicHomes-Shannon/execute-results/tex.json": {
       "checksum": "db97347fe4b688caa89d889e88cd1404"
@@ -6534,7 +6826,7 @@
       "checksum": "5594de08dedb2fbdef51fc0281792cef"
     },
     "_freeze/07-EnvironmentalStressorsandSocialComplaintsNYC-Emma/execute-results/html.json": {
-      "checksum": "4dbb0d9f611c2b1f9fa4ce56022f91eb"
+      "checksum": "c49241e529b51299506a7090a236298c"
     },
     "_freeze/07-EnvironmentalStressorsandSocialComplaintsNYC-Emma/execute-results/tex.json": {
       "checksum": "84f95b07a2df3e5343e314dc1fa007da"
@@ -6543,7 +6835,7 @@
       "checksum": "04a6da853b4f64ed3cdbcdddc9b91a7e"
     },
     "_freeze/07-EnvironmentalStressorsandSocialComplaintsNYC-Emma/figure-html/fig-plot-relationship-1.png": {
-      "checksum": "015ffdbb03e56066745aa7946d6a971a"
+      "checksum": "de0c93106ae9277bc7e62289984d1238"
     },
     "_freeze/07-EnvironmentalStressorsandSocialComplaintsNYC-Emma/figure-pdf/fig-plot-flood-1.pdf": {
       "checksum": "e04b96b2e19f197259a0eafea7ebcc5a"
@@ -6552,7 +6844,7 @@
       "checksum": "360a03f7283a387deb2f1c599eed87b1"
     },
     "_freeze/08-Beating-Around-the-Bush--Uncovering-the-Hidden-Link-Between-Urban-Trees-and-Wildlife-Activity-Xinru/execute-results/html.json": {
-      "checksum": "5385f28ce0f5103b4a8f76c2742347e9"
+      "checksum": "b513538e7876bc933d3f840d646ee603"
     },
     "_freeze/08-Beating-Around-the-Bush--Uncovering-the-Hidden-Link-Between-Urban-Trees-and-Wildlife-Activity-Xinru/execute-results/tex.json": {
       "checksum": "a1ce9dbb47bd7f25cf7f40303db0c023"
@@ -6602,149 +6894,143 @@
     "_freeze/site_libs/clipboard/clipboard.min.js": {
       "checksum": "15f52a1ee547f2bdd46e56747332ca2d"
     },
+    "_freeze/site_libs/htmltools-fill-0.5.8.1/fill.css": {
+      "checksum": "0c307b2ce7a3fa7f260a0451457c809f"
+    },
+    "_freeze/site_libs/htmlwidgets-1.6.4/htmlwidgets.js": {
+      "checksum": "237f59bc086ccf24f39be55311023b91"
+    },
+    "_freeze/site_libs/jquery-3.6.0/jquery-3.6.0.js": {
+      "checksum": "2849239b95f5a9a2aea3f6ed9420bb88"
+    },
+    "_freeze/site_libs/jquery-3.6.0/jquery-3.6.0.min.js": {
+      "checksum": "8fb8fee4fcc3cc86ff6c724154c49c42"
+    },
+    "_freeze/site_libs/jquery-3.6.0/jquery-3.6.0.min.map": {
+      "checksum": "6efc5d663aaacac2024153fa0d4bafcd"
+    },
+    "_freeze/site_libs/leaflet-1.3.1/images/layers-2x.png": {
+      "checksum": "4f0283c6ce28e888000e978e537a6a56"
+    },
+    "_freeze/site_libs/leaflet-1.3.1/images/layers.png": {
+      "checksum": "a6137456ed160d7606981aa57c559898"
+    },
+    "_freeze/site_libs/leaflet-1.3.1/images/marker-icon-2x.png": {
+      "checksum": "401d815dc206b8dc1b17cd0e37695975"
+    },
+    "_freeze/site_libs/leaflet-1.3.1/images/marker-icon.png": {
+      "checksum": "2273e3d8ad9264b7daa5bdbf8e6b47f8"
+    },
+    "_freeze/site_libs/leaflet-1.3.1/images/marker-shadow.png": {
+      "checksum": "44a526eed258222515aa21eaffd14a96"
+    },
+    "_freeze/site_libs/leaflet-1.3.1/leaflet.css": {
+      "checksum": "58da535d4980b4c71b74a41bbee8a510"
+    },
+    "_freeze/site_libs/leaflet-1.3.1/leaflet.js": {
+      "checksum": "af438f3b0ec09c81bc8fb9959de88155"
+    },
+    "_freeze/site_libs/leaflet-binding-2.2.3/leaflet.js": {
+      "checksum": "7b0d68b050b79c5699a9f361b697b6ef"
+    },
+    "_freeze/site_libs/leafletfix-1.0.0/leafletfix.css": {
+      "checksum": "6a38c873de948d8a1458ec0429aa0063"
+    },
+    "_freeze/site_libs/proj4-2.6.2/proj4.min.js": {
+      "checksum": "4c6ef5a940694e1acc5c9ef66572fa79"
+    },
+    "_freeze/site_libs/Proj4Leaflet-1.0.1/proj4leaflet.js": {
+      "checksum": "4c72a5a790e066510f9eb68541280646"
+    },
+    "_freeze/site_libs/rstudio_leaflet-1.3.1/images/1px.png": {
+      "checksum": "978c1bee49d7ad5fc1a4d81099b13e18"
+    },
+    "_freeze/site_libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css": {
+      "checksum": "49b23a276edf8677e7bb779525d2be7d"
+    },
     "_quarto.yml": {
-      "checksum": "77a53ab3da050285336a9eb4f90972ff"
+      "checksum": "3742e6df83a2f51ba5820af00b9e7f06"
     },
     ".Rapp.history": {
       "checksum": "d41d8cd98f00b204e9800998ecf8427e"
     },
     ".RData": {
-      "checksum": "7b3840eaf29dcc1f6ded0fd2ef278050"
+      "checksum": "a8e057e0ccbb32cd13b7c65f60faede0"
     },
-    "01-Final-Project-Crystal.qmd": {
-      "checksum": "2c194039e23e64687a0f46babfbe5626"
+    "bibliography/packages.bib": {
+      "checksum": "6d5aae34f47d5e71a5f6097f4f91e659"
     },
-    "02-Final-Social-Infrastructure-and-Well-Being-Jonah.qmd": {
-      "checksum": "50b3a7dec08ea82960f00a6ae07da173"
+    "chapters/01-Final-Project-Crystal.qmd": {
+      "checksum": "b0cebc06a096aabfc8aee1905b390bde"
     },
-    "03-Final-Restaurant-and-Museum-Project-Joyce_files/figure-html/unnamed-chunk-20-1.png": {
-      "checksum": "b8dda4792e0cb1b6d984799883692378"
+    "chapters/02-Final-Social-Infrastructure-and-Well-Being-Jonah.qmd": {
+      "checksum": "993a3d1333889b32ae8dccbee7f2564b"
     },
-    "03-Final-Restaurant-and-Museum-Project-Joyce_files/figure-html/unnamed-chunk-25-1.png": {
-      "checksum": "574b283e4c0d049fe36ff0ccbb9ab132"
+    "chapters/03-Final-Restaurant-and-Museum-Project-Joyce.qmd": {
+      "checksum": "5d3f5560c41044f6ea4d3c933aee22f6"
     },
-    "03-Final-Restaurant-and-Museum-Project-Joyce.qmd": {
-      "checksum": "688e88d4b385ca8d22b38339c5c07a9f"
+    "chapters/04-MSG-effect-Robert.qmd": {
+      "checksum": "366235383ba680bb5a203d286d672f99"
     },
-    "04-MSG-effect-Robert.qmd": {
-      "checksum": "c5d00c61be4ac29cf2473b56cba9ac5b"
+    "chapters/05-Final-Project-Isley.qmd": {
+      "checksum": "dbea0940ff2c7701d0670b0d4989026b"
     },
-    "05-Final-Project-Isley.qmd": {
-      "checksum": "6f2344e875f36fccf3ec73a974d426f5"
+    "chapters/06-ToxicHomes-Shannon.qmd": {
+      "checksum": "d58a08992becbd590c0d6b2fa04f2044"
     },
-    "06-ToxicHomes-Shannon_cache/html/__packages": {
-      "checksum": "3960068819e8b0754fdf010cb38d9564"
+    "chapters/07-EnvironmentalStressorsandSocialComplaintsNYC-Emma.qmd": {
+      "checksum": "93bc0d35eefbc5896414c124c15032d7"
     },
-    "06-ToxicHomes-Shannon_cache/html/load-data_d2ab88f2fadb19491ad290f65ad01c7f.RData": {
-      "checksum": "a32f03234cebde059297fb4d9a371c0d"
+    "chapters/08-Beating-Around-the-Bush--Uncovering-the-Hidden-Link-Between-Urban-Trees-and-Wildlife-Activity-Xinru.qmd": {
+      "checksum": "7fa924b7956e11c032dc6306cda2bc36"
     },
-    "06-ToxicHomes-Shannon_cache/html/load-data_d2ab88f2fadb19491ad290f65ad01c7f.rdb": {
-      "checksum": "447cb79ea19c17ae6e7b9cf57789002b"
+    "chapters/09-references.qmd": {
+      "checksum": "749848b6c9d1278f726fa98c67b68984"
     },
-    "06-ToxicHomes-Shannon_cache/html/load-data_d2ab88f2fadb19491ad290f65ad01c7f.rdx": {
-      "checksum": "0126ad9183c5411648570fee296318ef"
+    "data/raw/2015_Street_Tree_Census.parquet": {
+      "checksum": "ab0d4c3c11e440e15badffbe23b3c6e1"
     },
-    "06-ToxicHomes-Shannon_cache/pdf/__packages": {
-      "checksum": "164dc55be91a40905c88902200e01bca"
-    },
-    "06-ToxicHomes-Shannon_cache/pdf/load-data_877ad9b124ab62b12344f74b646b5498.RData": {
-      "checksum": "4ed3c880e053cd87ce55c0f1ca650f63"
-    },
-    "06-ToxicHomes-Shannon_cache/pdf/load-data_877ad9b124ab62b12344f74b646b5498.rdb": {
-      "checksum": "420f42cfc269c5cfe8abe6c1bdc8ece3"
-    },
-    "06-ToxicHomes-Shannon_cache/pdf/load-data_877ad9b124ab62b12344f74b646b5498.rdx": {
-      "checksum": "c2b204dec2e38b56a477edd12d794f47"
-    },
-    "06-ToxicHomes-Shannon_files/figure-html/corr plot-1.png": {
-      "checksum": "2b19340aabc765ab6a94f0ad7169afef"
-    },
-    "06-ToxicHomes-Shannon_files/figure-html/dv chart-1.png": {
-      "checksum": "75f9c1a820b4642ead9398d0fa6b7f7b"
-    },
-    "06-ToxicHomes-Shannon_files/figure-html/fig-corr-plot-1.png": {
-      "checksum": "ad5851eb9eb71e6d6747cc3db5957fbf"
-    },
-    "06-ToxicHomes-Shannon_files/figure-html/fig-dv-chart-1.png": {
-      "checksum": "75f9c1a820b4642ead9398d0fa6b7f7b"
-    },
-    "06-ToxicHomes-Shannon_files/figure-html/fig-lag-plot-1.png": {
-      "checksum": "cef8be00d898d2616601f5425639fffb"
-    },
-    "06-ToxicHomes-Shannon_files/figure-html/fig-mold-chart-1.png": {
-      "checksum": "f28b0c37fba83d993c66a6753737fc3b"
-    },
-    "06-ToxicHomes-Shannon_files/figure-html/fig-temporal-plots-1.png": {
-      "checksum": "642907c7fb5db3afd521737fbb734a89"
-    },
-    "06-ToxicHomes-Shannon_files/figure-html/lag plot-1.png": {
-      "checksum": "feb9dab5d1f78b7548ba332f46167021"
-    },
-    "06-ToxicHomes-Shannon_files/figure-html/mold chart-1.png": {
-      "checksum": "4fe1f576ad9b52e91a54538c5357665d"
-    },
-    "06-ToxicHomes-Shannon_files/figure-html/temporal plots-1.png": {
-      "checksum": "a2706481777b701a86218b888ca0a545"
-    },
-    "06-ToxicHomes-Shannon_files/figure-pdf/fig-corr-plot-1.pdf": {
-      "checksum": "e8116011aff5a25a3e57fd5f29084831"
-    },
-    "06-ToxicHomes-Shannon_files/figure-pdf/fig-dv-chart-1.pdf": {
-      "checksum": "650fc6ecde482c5f834d8e6533a194f2"
-    },
-    "06-ToxicHomes-Shannon_files/figure-pdf/fig-lag-plot-1.pdf": {
-      "checksum": "bf8bcb84d26f222469c450ff87b43a15"
-    },
-    "06-ToxicHomes-Shannon_files/figure-pdf/fig-mold-chart-1.pdf": {
-      "checksum": "23e7116438b0dd88eaeca7f336ef8c98"
-    },
-    "06-ToxicHomes-Shannon_files/figure-pdf/fig-temporal-plots-1.pdf": {
-      "checksum": "5594de08dedb2fbdef51fc0281792cef"
-    },
-    "06-ToxicHomes-Shannon.qmd": {
-      "checksum": "ac98d2e75bf12481f04fc436925086e7"
-    },
-    "07-EnvironmentalStressorsandSocialComplaintsNYC-Emma.qmd": {
-      "checksum": "d08a4fa165428a5f3274504d3b778fcb"
-    },
-    "08-Beating-Around-the-Bush--Uncovering-the-Hidden-Link-Between-Urban-Trees-and-Wildlife-Activity-Xinru.qmd": {
-      "checksum": "b4581e1daf2b3a43bf24ccfbfac0b94c"
-    },
-    "311_Service_Requests_from_2010_to_Present_20251215.parquet": {
+    "data/raw/311_Service_Requests_from_2010_to_Present_20251215.parquet": {
       "checksum": "77282349982e58c50649bc5824894708"
     },
-    "cover-trying.png": {
-      "checksum": "eb75aa493a2665e46ba784bfcd93e602"
-    },
-    "cover.png": {
-      "checksum": "308012df3fa962ae61c7114806331a72"
-    },
-    "E-Designations.parquet": {
+    "data/raw/E-Designations.parquet": {
       "checksum": "a85334d4bab35f68ef86566e9cf4a1c8"
     },
-    "Hazard_Mitigation_Plan.parquet": {
+    "data/raw/Hazard_Mitigation_Plan.parquet": {
       "checksum": "98ee2d80a536d18ea09bdf7864d6c0da"
     },
-    "index.qmd": {
-      "checksum": "7383b8c5a8b6269cf2e0ce3db34f29c0"
-    },
-    "Indoor_Environmental_Complaints_data.parquet": {
+    "data/raw/Indoor_Environmental_Complaints_data.parquet": {
       "checksum": "ee9cb48ab93af1585d24ba8bce8f98bd"
     },
-    "New_York_City_Leading_Causes_of_Death_data.parquet": {
+    "data/raw/New_York_City_Leading_Causes_of_Death_data.parquet": {
       "checksum": "93d154ccf4d338258e1f0b127f4c9507"
     },
-    "NYPD_Complaint_Data_Historic_20251218.parquet": {
+    "data/raw/NYPD_Complaint_Data_Historic_20251218.parquet": {
       "checksum": "00928e5df89467965dccff130566556f"
     },
-    "raccoon.png": {
+    "data/raw/restaurant_rating_data.parquet": {
+      "checksum": "49fbd8f53c49b723a5145367f4252836"
+    },
+    "data/raw/Street_Flooding_Complaints.parquet": {
+      "checksum": "d6238d0b5e89773fbba84a6a8e7a19ff"
+    },
+    "data/raw/Urban_Park_Ranger_Animal_Condition_Response.parquet": {
+      "checksum": "8108f21422dcbf897210336e277b2543"
+    },
+    "images/cover.png": {
+      "checksum": "eb75aa493a2665e46ba784bfcd93e602"
+    },
+    "images/raccoon.png": {
       "checksum": "0477e293630085fcd0c2b327bece7267"
     },
-    "references.bib": {
-      "checksum": "82c1cc91cf544d383b6a5ad1b65a6feb"
+    "index.qmd": {
+      "checksum": "129601f6f24d224ecdeb9ad18962e516"
     },
-    "Street_Flooding_Complaints.parquet": {
-      "checksum": "d6238d0b5e89773fbba84a6a8e7a19ff"
+    "README.md": {
+      "checksum": "bbd8eb812b4c1638db1fcee66f82cc5c"
+    },
+    "scripts/packages-bib-creation.R": {
+      "checksum": "efb1fa36dfb4d176fabc245f30965294"
     }
   },
   "users": null
