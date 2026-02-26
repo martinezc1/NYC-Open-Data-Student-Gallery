@@ -21,6 +21,8 @@ This project uses descriptive and exploratory analyses to examine how urban tree
 
 For this project, I used the following R packages to clean, analyze, and visualize the data.
 
+(@R-tidyverse) (@R-janitor) (@R-skimr) (@R-ggplot2) (@R-knitr) (@R-supernova) (@R-rcompanion) (@R-arrow)
+
 ```{r}
 #| label: libraries
 #| message: false

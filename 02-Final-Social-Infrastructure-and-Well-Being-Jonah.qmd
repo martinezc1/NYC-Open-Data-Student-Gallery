@@ -18,6 +18,7 @@ The answer, at the moment, is a tentative yes. At present, NYC Open Data does no
 In this exploratory analysis, I examine whether the number of permitted events in a community district (i.e., gatherings, such as street fairs, that require city permits) predicts the number of monthly SNAP recipients in a community district (i.e., low-income individuals who receive benefits that can be used to purchase food). *(Note: The acronym SNAP stands for Supplemental Nutrition Assistance Program)*. I conceptualize permitted events as a rough measure of social connectedness and number of SNAP recipients per month as a rough measure of economic health and, thereby, overall well-being. Yet, rather than treat these variables as definitive measures, I use them as an opportunity to demonstrate how lucrative this mode of research can be. I conclude, also, with a number of suggestions as to how data collection in this field can best be facilitated.
 
 ## Libraries Used
+(@R-tidyverse) (@R-nycOpenData) (@R-dplyr) (@R-stringr)
 
 ```{r}
 #| label: loading-libraries

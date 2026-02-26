@@ -37,6 +37,7 @@ While perceptions of the “MSG Effect” are deeply ingrained in basketball cul
 
 #### hoopR allows us to call all NBA game data from the 2002 season to present, so that's what we will work with.
 
+(@R-hoopR) (@R-tidyverse) (@R-knitr)
 ```{r}
 #| message: false
 #| warning: false
@@ -598,7 +599,7 @@ allstar_msg_adv <- player_msg_advantage1 %>%
   mutate(
     msg_adv_ts = msg_adv_ts * 100)
 ```
-
+(@R-ggrepel)
 ```{r}
 #| label: fig-question3d
 #| fig-cap: "Recent NBA All-Stars: change in total output and change in true shooting at MSG versus other away games."

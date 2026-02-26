@@ -15,6 +15,8 @@ The analysis focuses on monthly aggregated data and includes exploratory summari
 
 ### Data Preparation & Cleaning
 
+(@R-tidyverse) (@R-readxl) (@R-ggplot2) (@R-mosaic) (@R-AICcmodavg) (@R-knitr) (@R-arrow)
+
 ```{r}
 #| label: load-package
 #| message: false

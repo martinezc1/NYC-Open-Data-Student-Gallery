@@ -15,12 +15,16 @@ book:
     - 06-ToxicHomes-Shannon.qmd
     - 07-EnvironmentalStressorsandSocialComplaintsNYC-Emma.qmd
     - 08-Beating-Around-the-Bush--Uncovering-the-Hidden-Link-Between-Urban-Trees-and-Wildlife-Activity-Xinru.qmd
+  appendices:
+    - 09-references.qmd
   cover-image: cover-trying.png
 
 execute:
   freeze: auto
 
-bibliography: references.bib
+bibliography: packages.bib
+link-citations: true
+number-sections: true
 
 website:
   search: false

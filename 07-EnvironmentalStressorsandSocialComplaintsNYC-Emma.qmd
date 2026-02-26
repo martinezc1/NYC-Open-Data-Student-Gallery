@@ -28,6 +28,8 @@ Due to the size of the full 311 Service Requests dataset, noise complaint data w
 
 ## Reproducible Workflow
 
+(@R-tidyverse) (@R-lubridate) (@R-readxl) (@R-httr) (@R-jsonlite) (@R-knitr)
+
 ```{r}
 #| label: setup
 #| message: false

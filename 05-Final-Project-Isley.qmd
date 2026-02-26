@@ -7,6 +7,8 @@ author: "Isley Jean-Pierre"
 
 This is a project that I hope to present at the NYC OpenData conference next spring. I must admit that there are some datasets that I intended to use for this final assignment, but because of time and roadblocks, I will focus on the two keys datasets for now. My goal is to keep on this project by finding a meaningful way to include the other datasets. I believe that this project has the potential to become something special.
 
+(@R-tidyverse) (@R-dplyr) (@R-Hmisc) (@R-ggplot2) (@R-corrplot) (@R-lubridate) (@R-nycOpenData)
+
 ```{r}
 library(tidyverse)
 library(dplyr)

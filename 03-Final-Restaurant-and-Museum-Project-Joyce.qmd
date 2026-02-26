@@ -18,6 +18,8 @@ I had 3 goals for this project which include:
 ## Packages
 
 In this piece of code, I am putting all the packages used for this project.
+(@R-tidyverse) (@R-janitor) (@R-ggthemes) (@R-rcompanion) (@R-leaflet) (@R-leaflet.extras)
+(@R-leaflet.providers) (@R-htmltools) (@R-knitr) (@R-nycOpenData) (@R-arrow)
 ```{r}
 #| label: packages
 #| message: false
