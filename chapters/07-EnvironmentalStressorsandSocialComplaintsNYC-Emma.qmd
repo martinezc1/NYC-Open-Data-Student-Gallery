@@ -70,7 +70,7 @@ street_flooding <- read_parquet(
 
 To avoid downloading the full 311 dataset, noise complaints were retrieved using the NYC Open Data API. Only relevant variables and records were requested.
 
-```{r api-helper}
+```{r}
 #| label: api-helper
 #| message: false
 #| warning: true
@@ -134,7 +134,7 @@ flood_clean <- street_flooding |>
 
 ## Merging Datasets
 
-```{r merge}
+```{r}
 #| label: merge
 #| message: false
 #| warning: true
