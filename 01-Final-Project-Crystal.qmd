@@ -12,12 +12,11 @@ This project examines the leading causes of death in NYC from 2007 - 2014, and i
 ```{r}
 #| label: loading-libraries
 #| message: false
-#| warning: true
+#| warning: false
 #| paged-print: false
 
 library(tidyverse)
 library(skimr)
-library(readxl)
 library(ggplot2)
 library(knitr)
 library(lubridate)
@@ -27,7 +26,9 @@ causes_of_death<- read_parquet("New_York_City_Leading_Causes_of_Death_data.parqu
 indoor_complaints<- read_parquet("Indoor_Environmental_Complaints_data.parquet")
 ```
 
-In this section I loaded all of the packages that were used throughout the project (@R-tidyverse) (@R-skimr) (@R-readxl) (@R-ggplot2) (@R-knitr) (@R-lubridate) (@R-arrow). The 2 data sets used in this project are the 'Leading Causes of Death' and 'Indoor Environmental Complaints' data from 311 which could both be found on the NYC Open data website.
+In this section I loaded all of the packages that were used throughout the project. The 2 data sets used in this project are the 'Leading Causes of Death' and 'Indoor Environmental Complaints' data from 311 which could both be found on the NYC Open data website.
+
+(@R-tidyverse) (@R-skimr) (@R-readxl) (@R-ggplot2) (@R-knitr) (@R-lubridate) (@R-arrow)
 
 ## Cleaning the data sets
 

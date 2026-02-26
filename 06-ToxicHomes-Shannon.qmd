@@ -22,7 +22,6 @@ The analysis focuses on monthly aggregated data and includes exploratory summari
 #| message: false
 #| warning: false
 library(tidyverse)
-library(readxl)
 library(ggplot2)
 library(mosaic)
 library(AICcmodavg)

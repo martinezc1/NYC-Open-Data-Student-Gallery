@@ -10,6 +10,8 @@ This is a project that I hope to present at the NYC OpenData conference next spr
 (@R-tidyverse) (@R-dplyr) (@R-Hmisc) (@R-ggplot2) (@R-corrplot) (@R-lubridate) (@R-nycOpenData)
 
 ```{r}
+#| message: false
+#| warning: false
 library(tidyverse)
 library(dplyr)
 library(Hmisc)

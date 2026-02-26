@@ -33,13 +33,13 @@ Due to the size of the full 311 Service Requests dataset, noise complaint data w
 ```{r}
 #| label: setup
 #| message: false
-#| warning: true
+#| warning: false
 library(tidyverse)
 library(lubridate)
-library(readxl)
 library(httr)
 library(jsonlite)
 library(knitr)
+library(arrow)
 ```
 
 ## Loading Downloaded Excel Datasets
@@ -49,7 +49,6 @@ library(knitr)
 #| message: false
 #| warning: true
 
-library(arrow)
 edesignation <- read_parquet(
   "E-Designations.parquet",
   na = c("N/A", "NA", "")
