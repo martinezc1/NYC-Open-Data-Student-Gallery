@@ -2607,6 +2607,40 @@
         "Archs": "haven.so.dSYM"
       }
     },
+    "here": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "description": {
+        "Package": "here",
+        "Title": "A Simpler Way to Find Your Files",
+        "Version": "1.0.2",
+        "Date": "2025-09-06",
+        "Authors@R": "\n    c(person(given = \"Kirill\",\n             family = \"M\\u00fcller\",\n             role = c(\"aut\", \"cre\"),\n             email = \"kirill@cynkra.com\",\n             comment = c(ORCID = \"0000-0002-1416-3412\")),\n      person(given = \"Jennifer\",\n             family = \"Bryan\",\n             role = \"ctb\",\n             email = \"jenny@rstudio.com\",\n             comment = c(ORCID = \"0000-0002-6983-2759\")))",
+        "Description": "Constructs paths to your project's files.\n    Declare the relative path of a file within your project with 'i_am()'.\n    Use the 'here()' function as a drop-in replacement for 'file.path()',\n    it will always locate the files relative to your project root.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://here.r-lib.org/, https://github.com/r-lib/here",
+        "BugReports": "https://github.com/r-lib/here/issues",
+        "Imports": "rprojroot (>= 2.1.0)",
+        "Suggests": "conflicted, covr, fs, knitr, palmerpenguins, plyr, readr,\nrlang, rmarkdown, testthat, uuid, withr",
+        "VignetteBuilder": "knitr",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.3.3.9000",
+        "Config/testthat/edition": "3",
+        "Config/Needs/website": "tidyverse/tidytemplate",
+        "NeedsCompilation": "no",
+        "Packaged": "2025-09-14 18:48:53 UTC; kirill",
+        "Author": "Kirill Müller [aut, cre] (ORCID:\n    <https://orcid.org/0000-0002-1416-3412>),\n  Jennifer Bryan [ctb] (ORCID: <https://orcid.org/0000-0002-6983-2759>)",
+        "Maintainer": "Kirill Müller <kirill@cynkra.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2025-09-15 05:10:09 UTC",
+        "Built": "R 4.5.0; ; 2025-09-15 07:48:10 UTC; unix",
+        "RemoteType": "standard",
+        "RemotePkgRef": "here",
+        "RemoteRef": "here",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemoteSha": "1.0.2"
+      }
+    },
     "highr": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
@@ -6961,28 +6995,28 @@
       "checksum": "6d5aae34f47d5e71a5f6097f4f91e659"
     },
     "chapters/01-Final-Project-Crystal.qmd": {
-      "checksum": "b0cebc06a096aabfc8aee1905b390bde"
+      "checksum": "76226d1277ad73d3703d4e8916f999cb"
     },
     "chapters/02-Final-Social-Infrastructure-and-Well-Being-Jonah.qmd": {
       "checksum": "993a3d1333889b32ae8dccbee7f2564b"
     },
     "chapters/03-Final-Restaurant-and-Museum-Project-Joyce.qmd": {
-      "checksum": "5d3f5560c41044f6ea4d3c933aee22f6"
+      "checksum": "3c6bb3725412a4cd3e380ac370e17d35"
     },
     "chapters/04-MSG-effect-Robert.qmd": {
       "checksum": "366235383ba680bb5a203d286d672f99"
     },
     "chapters/05-Final-Project-Isley.qmd": {
-      "checksum": "dbea0940ff2c7701d0670b0d4989026b"
+      "checksum": "ab1ebfd5dfbe5b5766863fb92f62fd78"
     },
     "chapters/06-ToxicHomes-Shannon.qmd": {
-      "checksum": "d58a08992becbd590c0d6b2fa04f2044"
+      "checksum": "bddc039c3b0d6c75f59290f788aa613c"
     },
     "chapters/07-EnvironmentalStressorsandSocialComplaintsNYC-Emma.qmd": {
-      "checksum": "93bc0d35eefbc5896414c124c15032d7"
+      "checksum": "1bc0f05e61b6e083fc4898ff4d500a7e"
     },
     "chapters/08-Beating-Around-the-Bush--Uncovering-the-Hidden-Link-Between-Urban-Trees-and-Wildlife-Activity-Xinru.qmd": {
-      "checksum": "7fa924b7956e11c032dc6306cda2bc36"
+      "checksum": "8b97bfdcd6ca2abc4d98ea057597fa5e"
     },
     "chapters/09-references.qmd": {
       "checksum": "749848b6c9d1278f726fa98c67b68984"

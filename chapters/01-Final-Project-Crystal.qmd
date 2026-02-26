@@ -23,11 +23,11 @@ library(lubridate)
 library(arrow)
 library(here)
 
-causes_of_death <- read_parquet(
-  here("data", "raw", "New_York_City_Leading_Causes_of_Death_data.parquet")
-)
-indoor_complaints<- read_parquet(
-  here("data","raw","Indoor_Environmental_Complaints_data.parquet"))
+causes_of_death<- read_parquet(
+  here("data","raw", "New_York_City_Leading_Causes_of_Death_data.parquet"))
+
+indoor_complaints<- read_parquet(here
+                                 ("data","raw","Indoor_Environmental_Complaints_data.parquet"))
 ```
 
 In this section I loaded all of the packages that were used throughout the project. The 2 data sets used in this project are the 'Leading Causes of Death' and 'Indoor Environmental Complaints' data from 311 which could both be found on the NYC Open data website.
