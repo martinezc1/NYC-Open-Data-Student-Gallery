@@ -21,7 +21,7 @@ library(lubridate)
 library(nycOpenData)
 ```
 
-## Let's load the dataset
+## Let's load the dataset first
 
 ```{r}
 rea <- nycOpenData::nyc_dop_juvenile_rearrest_rate(limit= 10000)
@@ -33,6 +33,7 @@ head(rea)
 ```{r}
 rea_clean <- rea %>%
   filter(year >= 2023 & year <= 2025)
+
 head(rea_clean)
 ```
 
@@ -56,6 +57,7 @@ rea_clean <- rea_clean %>%
 ## Let's see if we can find a correlation between rearrest rates and date Before that let's make sure that the columns are in the right format
 
 ```{r}
+#| label: str
 str(rea_clean)
 ```
 

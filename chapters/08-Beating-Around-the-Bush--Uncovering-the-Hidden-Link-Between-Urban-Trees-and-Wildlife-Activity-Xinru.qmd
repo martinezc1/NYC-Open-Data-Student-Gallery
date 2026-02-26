@@ -38,7 +38,7 @@ library(arrow)
 library(here)
 ```
 
-## Data and Methods
+## Data and Methods 
 
 ### Data Sources
 
