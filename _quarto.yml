@@ -21,6 +21,8 @@ book:
 
 execute:
   freeze: auto
+  warning: false
+  execute-dir: project
 
 bibliography: bibliography/packages.bib
 link-citations: true
