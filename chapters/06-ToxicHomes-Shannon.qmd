@@ -38,7 +38,7 @@ library(here)
 mold_data <- read_parquet(
   here("data", "raw","311_Service_Requests_from_2010_to_Present_20251215.parquet"))
 dv_data <- read_parquet(
-  here("data", "raw","data/rawNYPD_Complaint_Data_Historic_20251218.parquet"))
+  here("data", "raw","NYPD_Complaint_Data_Historic_20251218.parquet"))
 ```
 
 ```{r}
