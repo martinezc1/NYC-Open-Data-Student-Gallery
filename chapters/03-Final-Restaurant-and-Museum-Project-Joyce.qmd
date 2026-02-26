@@ -19,7 +19,7 @@ I had 3 goals for this project which include:
 
 In this piece of code, I am putting all the packages used for this project.
 (@R-tidyverse) (@R-janitor) (@R-ggthemes) (@R-rcompanion) (@R-leaflet) (@R-leaflet.extras)
-(@R-leaflet.providers) (@R-htmltools) (@R-knitr) (@R-nycOpenData) (@R-arrow)
+(@R-leaflet.providers) (@R-htmltools) (@R-knitr) (@R-nycOpenData) (@R-arrow) (@R-here)
 ```{r}
 #| label: packages
 #| message: false
@@ -51,7 +51,9 @@ museum_data <- as.data.frame(nyc_museum_locations())
 restaurant_data <- as.data.frame(nyc_restaurant_inspection_results())
 
 restaurant_rating_data <- read_parquet(
-  here("data", "raw", "restaurant_rating_data.parquet", show_col_types = FALSE))
+  here("data", "raw", "restaurant_rating_data.parquet"), 
+  as_data_frame = TRUE
+)
 ```
 
 ### Cleaning and Merging Data Sets

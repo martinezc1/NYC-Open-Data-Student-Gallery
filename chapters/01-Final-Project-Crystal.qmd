@@ -32,7 +32,7 @@ indoor_complaints<- read_parquet(here
 
 In this section I loaded all of the packages that were used throughout the project. The 2 data sets used in this project are the 'Leading Causes of Death' and 'Indoor Environmental Complaints' data from 311 which could both be found on the NYC Open data website.
 
-(@R-tidyverse) (@R-skimr) (@R-readxl) (@R-ggplot2) (@R-knitr) (@R-lubridate) (@R-arrow)
+(@R-tidyverse) (@R-skimr) (@R-readxl) (@R-ggplot2) (@R-knitr) (@R-lubridate) (@R-arrow) (@R-here)
 
 ## Cleaning the data sets
 
