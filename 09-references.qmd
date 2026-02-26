@@ -1,8 +1,0 @@
----
-title: "references"
-editor: visual
----
-
-# References {#sec-references}
-::: {#refs}
-:::

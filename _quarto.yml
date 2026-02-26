@@ -7,17 +7,17 @@ book:
   date: "2026-01-29"
   chapters:
     - index.qmd
-    - 01-Final-Project-Crystal.qmd
-    - 02-Final-Social-Infrastructure-and-Well-Being-Jonah.qmd
-    - 03-Final-Restaurant-and-Museum-Project-Joyce.qmd
-    - 04-MSG-effect-Robert.qmd
-    - 05-Final-Project-Isley.qmd
-    - 06-ToxicHomes-Shannon.qmd
-    - 07-EnvironmentalStressorsandSocialComplaintsNYC-Emma.qmd
-    - 08-Beating-Around-the-Bush--Uncovering-the-Hidden-Link-Between-Urban-Trees-and-Wildlife-Activity-Xinru.qmd
+    - chapters/01-Final-Project-Crystal.qmd
+    - chapters/02-Final-Social-Infrastructure-and-Well-Being-Jonah.qmd
+    - chapters/03-Final-Restaurant-and-Museum-Project-Joyce.qmd
+    - chapters/04-MSG-effect-Robert.qmd
+    - chapters/05-Final-Project-Isley.qmd
+    - chapters/06-ToxicHomes-Shannon.qmd
+    - chapters/07-EnvironmentalStressorsandSocialComplaintsNYC-Emma.qmd
+    - chapters/08-Beating-Around-the-Bush--Uncovering-the-Hidden-Link-Between-Urban-Trees-and-Wildlife-Activity-Xinru.qmd
   appendices:
-    - 09-references.qmd
-  cover-image: cover-trying.png
+    - chapters/09-references.qmd
+  cover-image: images/cover.png
 
 execute:
   freeze: auto

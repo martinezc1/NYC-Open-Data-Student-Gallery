@@ -1,12 +1,34 @@
+# RStudio
 .Rproj.user
 .Rhistory
-*.Rapp.history
+.Rapp.history
 .RData
 .Ruserdata
+
+# macOS
 .DS_Store
+Thumbs.db
+
+# Quarto
 _book/
-_freeze/
-/.quarto/
+.quarto/
+
+# Logs
+*.log
+
+# Temp files
+*.tmp
+
+# Notebook artifacts
+**/*.quarto_ipynb
+
+# Excel / CSV exports
 *.xlsx
 *.csv
-**/*.quarto_ipynb
+
+# Quarto / knitr sidecar folders created during rendering
+*_files/
+*_cache/
+
+# R build artifacts
+*.tar.gz
