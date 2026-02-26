@@ -175,7 +175,7 @@ ggplot(rea_clean, aes(x = month_year, y = rate)) +
 ## Let's call the data
 
 ```{r}
-juv <- nycOpenData::nyc_dop_Juvenile_cases(limit = 10000)
+juv <- nycOpenData::nyc_dop_juvenile_cases(limit = 10000)
 head(juv)
 ```
 

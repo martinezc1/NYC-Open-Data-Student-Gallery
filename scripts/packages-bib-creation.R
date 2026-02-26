@@ -6,6 +6,7 @@ pkgs <- c(
   "ggplot2",
   "ggrepel",
   "ggthemes",
+  "here",
   "Hmisc",
   "hoopR",
   "httr",
@@ -24,7 +25,6 @@ pkgs <- c(
   "skimr",
   "stringr",
   "supernova",
-  "here",
   "tidyverse"
 )
 
