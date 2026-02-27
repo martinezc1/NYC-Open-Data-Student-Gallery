@@ -4034,6 +4034,37 @@
         "RemoteSha": "1.45.1"
       }
     },
+    "pheatmap": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "description": {
+        "Package": "pheatmap",
+        "Type": "Package",
+        "Title": "Pretty Heatmaps",
+        "Version": "1.0.13",
+        "Date": "2025-06-05",
+        "Authors@R": "person(given = \"Raivo\",\n                  family = \"Kolde\",\n                  role = c(\"aut\", \"cre\"),\n                  email = \"rkolde@gmail.com\")",
+        "Depends": "R (>= 2.0)",
+        "Description": "Implementation of heatmaps that offers more control\n    over dimensions and appearance.",
+        "Imports": "grid, RColorBrewer, scales, gtable, stats, grDevices, graphics",
+        "License": "GPL-2",
+        "Encoding": "UTF-8",
+        "LazyLoad": "yes",
+        "RoxygenNote": "7.3.2",
+        "NeedsCompilation": "no",
+        "Packaged": "2025-06-05 12:31:16 UTC; raivokolde",
+        "Author": "Raivo Kolde [aut, cre]",
+        "Maintainer": "Raivo Kolde <rkolde@gmail.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2025-06-05 13:20:01 UTC",
+        "Built": "R 4.5.0; ; 2025-06-05 13:26:38 UTC; unix",
+        "RemoteType": "standard",
+        "RemotePkgRef": "pheatmap",
+        "RemoteRef": "pheatmap",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemoteSha": "1.0.13"
+      }
+    },
     "pillar": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
@@ -6983,43 +7014,46 @@
       "checksum": "49b23a276edf8677e7bb779525d2be7d"
     },
     "_quarto.yml": {
-      "checksum": "3742e6df83a2f51ba5820af00b9e7f06"
+      "checksum": "9e55cab7d6ac34458e6fb42fe25c55d5"
     },
     ".Rapp.history": {
       "checksum": "d41d8cd98f00b204e9800998ecf8427e"
     },
     ".RData": {
-      "checksum": "a8e057e0ccbb32cd13b7c65f60faede0"
+      "checksum": "a3140b1fdfddbcf43a0cff01c11b6954"
     },
     "bibliography/packages.bib": {
-      "checksum": "6d5aae34f47d5e71a5f6097f4f91e659"
+      "checksum": "37c6b65f72842033bd328e109992ce15"
     },
     "chapters/01-Final-Project-Crystal.qmd": {
-      "checksum": "76226d1277ad73d3703d4e8916f999cb"
+      "checksum": "609f807a54545186a28ae393c499ebf5"
     },
     "chapters/02-Final-Social-Infrastructure-and-Well-Being-Jonah.qmd": {
       "checksum": "993a3d1333889b32ae8dccbee7f2564b"
     },
     "chapters/03-Final-Restaurant-and-Museum-Project-Joyce.qmd": {
-      "checksum": "3c6bb3725412a4cd3e380ac370e17d35"
+      "checksum": "eaf847b2dacd92eb23e1fb198c4547d6"
     },
     "chapters/04-MSG-effect-Robert.qmd": {
       "checksum": "366235383ba680bb5a203d286d672f99"
     },
     "chapters/05-Final-Project-Isley.qmd": {
-      "checksum": "ab1ebfd5dfbe5b5766863fb92f62fd78"
+      "checksum": "39f995a5c5c00e87af23b4c40aa9edb6"
     },
     "chapters/06-ToxicHomes-Shannon.qmd": {
-      "checksum": "bddc039c3b0d6c75f59290f788aa613c"
+      "checksum": "784b228740f86af8e64d286c010f1899"
     },
     "chapters/07-EnvironmentalStressorsandSocialComplaintsNYC-Emma.qmd": {
-      "checksum": "1bc0f05e61b6e083fc4898ff4d500a7e"
+      "checksum": "400f6911e3df6114d9d830e14cbf12be"
     },
     "chapters/08-Beating-Around-the-Bush--Uncovering-the-Hidden-Link-Between-Urban-Trees-and-Wildlife-Activity-Xinru.qmd": {
-      "checksum": "8b97bfdcd6ca2abc4d98ea057597fa5e"
+      "checksum": "97a4b56fd8339f6ad9c7e0afc09745d2"
     },
-    "chapters/09-references.qmd": {
-      "checksum": "749848b6c9d1278f726fa98c67b68984"
+    "chapters/09-Domestic-Violence-Incidents-vs-Recourse-Allocation-Across-NYC-Laura.qmd": {
+      "checksum": "21f62a60a510bf33ff1e7c0777218025"
+    },
+    "chapters/10-references.qmd": {
+      "checksum": "8bc83472745359a671ceb4faa730240f"
     },
     "data/raw/2015_Street_Tree_Census.parquet": {
       "checksum": "ab0d4c3c11e440e15badffbe23b3c6e1"
@@ -7058,13 +7092,13 @@
       "checksum": "0477e293630085fcd0c2b327bece7267"
     },
     "index.qmd": {
-      "checksum": "129601f6f24d224ecdeb9ad18962e516"
+      "checksum": "5a5d6c268315bfeb5ae3ed0472e16d97"
     },
     "README.md": {
       "checksum": "bbd8eb812b4c1638db1fcee66f82cc5c"
     },
     "scripts/packages-bib-creation.R": {
-      "checksum": "efb1fa36dfb4d176fabc245f30965294"
+      "checksum": "1b9549414bbb2d05e34625e544caf8d5"
     }
   },
   "users": null

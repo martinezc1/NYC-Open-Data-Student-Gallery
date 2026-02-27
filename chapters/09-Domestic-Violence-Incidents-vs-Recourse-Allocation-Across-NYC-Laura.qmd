@@ -19,7 +19,7 @@ library(nycOpenData)
 
 theme_set(theme_solarized_2())
 ```
-(@R-tidyverse) (@R-janitor) (@R-ggthemes) (@R-pheatmap)
+(@R-tidyverse) (@R-janitor) (@R-ggthemes) (@R-pheatmap) (@R-nycOpenData)
 
 ## Research Question: {#sec-laura}
 Are domestic violence resources for victims meeting the needs of victims in New York City?
