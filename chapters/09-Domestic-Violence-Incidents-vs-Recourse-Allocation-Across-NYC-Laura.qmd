@@ -40,13 +40,10 @@ FJC Client Visits (total amount of people visiting), Safety Planning Services (p
 fjc <- nyc_any_dataset("https://data.cityofnewyork.us/resource/a35y-93e7.json") %>%
   clean_names()
 
-
 FV <- nyc_any_dataset("https://data.cityofnewyork.us/resource/7t9i-jsfp.json") %>%
   clean_names()
 
-
 # I filtered the data for 2020
-
 
 fjc_2020 <- fjc %>%
   filter(report_year == 2020)
@@ -57,14 +54,10 @@ fjc_2020 <- fjc_2020 %>%
 FV_2020 <- FV %>%
   filter(year == 2020)
 
-str(FV_2020)
-
 FV_2020 <- FV_2020 %>%
   mutate(across(c(bronx, brooklyn, manhattan, queens, staten_island,citywide), as.numeric))
 
-
 # Borough totals
-
 
 fjc_borough_2020 <- fjc_2020 %>%
   select(
@@ -219,7 +212,6 @@ compare_2020 <- fjc_borough_2020 %>%
 compare_long <- compare_2020 %>%
   select(borough, incidents_total, fjc_client_visits) %>%
   pivot_longer(cols = -borough, names_to = "metric", values_to = "count")
-compare_long
 ```
 
 ```{r}
