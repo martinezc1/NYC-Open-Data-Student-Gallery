@@ -1,0 +1,333 @@
+---
+title: "Domestic Violence Incidents vs Recourse Allocation Across NYC"
+author: "Laura Werner"
+editor: visual
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,        
+  message = FALSE,    
+  warning = FALSE     
+)
+
+library(tidyverse)
+library(janitor)
+library(ggthemes)
+library(pheatmap)
+library(nycOpenData)
+
+theme_set(theme_solarized_2())
+```
+(@R-tidyverse) (@R-janitor) (@R-ggthemes) (@R-pheatmap)
+
+## Research Question: {#sec-laura}
+Are domestic violence resources for victims meeting the needs of victims in New York City?
+
+Domestic violence is a serious public safety and public health issue that affects individuals, families, and entire communities. Beyond immediate physical harm, domestic violence has long-term psychological, emotional, and developmental consequences, especially for children who are exposed to violence in the home. Access to timely and effective support services is therefore critical for interrupting cycles of abuse and promoting safety and recovery.
+
+In this project, I examine whether domestic violence–related resources are aligned with reported need across New York City. Specifically, I compare borough-level reported domestic violence incidents to borough-level Family Justice Center (FJC) service utilization during the year 2020. By focusing on a single year, this analysis ensures that reported incidents and service usage are directly comparable.
+
+If boroughs with the highest levels of reported domestic violence do not also show strong engagement with victim support services, this may indicate gaps in access, outreach, awareness, or service capacity. Understanding these disparities is essential for identifying where additional resources and policy attention may be needed.
+
+
+## Data Sources:
+In this analysis I use two publicly available datasets from NYC Open Data, downloaded as CSV files and filtered to the year 2020 to ensure time-aligned comparisons: 
+
+1. [Family Violence Related Snapshots - New York City Community Board Districts](https://data.cityofnewyork.us/Public-Safety/Family-Violence-Related-Snapshots-New-York-City-Co/a35y-93e7/about_data): This dataset contains counts of domestic violence–related incidents reported to law enforcement, disaggregated by community board district and borough. For this analysis, the following measures were aggregated to the borough level: Family Domestic Incident Reports (FAM_DIR), Family Felony Assaults (FAM_Fel_Assault), Domestic Violence Felony Assaults (DV_Fel_Assault), Family Rape (FAM_Rape), and Domestic Violence Rape (DV_Rape).
+2. [Annual Report on Domestic Violence Initiatives (Family Justice Center Services)](https://data.cityofnewyork.us/Social-Services/Annual-Report-on-Domestic-Violence-Initiatives-Ind/7t9i-jsfp/about_data): This dataset summarizes Family Justice Center service utilization by borough. The analysis focuses on the following service categories that were given to victims:
+FJC Client Visits (total amount of people visiting), Safety Planning Services (provided), Criminal Justice Support Services, Counseling Services, Housing and Shelter Services, and Mental Health Services.
+
+```{r}
+
+fjc <- nyc_any_dataset("https://data.cityofnewyork.us/resource/a35y-93e7.json") %>%
+  clean_names()
+
+
+FV <- nyc_any_dataset("https://data.cityofnewyork.us/resource/7t9i-jsfp.json") %>%
+  clean_names()
+
+
+# I filtered the data for 2020
+
+
+fjc_2020 <- fjc %>%
+  filter(report_year == 2020)
+
+fjc_2020 <- fjc_2020 %>%
+  mutate(across(c(fam_dir, fam_fel_assault, dv_fel_assault, fam_rape, dv_rape), as.numeric))
+
+FV_2020 <- FV %>%
+  filter(year == 2020)
+
+str(FV_2020)
+
+FV_2020 <- FV_2020 %>%
+  mutate(across(c(bronx, brooklyn, manhattan, queens, staten_island,citywide), as.numeric))
+
+
+# Borough totals
+
+
+fjc_borough_2020 <- fjc_2020 %>%
+  select(
+    report_year,
+    comm_dist_boro,
+    fam_dir,
+    fam_fel_assault,
+    dv_fel_assault,
+    fam_rape,
+    dv_rape
+  ) %>%
+  mutate(
+    borough = case_when(
+      str_detect(str_to_lower(comm_dist_boro), "bronx") ~ "Bronx",
+      str_detect(str_to_lower(comm_dist_boro), "brooklyn") ~ "Brooklyn",
+      str_detect(str_to_lower(comm_dist_boro), "manhattan") ~ "Manhattan",
+      str_detect(str_to_lower(comm_dist_boro), "queens") ~ "Queens",
+      str_detect(str_to_lower(comm_dist_boro), "staten") ~ "Staten Island",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  filter(!is.na(borough)) %>%
+  group_by(borough) %>%
+  summarise(
+    fam_dir = sum(fam_dir, na.rm = TRUE),
+    fam_fel_assault = sum(fam_fel_assault, na.rm = TRUE),
+    dv_fel_assault = sum(dv_fel_assault, na.rm = TRUE),
+    fam_rape = sum(fam_rape, na.rm = TRUE),
+    dv_rape = sum(dv_rape, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    incidents_total = fam_dir + fam_fel_assault + dv_fel_assault + fam_rape + dv_rape
+  ) %>%
+  arrange(desc(incidents_total))
+```
+
+```{r}
+#| label: fig-fjc-borough-2020
+#| fig-cap: "Total reported domestic violence–related incidents by borough in 2020. The Bronx and Queens show the highest total incident counts, while Staten Island reports substantially fewer incidents."
+#| fig-alt: "Horizontal bar chart showing total domestic violence–related incidents in 2020 by borough. The Bronx has the highest total, followed by Queens. Manhattan and Brooklyn have moderate levels, and Staten Island has the lowest."
+# Total incidents by borough 
+ggplot(fjc_borough_2020, aes(x = reorder(borough, incidents_total), y = incidents_total)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Total DV-Related Incident Reports by Borough (2020)",
+    x = "Borough",
+    y = "Total incidents (sum of selected measures)"
+  )
+```
+
+## Total DV-related incident reports by borough (2020)
+
+The Bronx experienced the highest total number of reported domestic violence related incidents in 2020, followed by Queens. Manhattan and Brooklyn reported similar (moderate) levels, while Staten Island reported much fewer incidents. This pattern highlights meaningful borough-level differences in reported domestic violence across New York City.
+
+```{r}
+# Incident types by borough
+fjc_borough_long <- fjc_borough_2020 %>%
+  select(borough, fam_dir, fam_fel_assault, dv_fel_assault, fam_rape, dv_rape) %>%
+  pivot_longer(cols = -borough, names_to = "incident_type", values_to = "count")
+```
+
+```{r}
+#| label: fig-fjc_borough-long
+#| fig-cap: "Distribution of domestic violence–related incident types by borough in 2020. Family domestic incident reports substantially exceed felony assault and rape-related categories across all boroughs."
+#| fig-alt: "Grouped bar chart displaying counts of different domestic violence–related incident categories by borough. Family domestic incident reports dominate across all boroughs, with the Bronx showing consistently higher counts across most categories."
+ggplot(fjc_borough_long, aes(x = borough, y = count, fill = incident_type)) +
+  geom_col(position = "dodge") +
+  labs(
+    title = "DV-Related Incident Types by Borough (2020)",
+    x = "Borough",
+    y = "Count",
+    fill = "Incident Type"
+  )
+```
+
+```{r}
+# Annual Report (Services)
+
+service_categories <- c(
+  "FJC_Client_Visits",
+  "FJC_Unique_Clients_Service_Safety_Plan",
+  "FJC_Unique_Clients_Service_Crim_Just",
+  "FJC_Unique_Clients_Service_Counseling",
+  "FJC_Unique_Clients_Service_Housing_Shelter",
+  "FJC_Unique_Clients_Service_Health_Mental_Health"
+)
+
+services_borough_cat_2020 <- FV_2020 %>%
+  filter(category %in% service_categories) %>%
+  pivot_longer(
+    cols = c(bronx, brooklyn, manhattan, queens, staten_island),
+    names_to = "borough",
+    values_to = "count"
+  ) %>%
+  mutate(
+    borough = case_when(
+      borough == "bronx" ~ "Bronx",
+      borough == "brooklyn" ~ "Brooklyn",
+      borough == "manhattan" ~ "Manhattan",
+      borough == "queens" ~ "Queens",
+      borough == "staten_island" ~ "Staten Island",
+      TRUE ~ borough
+    )
+  ) %>%
+  group_by(borough, category) %>%
+  summarise(total = sum(count, na.rm = TRUE), .groups = "drop")
+```
+
+## DV-related incident types by borough (2020)
+
+Across all boroughs, family domestic incident reports dominate the overall incident counts, far exceeding felony assaults and rape-related offenses. This suggests that non-fatal but persistent family violence represents the most common form of reported domestic violence citywide. The Bronx consistently reports higher counts across nearly all incident categories.
+
+```{r}
+#| label: fig-services-borough-cat-2020
+#| fig-cap: "Family Justice Center service utilization by borough in 2020 across major service categories, including client visits, safety planning, criminal justice support, counseling, housing, and mental health services."
+#| fig-alt: "Grouped bar chart showing counts of Family Justice Center services by borough and service type. Client visits are the largest category in all boroughs. Queens shows comparatively higher overall service utilization, while Manhattan and Staten Island show lower totals across categories."
+# Services by borough 
+ggplot(services_borough_cat_2020, aes(x = borough, y = total, fill = category)) +
+  geom_col(position = "dodge") +
+  labs(
+    title = "Family Justice Center Services by Borough (2020)",
+    x = "Borough",
+    y = "Count",
+    fill = "Service Category"
+  )
+```
+
+## Family Justice Center services by borough (2020)
+
+Larger, necessary services, such as housing, mental health support, and criminal justice assistance occur at very low levels compared to the Family Justice Center visits across New York City. Queens shows the highest overall service utilization, while Manhattan and Staten Island show comparatively lower service engagement across categories.
+
+```{r}
+# Comparing incidents vs services 
+
+visits_by_borough_2020 <- services_borough_cat_2020 %>%
+  filter(category == "FJC_Client_Visits") %>%
+  select(borough, fjc_client_visits = total)
+
+# incidents and visits  (standardized ratio)
+compare_2020 <- fjc_borough_2020 %>%
+  select(borough, incidents_total) %>%
+  left_join(visits_by_borough_2020, by = "borough") %>%
+  mutate(
+    visits_per_100_incidents = (fjc_client_visits / incidents_total) * 100
+  ) %>%
+  arrange(desc(incidents_total))
+
+# incidents vs visits 
+compare_long <- compare_2020 %>%
+  select(borough, incidents_total, fjc_client_visits) %>%
+  pivot_longer(cols = -borough, names_to = "metric", values_to = "count")
+```
+
+```{r}
+#| label: fig-compare-long
+#| fig-cap: "Comparison of total reported domestic violence incidents and Family Justice Center client visits by borough in 2020."
+#| fig-alt: "Side-by-side bar chart comparing total domestic violence incidents and total Family Justice Center client visits by borough. Although boroughs with more incidents generally have more visits, the relationship is not proportional. The Bronx has the highest incidents but not the highest number of visits."
+ggplot(compare_long, aes(x = borough, y = count, fill = metric)) +
+  geom_col(position = "dodge") +
+  labs(
+    title = "Reported Incidents vs FJC Client Visits by Borough (2020)",
+    x = "Borough",
+    y = "Count",
+    fill = "Metric"
+  )
+```
+
+## Reported domestic violence incidents versus FJC client visits by borough (2020)
+
+Although boroughs with higher numbers of reported incidents tend to have more FJC client visits, the relationship is not proportional. The Bronx has the highest reported incidents but does not have the highest number of client visits, suggesting potential gaps between need and service engagement or avalability.
+
+
+```{r}
+#| label: fig-compare-2020
+#| fig-cap: "Standardized rate of Family Justice Center client visits per 100 reported domestic violence incidents by borough in 2020."
+#| fig-alt: "Horizontal bar chart showing the number of Family Justice Center client visits per 100 reported incidents in each borough. Staten Island has the highest rate, while the Bronx has the lowest, indicating disparities in service engagement relative to reported need."
+# Visits per 100 incidents 
+ggplot(compare_2020, aes(x = reorder(borough, visits_per_100_incidents), y = visits_per_100_incidents)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "FJC Client Visits per 100 Reported Incidents (2020)",
+    x = "Borough",
+    y = "Visits per 100 incidents"
+  )
+```
+
+## FJC client visits per 100 reported incidents by borough (2020).
+
+When service engagement is standardized relative to reported incident burden, clear disparities emerge. Staten Island has the highest number of visits per 100 incidents, while the Bronx has the lowest. This suggests that victims in boroughs with the highest reported need may be engaging with services at lower rates than those in boroughs with lower reported incident levels. This brings about a concerning question: why are people in Staten Island receiving services after reporting abuse, yet people in the Bronx who are reporting abuse are not receiving the same access to services?
+
+```{r}
+#| label: fig-scatterplot-compare
+#| fig-cap: "Relationship between total reported domestic violence incidents and Family Justice Center client visits by borough in 2020, with fitted linear trend line."
+#| fig-alt: "Scatterplot displaying total reported incidents on the x-axis and Family Justice Center client visits on the y-axis for each borough. A fitted regression line shows a weak positive relationship, with boroughs deviating from proportional alignment between incidents and service use."
+# Scatterplot 
+ggplot(compare_2020, aes(x = incidents_total, y = fjc_client_visits)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Incidents vs FJC Client Visits by Borough (2020)",
+    x = "Total reported incidents (index)",
+    y = "FJC client visits"
+  )
+```
+
+
+## Relationship between reported incidents and FJC client visits by borough (2020)
+
+The scatterplot shows a weak positive relationship between reported incidents and service visits. However, boroughs deviate from the trend line, indicating that service engagement does not increase proportionally with reported domestic violence burden.
+
+```{r}
+# heatmap
+
+services_matrix <- services_borough_cat_2020 %>%
+  pivot_wider(names_from = category, values_from = total) %>%
+  arrange(borough)
+
+services_mat <- services_matrix %>%
+  column_to_rownames("borough") %>%
+  as.matrix()
+```
+
+```{r}
+#| label: fig-pheatmap
+#| fig-cap: "Heatmap illustrating variation in Family Justice Center service utilization by borough and service category in 2020."
+#| fig-alt: "Heatmap showing intensity of Family Justice Center service counts across boroughs and service categories. Darker cells indicate higher service utilization. Queens displays stronger engagement across multiple categories, while housing and mental health services show lower intensity in several boroughs."
+pheatmap(
+  services_mat,
+  cluster_rows = FALSE,
+  cluster_cols = FALSE,
+  main = "FJC Services by Borough (2020)"
+)
+```
+
+## Heatmap of Family Justice Center service utilization by borough (2020)
+
+Service utilization patterns differ across boroughs not only in volume but also in service mix. Queens shows higher engagement across multiple service categories, while other boroughs show lower intensity in several forms of support, particularly housing and mental health services.
+
+```{r}
+top_incidents <- fjc_borough_2020 %>%
+  slice_max(incidents_total, n = 1)
+
+lowest_ratio <- compare_2020 %>%
+  slice_min(visits_per_100_incidents, n = 1)
+
+```
+
+## Discussion
+
+Together, these findings suggest that domestic violence resources are not evenly aligned with reported need across New York City boroughs. The Bronx consistently exhibits the highest domestic violence incidents, yet shows the lowest level of service engagement. In contrast, Staten Island shows much higher service engagement per reported incident.
+
+These disparities may reflect structural barriers such as limited access to Family Justice Centers, transportation challenges, language barriers, fear of retaliation, limited outreach, or insufficient service capacity. This analysis does not suggest that victims are unwilling to seek help, but rather that help may not be equally accessible or visible across boroughs. Some people may not even know help is available. 
+
+## Conclusion
+
+The findings from this analysis raise serious concerns about whether domestic violence resources are adequately meeting the needs of victims in New York City. In boroughs with the highest levels of reported domestic violence (particularly the Bronx) victims appear to engage with support services at disproportionately low rates relative to need.
+
+This gap is not merely a statistical issue; it represents real people whose safety, physical health, mental well-being, and long-term stability may be at risk. When access to support is limited, survivors may remain trapped in abusive environments, and children exposed to violence may face lasting developmental and psychological consequences. Without visible, accessible, and adequately resourced services, cycles of abuse are more likely to continue.
+
+These findings underscore the urgent need to evaluate how domestic violence resources are distributed, promoted, and delivered across boroughs. Improving access to services, especially in areas with the highest reported need, is essential for protecting survivors, supporting families, and preventing future harm. Ensuring that help is both available and attainable is not optional, it is a public responsibility.

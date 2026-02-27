@@ -55,7 +55,7 @@ The following students contributed original research projects to this volume as 
 -   Shannon Joyce - @sec-shannon
 -   Emma Valentina Tupone - @sec-emma
 -   Xinru Wang - @sec-xinru
--   Laura Werner - *(chapter forthcoming)*
+-   Laura Werner - @sec-laura
 
 ## Acknowledgments
 

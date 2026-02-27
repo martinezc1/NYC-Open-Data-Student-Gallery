@@ -15,6 +15,7 @@ book:
     - chapters/06-ToxicHomes-Shannon.qmd
     - chapters/07-EnvironmentalStressorsandSocialComplaintsNYC-Emma.qmd
     - chapters/08-Beating-Around-the-Bush--Uncovering-the-Hidden-Link-Between-Urban-Trees-and-Wildlife-Activity-Xinru.qmd
+    - chapters/09-Domestic-Violence-Incidents-vs-Recourse-Allocation-Across-NYC-Laura.qmd
   appendices:
     - chapters/09-references.qmd
   cover-image: images/cover.png
