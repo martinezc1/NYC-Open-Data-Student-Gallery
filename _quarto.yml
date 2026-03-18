@@ -35,7 +35,7 @@ website:
 format:
   html:
     theme:
-      - quartz
+      - minty
       - brand
     css: styles.css
     toc: true
