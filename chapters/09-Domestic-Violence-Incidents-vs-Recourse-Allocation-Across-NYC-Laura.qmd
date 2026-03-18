@@ -20,6 +20,7 @@ theme_set(theme_solarized_2())
 ```
 
 ## Research Question: {#sec-laura}
+
 Are domestic violence resources for victims meeting the needs of victims in New York City?
 
 Domestic violence is a serious public safety and public health issue that affects individuals, families, and entire communities. Beyond immediate physical harm, domestic violence has long-term psychological, emotional, and developmental consequences, especially for children who are exposed to violence in the home. Access to timely and effective support services is therefore critical for interrupting cycles of abuse and promoting safety and recovery.
@@ -29,11 +30,11 @@ In this project, I examine whether domestic violence–related resources are ali
 If boroughs with the highest levels of reported domestic violence do not also show strong engagement with victim support services, this may indicate gaps in access, outreach, awareness, or service capacity. Understanding these disparities is essential for identifying where additional resources and policy attention may be needed.
 
 ## Data Sources:
-In this analysis I use two publicly available datasets from NYC Open Data, downloaded as CSV files and filtered to the year 2020 to ensure time-aligned comparisons: 
 
-1. [Family Violence Related Snapshots - New York City Community Board Districts](https://data.cityofnewyork.us/Public-Safety/Family-Violence-Related-Snapshots-New-York-City-Co/a35y-93e7/about_data): This dataset contains counts of domestic violence–related incidents reported to law enforcement, disaggregated by community board district and borough. For this analysis, the following measures were aggregated to the borough level: Family Domestic Incident Reports (FAM_DIR), Family Felony Assaults (FAM_Fel_Assault), Domestic Violence Felony Assaults (DV_Fel_Assault), Family Rape (FAM_Rape), and Domestic Violence Rape (DV_Rape).
-2. [Annual Report on Domestic Violence Initiatives (Family Justice Center Services)](https://data.cityofnewyork.us/Social-Services/Annual-Report-on-Domestic-Violence-Initiatives-Ind/7t9i-jsfp/about_data): This dataset summarizes Family Justice Center service utilization by borough. The analysis focuses on the following service categories that were given to victims:
-FJC Client Visits (total amount of people visiting), Safety Planning Services (provided), Criminal Justice Support Services, Counseling Services, Housing and Shelter Services, and Mental Health Services.
+In this analysis I use two publicly available datasets from NYC Open Data, downloaded as CSV files and filtered to the year 2020 to ensure time-aligned comparisons:
+
+1.  [Family Violence Related Snapshots - New York City Community Board Districts](https://data.cityofnewyork.us/Public-Safety/Family-Violence-Related-Snapshots-New-York-City-Co/a35y-93e7/about_data): This dataset contains counts of domestic violence–related incidents reported to law enforcement, disaggregated by community board district and borough. For this analysis, the following measures were aggregated to the borough level: Family Domestic Incident Reports (FAM_DIR), Family Felony Assaults (FAM_Fel_Assault), Domestic Violence Felony Assaults (DV_Fel_Assault), Family Rape (FAM_Rape), and Domestic Violence Rape (DV_Rape).
+2.  [Annual Report on Domestic Violence Initiatives (Family Justice Center Services)](https://data.cityofnewyork.us/Social-Services/Annual-Report-on-Domestic-Violence-Initiatives-Ind/7t9i-jsfp/about_data): This dataset summarizes Family Justice Center service utilization by borough. The analysis focuses on the following service categories that were given to victims: FJC Client Visits (total amount of people visiting), Safety Planning Services (provided), Criminal Justice Support Services, Counseling Services, Housing and Shelter Services, and Mental Health Services.
 
 ```{r}
 
@@ -232,7 +233,6 @@ ggplot(compare_long, aes(x = borough, y = count, fill = metric)) +
 
 Although boroughs with higher numbers of reported incidents tend to have more FJC client visits, the relationship is not proportional. The Bronx has the highest reported incidents but does not have the highest number of client visits, suggesting potential gaps between need and service engagement or avalability.
 
-
 ```{r}
 #| label: fig-compare-2020
 #| fig-cap: "Standardized rate of Family Justice Center client visits per 100 reported domestic violence incidents by borough in 2020."
@@ -266,7 +266,6 @@ ggplot(compare_2020, aes(x = incidents_total, y = fjc_client_visits)) +
     y = "FJC client visits"
   )
 ```
-
 
 ## Relationship between reported incidents and FJC client visits by borough (2020)
 
@@ -313,7 +312,7 @@ lowest_ratio <- compare_2020 %>%
 
 Together, these findings suggest that domestic violence resources are not evenly aligned with reported need across New York City boroughs. The Bronx consistently exhibits the highest domestic violence incidents, yet shows the lowest level of service engagement. In contrast, Staten Island shows much higher service engagement per reported incident.
 
-These disparities may reflect structural barriers such as limited access to Family Justice Centers, transportation challenges, language barriers, fear of retaliation, limited outreach, or insufficient service capacity. This analysis does not suggest that victims are unwilling to seek help, but rather that help may not be equally accessible or visible across boroughs. Some people may not even know help is available. 
+These disparities may reflect structural barriers such as limited access to Family Justice Centers, transportation challenges, language barriers, fear of retaliation, limited outreach, or insufficient service capacity. This analysis does not suggest that victims are unwilling to seek help, but rather that help may not be equally accessible or visible across boroughs. Some people may not even know help is available.
 
 ## Conclusion
 
