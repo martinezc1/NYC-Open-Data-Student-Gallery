@@ -26,6 +26,8 @@ library(tigris)
 library(htmltools)
 ```
 
+(@R-tidyverse) (@R-Hmisc) (@R-corrplot) (@R-lubridate) (@R-leaflet) (@R-sf) (@R-viridis) (@R-stringr) (@R-tidyr) (@R-tigris) (@R-htmltools)
+
 ## Preparing Rearrest Rate Data
 
 I will use three datasets from NYC OpenData. Let's load the "rearrest rate" and the the "DOP Juvenile" datasets. This dataset contains the number of juvenile probationers rearrested divided by the number supervised during the reporting period. This dataset contains the number of active juvenile probation supervision cases on the last day of the reporting period:General Supervision, Pathways to Excellence Achievement and Knowledge (PEAK), Every Child Has An Opportunity To Excel And Succeed (ECHOES), Juvenile Justice Initiative (JJI), Advocate Intervene Mentor (AIM), Enhanced Supervision Program (ESP). The "school discharge" dataset provides annual reporting on New York City Department of Education student discharges and transfers, as required by Local Law 42. It includes the number of students discharged or transferred by grade or cohort, disaggregated by demographics (race/ethnicity, gender, age, English language learner status, and special education status) and summarized at multiple geographic levels (citywide, borough, district, and school). Discharge and transfer codes indicate the reason students exited or moved within the system.

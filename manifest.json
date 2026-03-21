@@ -2765,7 +2765,7 @@
         "Type": "Package",
         "Package": "htmltools",
         "Title": "Tools for HTML",
-        "Version": "0.5.8.1",
+        "Version": "0.5.9",
         "Authors@R": "c(\n    person(\"Joe\", \"Cheng\", , \"joe@posit.co\", role = \"aut\"),\n    person(\"Carson\", \"Sievert\", , \"carson@posit.co\", role = c(\"aut\", \"cre\"),\n           comment = c(ORCID = \"0000-0002-4958-2844\")),\n    person(\"Barret\", \"Schloerke\", , \"barret@posit.co\", role = \"aut\",\n           comment = c(ORCID = \"0000-0001-9986-114X\")),\n    person(\"Winston\", \"Chang\", , \"winston@posit.co\", role = \"aut\",\n           comment = c(ORCID = \"0000-0002-1576-2126\")),\n    person(\"Yihui\", \"Xie\", , \"yihui@posit.co\", role = \"aut\"),\n    person(\"Jeff\", \"Allen\", role = \"aut\"),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"))\n  )",
         "Description": "Tools for HTML generation and output.",
         "License": "GPL (>= 2)",
@@ -2778,16 +2778,21 @@
         "Config/Needs/check": "knitr",
         "Config/Needs/website": "rstudio/quillt, bench",
         "Encoding": "UTF-8",
-        "RoxygenNote": "7.3.1",
+        "RoxygenNote": "7.3.3",
         "Collate": "'colors.R' 'fill.R' 'html_dependency.R' 'html_escape.R'\n'html_print.R' 'htmltools-package.R' 'images.R' 'known_tags.R'\n'selector.R' 'staticimports.R' 'tag_query.R' 'utils.R' 'tags.R'\n'template.R'",
         "NeedsCompilation": "yes",
-        "Packaged": "2024-04-02 14:26:15 UTC; cpsievert",
-        "Author": "Joe Cheng [aut],\n  Carson Sievert [aut, cre] (<https://orcid.org/0000-0002-4958-2844>),\n  Barret Schloerke [aut] (<https://orcid.org/0000-0001-9986-114X>),\n  Winston Chang [aut] (<https://orcid.org/0000-0002-1576-2126>),\n  Yihui Xie [aut],\n  Jeff Allen [aut],\n  Posit Software, PBC [cph, fnd]",
+        "Packaged": "2025-12-02 23:32:55 UTC; cpsievert",
+        "Author": "Joe Cheng [aut],\n  Carson Sievert [aut, cre] (ORCID:\n    <https://orcid.org/0000-0002-4958-2844>),\n  Barret Schloerke [aut] (ORCID: <https://orcid.org/0000-0001-9986-114X>),\n  Winston Chang [aut] (ORCID: <https://orcid.org/0000-0002-1576-2126>),\n  Yihui Xie [aut],\n  Jeff Allen [aut],\n  Posit Software, PBC [cph, fnd]",
         "Maintainer": "Carson Sievert <carson@posit.co>",
         "Repository": "CRAN",
-        "Date/Publication": "2024-04-04 05:03:00 UTC",
-        "Built": "R 4.5.0; aarch64-apple-darwin20; 2025-04-01 06:32:11 UTC; unix",
-        "Archs": "htmltools.so.dSYM"
+        "Date/Publication": "2025-12-04 11:50:09 UTC",
+        "Built": "R 4.5.2; aarch64-apple-darwin20; 2025-12-04 12:12:04 UTC; unix",
+        "Archs": "htmltools.so.dSYM",
+        "RemoteType": "standard",
+        "RemotePkgRef": "htmltools",
+        "RemoteRef": "htmltools",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemoteSha": "0.5.9"
       }
     },
     "htmlwidgets": {
@@ -5628,6 +5633,40 @@
         "Built": "R 4.5.0; ; 2025-04-02 18:23:11 UTC; unix"
       }
     },
+    "tigris": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "description": {
+        "Package": "tigris",
+        "Type": "Package",
+        "Title": "Load Census TIGER/Line Shapefiles",
+        "Version": "2.2.1",
+        "Date": "2025-04-15",
+        "Authors@R": "c(\n      person(given=\"Kyle\", family=\"Walker\", email=\"kyle@walker-data.com\", role=c(\"aut\", \"cre\")),\n      person(given=\"Bob\", family=\"Rudis\", email=\"bob@rudis.net\", role=\"ctb\")\n    )",
+        "URL": "https://github.com/walkerke/tigris",
+        "BugReports": "https://github.com/walkerke/tigris/issues",
+        "Description": "Download TIGER/Line shapefiles from the United States Census Bureau\n    (<https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html>)\n    and load into R as 'sf' objects.",
+        "License": "MIT + file LICENSE",
+        "LazyData": "TRUE",
+        "Encoding": "UTF-8",
+        "Depends": "R (>= 3.3.0)",
+        "Suggests": "testthat, ggplot2, ggthemes, leaflet, knitr, tidycensus, sp",
+        "Imports": "stringr, magrittr, utils, rappdirs, httr, uuid, sf, dplyr,\nmethods",
+        "RoxygenNote": "7.3.2",
+        "NeedsCompilation": "no",
+        "Packaged": "2025-04-16 16:09:54 UTC; kylewalker",
+        "Author": "Kyle Walker [aut, cre],\n  Bob Rudis [ctb]",
+        "Maintainer": "Kyle Walker <kyle@walker-data.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2025-04-16 16:40:02 UTC",
+        "Built": "R 4.5.0; ; 2025-04-16 17:24:13 UTC; unix",
+        "RemoteType": "standard",
+        "RemotePkgRef": "tigris",
+        "RemoteRef": "tigris",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemoteSha": "2.2.1"
+      }
+    },
     "timechange": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
@@ -5904,6 +5943,41 @@
         "Date/Publication": "2026-01-23 18:50:02 UTC",
         "Built": "R 4.5.2; aarch64-apple-darwin20; 2026-01-23 22:37:24 UTC; unix",
         "Archs": "vctrs.so.dSYM"
+      }
+    },
+    "viridis": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "description": {
+        "Package": "viridis",
+        "Type": "Package",
+        "Title": "Colorblind-Friendly Color Maps for R",
+        "Version": "0.6.5",
+        "Date": "2024-01-28",
+        "Authors@R": "c(\n      person(\"Simon\", \"Garnier\", email = \"garnier@njit.edu\", role = c(\"aut\", \"cre\")),\n      person(\"Noam\", \"Ross\", email = \"noam.ross@gmail.com\", role = c(\"ctb\", \"cph\")),\n      person(\"Bob\", \"Rudis\", email = \"bob@rud.is\", role = c(\"ctb\", \"cph\")),\n      person(\"Marco\", \"Sciaini\", email = \"sciaini.marco@gmail.com\", role = c(\"ctb\", \"cph\")),\n      person(\"Antônio Pedro\", \"Camargo\", role = c(\"ctb\", \"cph\")),\n      person(\"Cédric\", \"Scherer\", email = \"scherer@izw-berlin.de\", role = c(\"ctb\", \"cph\"))\n  )",
+        "Maintainer": "Simon Garnier <garnier@njit.edu>",
+        "Description": "Color maps designed to improve graph readability for readers with \n    common forms of color blindness and/or color vision deficiency. The color \n    maps are also perceptually-uniform, both in regular form and also when \n    converted to black-and-white for printing. This package also contains \n    'ggplot2' bindings for discrete and continuous color and fill scales. A lean\n    version of the package called 'viridisLite' that does not include the \n    'ggplot2' bindings can be found at \n    <https://cran.r-project.org/package=viridisLite>.",
+        "License": "MIT + file LICENSE",
+        "Encoding": "UTF-8",
+        "Depends": "R (>= 2.10), viridisLite (>= 0.4.0)",
+        "Imports": "ggplot2 (>= 1.0.1), gridExtra",
+        "Suggests": "hexbin (>= 1.27.0), scales, MASS, knitr, dichromat,\ncolorspace, httr, mapproj, vdiffr, svglite (>= 1.2.0),\ntestthat, covr, rmarkdown, maps, terra",
+        "LazyData": "true",
+        "VignetteBuilder": "knitr",
+        "URL": "https://sjmgarnier.github.io/viridis/,\nhttps://github.com/sjmgarnier/viridis/",
+        "BugReports": "https://github.com/sjmgarnier/viridis/issues",
+        "RoxygenNote": "7.3.1",
+        "NeedsCompilation": "no",
+        "Packaged": "2024-01-28 16:20:23 UTC; simon",
+        "Author": "Simon Garnier [aut, cre],\n  Noam Ross [ctb, cph],\n  Bob Rudis [ctb, cph],\n  Marco Sciaini [ctb, cph],\n  Antônio Pedro Camargo [ctb, cph],\n  Cédric Scherer [ctb, cph]",
+        "Repository": "CRAN",
+        "Date/Publication": "2024-01-29 10:10:02 UTC",
+        "Built": "R 4.5.0; ; 2025-04-02 08:22:12 UTC; unix",
+        "RemoteType": "standard",
+        "RemotePkgRef": "viridis",
+        "RemoteRef": "viridis",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemoteSha": "0.6.5"
       }
     },
     "viridisLite": {
@@ -7014,13 +7088,13 @@
       "checksum": "49b23a276edf8677e7bb779525d2be7d"
     },
     "_quarto.yml": {
-      "checksum": "9e55cab7d6ac34458e6fb42fe25c55d5"
+      "checksum": "349888c48835b61ec9796061bb748957"
     },
     ".Rapp.history": {
       "checksum": "d41d8cd98f00b204e9800998ecf8427e"
     },
     ".RData": {
-      "checksum": "a3140b1fdfddbcf43a0cff01c11b6954"
+      "checksum": "893c41314f0d8663ae7ce3c80c99c98f"
     },
     "bibliography/packages.bib": {
       "checksum": "37c6b65f72842033bd328e109992ce15"
@@ -7038,7 +7112,7 @@
       "checksum": "366235383ba680bb5a203d286d672f99"
     },
     "chapters/05-Final-Project-Isley.qmd": {
-      "checksum": "39f995a5c5c00e87af23b4c40aa9edb6"
+      "checksum": "8064c768411a332d9f1725e4f25a3937"
     },
     "chapters/06-ToxicHomes-Shannon.qmd": {
       "checksum": "784b228740f86af8e64d286c010f1899"
@@ -7050,7 +7124,7 @@
       "checksum": "97a4b56fd8339f6ad9c7e0afc09745d2"
     },
     "chapters/09-Domestic-Violence-Incidents-vs-Recourse-Allocation-Across-NYC-Laura.qmd": {
-      "checksum": "21f62a60a510bf33ff1e7c0777218025"
+      "checksum": "6b3123b520cb4c569afb0dcb2ef26aec"
     },
     "chapters/10-references.qmd": {
       "checksum": "8bc83472745359a671ceb4faa730240f"
