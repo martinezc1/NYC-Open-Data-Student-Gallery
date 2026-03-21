@@ -8,11 +8,11 @@ author: "Isley Jean-Pierre"
 This is a project that I hope to present at the NYC OpenData conference next spring. I must admit that there are some datasets that I intended to use for this final assignment, but because of time and roadblocks, I will focus on the three key datasets for now. My goal is to keep working on this project by finding a meaningful way to include the other datasets. I believe that this project has the potential to become something special. Understanding the relationship between probation supervision levels, juvenile rearrest rates, and school discharge may help policymakers evaluate whether current probation resources are sufficient to 
 reduce recidivism among youth.
 
-## Loading Libraries
+### Loading Libraries
 
 ```{r}
 #| label: setup
-#| include: false
+#| include: true
 library(tidyverse)
 library(Hmisc)
 library(corrplot)
