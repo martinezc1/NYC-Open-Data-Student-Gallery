@@ -1,281 +1,511 @@
 ---
-title: "Final Project"
+title: "From School To Juvenile Incarceration"
 author: "Isley Jean-Pierre"
 ---
 
-# Final Project {#sec-isley}
+## From School To Juvenile Incarceration {#sec-isley}
 
-This is a project that I hope to present at the NYC OpenData conference next spring. I must admit that there are some datasets that I intended to use for this final assignment, but because of time and roadblocks, I will focus on the two keys datasets for now. My goal is to keep on this project by finding a meaningful way to include the other datasets. I believe that this project has the potential to become something special.
+This is a project that I hope to present at the NYC OpenData conference next spring. I must admit that there are some datasets that I intended to use for this final assignment, but because of time and roadblocks, I will focus on the three key datasets for now. My goal is to keep working on this project by finding a meaningful way to include the other datasets. I believe that this project has the potential to become something special. Understanding the relationship between probation supervision levels, juvenile rearrest rates, and school discharge may help policymakers evaluate whether current probation resources are sufficient to 
+reduce recidivism among youth.
 
-(@R-tidyverse) (@R-dplyr) (@R-Hmisc) (@R-ggplot2) (@R-corrplot) (@R-lubridate) (@R-nycOpenData)
+## Loading Libraries
 
 ```{r}
-#| message: false
-#| warning: false
+#| label: setup
+#| include: false
 library(tidyverse)
-library(dplyr)
 library(Hmisc)
-library(ggplot2)
 library(corrplot)
 library(lubridate)
-library(nycOpenData)
+library(leaflet)
+library(sf)
+library(viridis)
+library(stringr)
+library(tidyr)
+library(tigris)
+library(htmltools)
 ```
 
-## Let's load the dataset first
+## Preparing Rearrest Rate Data
+
+I will use three datasets from NYC OpenData. Let's load the "rearrest rate" and the the "DOP Juvenile" datasets. This dataset contains the number of juvenile probationers rearrested divided by the number supervised during the reporting period. This dataset contains the number of active juvenile probation supervision cases on the last day of the reporting period:General Supervision, Pathways to Excellence Achievement and Knowledge (PEAK), Every Child Has An Opportunity To Excel And Succeed (ECHOES), Juvenile Justice Initiative (JJI), Advocate Intervene Mentor (AIM), Enhanced Supervision Program (ESP). The "school discharge" dataset provides annual reporting on New York City Department of Education student discharges and transfers, as required by Local Law 42. It includes the number of students discharged or transferred by grade or cohort, disaggregated by demographics (race/ethnicity, gender, age, English language learner status, and special education status) and summarized at multiple geographic levels (citywide, borough, district, and school). Discharge and transfer codes indicate the reason students exited or moved within the system.
+
+### Loading Rearrest Data
 
 ```{r}
-rea <- nycOpenData::nyc_dop_juvenile_rearrest_rate(limit= 10000)
-head(rea)
+#| label: tbl-rearrest-rate
+# Load dataset
+rea <- nycOpenData::nyc_dop_juvenile_rearrest_rate(limit = 10000)
+
+# Preview first few rows
+rea %>%
+  head() %>%
+  knitr::kable(
+    caption = "Preview of juvenile rearrest rate data from NYC Open Data, showing key variables related to rearrest trends over time."
+  )
 ```
 
-## Let's focus on the years between 2023 and 2025
+### Cleaning Rearrest Data
 
 ```{r}
+#| label: cleaning-rearrest-data
 rea_clean <- rea %>%
   filter(year >= 2023 & year <= 2025)
 
-head(rea_clean)
-```
-
-## Let's create a new column that contains month and year
-
-```{r}
 rea_clean <- rea_clean %>%
   mutate(
     month_year = paste(month,year, sep = " "),
     month_year = my(month_year)
   )
-```
 
-## Removing the previous columns
-
-```{r}
 rea_clean <- rea_clean %>%
-  select(-month, -year)
+      select(-month, -year)
 ```
-
-## Let's see if we can find a correlation between rearrest rates and date Before that let's make sure that the columns are in the right format
+ 
+## Preparing Juvenile Cases Dataset
+This dataset contains the number of active juvenile probation supervision cases 
+on the last day of the reporting period: General Supervision, Pathways to Excellence 
+Achievement and Knowledge (PEAK), Every Child Has An Opportunity To Excel And Succeed (ECHOES),
+venile Justice Initiative (JJI), Advocate Intervene Mentor (AIM), Enhanced Supervision Program (ESP).
 
 ```{r}
-#| label: str
-str(rea_clean)
-```
+#| label: tbl-juvenile-cases-preview
 
-To see the structure.
-
-```{r}
-rea_clean <- rea_clean %>%
-  mutate(
-    rate = as.numeric(rate)  # Making rate into numeric instead of character
-  )
-```
-
-## Let's look at the sum of rearrest rates per year
-
-```{r}
-sum_year <- rea_clean %>%
-  mutate(year = year(month_year)) %>%
-  group_by(year) %>%
-  summarise(
-    total_rate = sum(rate, na.rm = TRUE)
-  )
-sum_year
-```
-
-## For fun, let's look at the average rearrest rates per year
-
-```{r}
-avg_rea_year <- rea_clean %>%
-  mutate(year = year(month_year)) %>%
-  group_by(year) %>%
-  summarise(
-    mean_rate = mean(rate, na.rm = TRUE)
-  )
-avg_rea_year
-```
-
-## Investigating the months
-
-Let's take a closer look to see if there are some months where rearrest rates are higher than others
-
-```{r}
-month_repeat <- rea_clean %>%
-  mutate(month = month(month_year, label = TRUE)) %>%
-  group_by(month) %>%
-  summarise(
-    mean_rate = mean(rate, na.rm = TRUE)
-  )
-month_repeat
-```
-
-## Let's finally see if we can find a correlation between rearrest rates and year
-
-```{r}
-cor(as.numeric(rea_clean$rate), as.numeric(rea_clean$month_year))
-```
-
-It seems that there is indeed a strong correlation between rearrest rates and year with r = 0.69.
-
-## Trying to run a correlation Matrix
-
-```{r}
-rea_cor <- rea_clean %>%
-  mutate(
-    year         = lubridate::year(month_year),
-    month        = lubridate::month(month_year)
-  ) %>%
-  select(rate, year, month)
-```
-
-```{r}
-cor_matrix <- cor(rea_cor)
-cor_matrix
-```
-
-## Building the Correlation Matrix
-
-```{r}
-corrplot(cor_matrix, method = "color", addCoef.col = "orange")
-```
-
-## Playing with ggplot
-
-```{r fig.cap= "This figure shows rearrest rates over time."}
-ggplot(rea_clean, aes(x = month_year, y = rate)) +
-  geom_line(color = "green", size = 1) +
-  geom_point(color = "black", size = 2) +
-  geom_smooth(method = "loess", se = FALSE, color = "red", linetype = "dashed") +
-  labs(
-    title = "Rearrest Rates Over Time",
-    x = "Year",
-    y = "Rate"
-  ) +
-  theme_minimal()
-```
-
-## Playing with ggplot (adding months into the graph)
-
-```{r fig.cap="This figure shows rearrest rates by year."}
-ggplot(rea_clean, aes(x = month_year, y = rate)) +
-  geom_line(color = "lightblue", size = 1) +
-  geom_point(color = "orange", size = 2) +
-  labs(
-    title = "Rearrest Rates Over Time",
-    subtitle = "Monthly Data",
-    x = "Year",
-    y = "Rate"
-  ) +
-  scale_x_date(date_breaks = "3 months", date_labels = "%b %Y") +
-  theme_light() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
-
-## For this section, I will use another dataset
-
-## Let's call the data
-
-```{r}
+# Load dataset
 juv <- nycOpenData::nyc_dop_juvenile_cases(limit = 10000)
-head(juv)
+
+# Preview first few rows
+juv %>%
+  head() %>%
+  knitr::kable(
+    caption = "Sample of the NYC Department of Probation juvenile cases dataset, illustrating the structure and key variables used in the analysis."
+  )
 ```
 
-## Let's look into the data from 2023 until 2025
+### Cleaning Rearrest Data
 
 ```{r}
 juv_clean <- juv %>%
   filter(year >= 2023 & year <= 2025)
-head(juv_clean)
-```
 
-## let's combine month and year together
-
-```{r}
 juv_clean <- juv_clean %>%
   mutate(
     month_year = paste(month,year, sep = " "),
     month_year = my(month_year)
   )
-head(juv_clean)
-```
 
-## Removing unwanted columns
-
-```{r}
 juv_clean <- juv_clean %>%
   select(-month, -year)
-```
 
-## Let's play around
-
-Let's see if we can find a correlation between rearrest rates and date but before that let's make sure that the columns are in the right format.
-
-```{r}
-str(juv_clean)
-```
-
-To look at the structure.
-
-## Let's see... (mutating scc form character to numeric)
-
-```{r}
 juv_clean <- juv_clean %>%
   mutate(supervision_caseload_count = as.numeric(supervision_caseload_count))
 ```
 
-```{r}
-juv_clean %>%
-  group_by(supervision_caseload_type) %>%
-  summarise(mean_count = mean(supervision_caseload_count, na.rm = TRUE))
-```
+## Combining Datasets
 
-## Let's run a correlation
+To investigate whether probation caseload size relates to rearrest rates, the datasets 
+were aggregated by month and merged using the `month_year` variable. This allows direct 
+comparison between monthly rearrest rates and the total number of youth supervised.
 
 ```{r}
-cor(juv_clean$supervision_caseload_count, as.numeric(juv_clean$month_year))
-```
-
-There is a very weak correlation (r = 0.06) between Supervision Caseload Count and Year.
-
-## Let's visualize the data
-
-```{r fig.cap="This figure shows the average supervision caseload count per program type."}
-juv_clean %>%
-  group_by(supervision_caseload_type) %>%
-  summarise(mean_count = mean(supervision_caseload_count, na.rm = TRUE)) %>%
-  ggplot(aes(x = reorder(supervision_caseload_type, mean_count), y = mean_count, fill = supervision_caseload_type)) +
-  geom_col(show.legend = FALSE) +
-  coord_flip() +
-  labs(
-    title = "Average Supervision Caseload Count by Program",
-    x = "Program Type",
-    y = "Average Caseload Count"
-  ) +
-  theme_minimal()
-```
-
-## Let's investigate further
-
-Let's try to include years into the graph.
-
-```{r}
-juv_year <- juv_clean %>%
-  mutate(year = year(month_year)) %>%         
-  group_by(supervision_caseload_type, year) %>%
+#| label: tbl-combined-data-preview
+#| 
+juv_month <- juv_clean %>%
+  group_by(month_year) %>%
   summarise(
-    total_count = sum(supervision_caseload_count, na.rm = TRUE),
-    .groups = "drop"                        
+    total_cases = sum(supervision_caseload_count, na.rm = TRUE)
+  )
+
+combined_data <- rea_clean %>%
+  left_join(juv_month, by = "month_year")
+
+combined_data$rate <- as.numeric(combined_data$rate)
+
+combined_data %>%
+  head() %>%
+  knitr::kable(
+    caption = "Preview of the merged dataset combining juvenile rearrest rates with monthly juvenile probation caseloads. This table confirms successful alignment by month-year and prepares the data for subsequent analysis."
   )
 ```
 
-```{r fig.cap="This figure shows supervision caseload type and count per year."}
-ggplot(juv_year, aes(x = factor(year), y = supervision_caseload_type, fill = total_count)) +
-  geom_tile(color = "white") +
-  scale_fill_viridis_c(option = "C") +
+## Analysis
+
+### Correlation Analysis
+
+```{r}
+cor(combined_data$rate, combined_data$total_cases, use = "complete.obs")
+```
+
+The correlation coefficient suggests the degree to which larger supervision caseloads correspond with higher or lower rearrest rates. While correlation does not imply causation, the relationship provides preliminary insight into how supervision capacity may relate to youth outcomes.
+
+### Regression Analysis
+
+A simple linear regression was used to test whether monthly probation caseload levels predict rearrest rates.
+
+```{r}
+model <- lm(rate ~ total_cases, data = combined_data)
+summary(model)
+```
+
+### Time Series Comparison
+
+```{r}
+#| label: fig-rearrest-rates-and-juv-caseload-over-time
+#| message: false
+#| warning: true
+#| fig.cap: This figure shows Rearrest Rates and Juvenile Caseloads Over Time.
+#| fig.alt: This figure shows Rearrest Rates and Juvenile Caseloads Over Time.
+
+combined_scaled <- combined_data %>%
+  mutate(rate_scaled = scale(rate),
+         cases_scaled = scale(total_cases))
+
+ggplot(combined_scaled, aes(x = month_year)) +
+  geom_line(aes(y = rate_scaled, color = "Rearrest Rate"), size = 1) +
+  geom_line(aes(y = cases_scaled, color = "Caseload"), size = 1) +
+  labs(title = "Rearrest Rates and Juvenile Caseloads Over Time",
+       x = "Date", y = "Standardized Value", color = "Variable") +
+  theme_minimal()
+```
+
+The standardized trend lines show that rearrest rates and caseloads generally move together, suggesting months with higher supervision counts tend to correspond with higher rearrest rates.
+
+### Visualizing Caseload and Rearrest Rates
+
+```{r}
+#| label: fig-juv-caseload-and-rearrest-rates
+#| message: false
+#| warning: true
+#| fig.cap: This figure shows Relationship Between Juvenile Caseloads and Rearrest Rates.
+#| fig.alt: This figure shows Relationship Between Juvenile Caseloads and Rearrest Rates.
+#| paged-print : false
+
+ggplot(combined_data, aes(x = total_cases, y = rate)) +
+  geom_point(color = "darkblue", alpha = 0.7, size = 3) +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
   labs(
-    title = "Caseload Counts by Program Per Year",
-    x = "Year",
-    y = "Program Type",
-    fill = "Total Count"
+    title = "Relationship Between Juvenile Caseloads and Rearrest Rates",
+    x = "Total Juvenile Probation Caseload",
+    y = "Rearrest Rate"
   ) +
   theme_minimal()
 ```
+
+This scatterplot shows the relationship between total juvenile probation caseloads and rearrest rates each month. The red trend line suggests that months with higher caseloads tend to have slightly higher rearrest rates, though there is variation and other factors likely play a role. While this doesn’t prove causation, it highlights how supervision levels may be related to youth outcomes and can inform resource planning.
+
+
+## Investigating Middle School vs High School Discharge
+
+```{r}
+#| label: tbl-school-discharge-preview
+
+# Load and clean dataset
+sdis <- nycOpenData::nyc_school_discharge(limit = 10000) %>%
+  select(-code, -discharge_description)
+
+# Preview cleaned dataset
+sdis %>%
+  head() %>%
+  knitr::kable(
+    caption = "Preview of the NYC school discharge dataset after removing unnecessary variables. The data include discharge counts by school level, district, and discharge type."
+  )
+```
+
+### Preparing Discharge Data
+
+```{r}
+sdis_male <- sdis %>%
+  filter(
+    student_category == "Male",
+    school_level %in% c("Middle School", "High School"),
+    count_of_students != "s",
+    total_enrolled_students != "s"
+  ) %>%
+  mutate(
+    count_of_students = as.numeric(count_of_students),
+    total_enrolled_students = as.numeric(total_enrolled_students)
+  )
+
+sdis_male <- sdis_male %>%
+  mutate(discharge_rate = count_of_students / total_enrolled_students)
+```
+
+
+### Summarizing Discharge Data
+
+```{r}
+#| label: tbl-discharge-summary
+
+sum_r <- sdis_male %>%
+  group_by(school_level) %>%
+  summarise(
+    mean_rate = mean(discharge_rate, na.rm = TRUE),
+    sd_rate = sd(discharge_rate, na.rm = TRUE),
+    n_schools = n()
+  )
+
+sum_r %>%
+  knitr::kable(
+    caption = "Summary statistics of discharge rates for male students by school level, including the mean discharge rate, standard deviation, and number of schools."
+  )
+```
+
+### Discharge Analyzes
+
+#### Independent T-Test
+
+```{r}
+t.test(discharge_rate ~ school_level, data = sdis_male)
+```
+
+T-Test results show no significant difference between males in middle school vs 
+high school discharge.
+
+#### Discharge Types by School Level
+
+```{r}
+#| label: tbl-discharge-contingency
+
+table_male <- sdis_male %>%
+  group_by(school_level, discharge_category) %>%
+  summarise(total = sum(count_of_students), .groups = "drop")
+
+c_tab <- xtabs(total ~ school_level + discharge_category, data = table_male)
+
+knitr::kable(
+  c_tab,
+  caption = "Contingency table showing total counts of discharge types by school level for male students."
+)
+```
+
+#### Chi-Square Analysis
+
+```{r}
+#| label: tbl-chi-square-test
+
+chi_res <- chisq.test(c_tab)
+
+chi_table <- tibble::tibble(
+  Statistic = chi_res$statistic,
+  Degrees_of_Freedom = chi_res$parameter,
+  P_Value = chi_res$p.value
+)
+
+chi_table %>%
+  knitr::kable(
+    caption = "Chi-square test of independence examining the relationship between school level and discharge category for male students."
+  )
+```
+
+### Visualizing Discharge Patterns
+#### Discharge Rates by School Level
+
+```{r}
+#| label: fig-discharge-boxplot
+#| message: false
+#| warning: true
+#| fig.cap: This figure shows Male Student Discharge Rates by School Level.
+#| fig.alt: This figure shows Male Student Discharge Rates by School Level.
+#| paged-print : false
+
+ggplot(sdis_male, aes(x = school_level, y = discharge_rate)) +
+  geom_boxplot() +
+  labs(
+    title = "Male Student Discharge Rates by School Level",
+    x = "School Level",
+    y = "Discharge Rate"
+  ) +
+  theme_minimal()
+```
+
+#### Discharge Type Composition by School Level
+
+```{r}
+#| label: fig-discharge-rate-barchart
+#| message: false
+#| warning: true
+#| fig.cap: This figure shows The Distribution of Discharge Types Among Male Students.
+#| fig.alt: This figure shows The Distribution of Discharge Types Among Male Students
+#| paged-print : false
+
+ggplot(table_male, aes(x = school_level, y = total, fill = discharge_category)) +
+  geom_bar(stat = "identity", position = "fill") +
+  labs(
+    title = "Distribution of Discharge Types Among Male Students",
+    y = "Proportion",
+    x = "School Level"
+  ) +
+  theme_minimal()
+```
+
+## Mapping District-Level Differences
+
+### Preparing District-Level Data
+
+```{r}
+sdis_male <- sdis %>%
+  filter(
+    student_category == "Male",
+    school_level %in% c("Middle School", "High School"),
+    count_of_students != "s",
+    total_enrolled_students != "s"
+  ) %>%
+  mutate(
+    count_of_students = as.numeric(count_of_students),
+    total_enrolled_students = as.numeric(total_enrolled_students),
+    discharge_rate = count_of_students / total_enrolled_students,
+    district = str_extract(geographic_unit, "\\d+"),
+    district = sprintf("%02d", as.numeric(district))
+  ) %>%
+  filter(!is.na(district))
+```
+
+```{r}
+district_summary <- sdis_male %>%
+  group_by(district, school_level) %>%
+  summarise(
+    mean_rate = mean(discharge_rate, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  pivot_wider(
+    names_from = school_level,
+    values_from = mean_rate
+  ) %>%
+  mutate(rate_diff = `High School` - `Middle School`)
+```
+
+### Districts with the Largest Gaps
+
+```{r}
+#| label: tbl-top-district-rate-differences
+
+district_summary %>%
+  arrange(desc(rate_diff)) %>%
+  slice_head(n = 5) %>%
+  knitr::kable(
+    caption = "Top five districts with the largest positive difference between high school and middle school male discharge rates."
+  )
+```
+
+### Building the Spatial Dataset
+
+```{r}
+#| message: false
+#| warning: false
+
+nyc_districts <- school_districts(
+  state = "NY",
+  year = 2022,
+  class = "sf",
+  progress_bar = FALSE
+) %>%
+  mutate(
+    district = substr(GEOID, nchar(GEOID) - 1, nchar(GEOID))
+  ) %>%
+  filter(district %in% sprintf("%02d", 1:32))
+
+map_data <- nyc_districts %>%
+  left_join(district_summary, by = "district")
+```
+
+### Static District Map
+
+```{r}
+#| label: fig-district-static-map
+#| message: false
+#| warning: false
+#| fig.cap: "District-level difference in male discharge rates between high schools and middle schools across New York City."
+#| fig.alt: "Static choropleth map of New York City school districts shaded by the difference between high school and middle school male discharge rates."
+
+ggplot(map_data) +
+  geom_sf(aes(fill = rate_diff), color = "lightblue", linewidth = 0.2) +
+  scale_fill_viridis_c(
+    name = "High − Middle\nDischarge Rate",
+    na.value = "grey90"
+  ) +
+  labs(
+    title = "Difference in Male Discharge Rates by School Level",
+    subtitle = "NYC School Districts",
+    caption = "Positive values indicate higher rates in high school"
+  ) +
+  theme_minimal()
+```
+
+### Interactive District Map
+
+```{r}
+#| label: fig-district-leaflet-map
+#| message: false
+#| warning: false
+#| fig-alt: Leaflet map of New York City school districts shaded by the difference between high school and middle school discharge rates, with darker areas indicating larger positive differences.
+#| fig-cap: Interactive map of NYC school districts showing the difference between high school and middle school discharge rates. Darker colors indicate districts where high school discharge rates exceed middle school rates by a larger margin.
+# Join district summary data to district boundaries
+district_map <- nyc_districts %>%
+  left_join(district_summary, by = "district") %>%
+  sf::st_transform(4326)
+
+# Create color palette
+pal <- colorNumeric(
+  palette = viridis::viridis(256),
+  domain = district_map$rate_diff,
+  na.color = "grey90"
+)
+
+# Interactive leaflet map
+leaflet(map_data) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(
+    fillColor = ~pal(rate_diff),
+    fillOpacity = 0.8,
+    color = "white",
+    weight = 1,
+    label = ~paste(
+      "District:", district,
+      "<br>High − Middle Rate:",
+      round(rate_diff, 3)
+    ) %>% lapply(HTML)
+  ) %>%
+  addLegend(
+    pal = pal,
+    values = ~rate_diff,
+    title = "High − Middle<br>Discharge Rate",
+    opacity = 1
+  )
+```
+
+### Focusing On Five Boroughs
+
+```{r}
+#| label: fig-district-leaflet-boroughs
+#| message: false
+#| warning: false
+#| fig.cap: "Interactive map focused on the five boroughs of New York City, showing district-level differences between high school and middle school male discharge rates. Darker shading indicates larger positive differences."
+#| fig.alt: "Leaflet map zoomed to the five boroughs of New York City, with school districts colored by the difference between high school and middle school male discharge rates."
+leaflet(map_data) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  fitBounds(
+    lng1 = -74.30, lat1 = 40.45,   # southwest corner
+    lng2 = -73.65, lat2 = 40.95    # northeast corner
+  ) %>%
+  addPolygons(
+    fillColor = ~pal(rate_diff),
+    fillOpacity = 0.8,
+    color = "white",
+    weight = 1,
+    label = ~paste(
+      "District:", district,
+      "<br>High − Middle Rate:",
+      round(rate_diff, 3)
+    ) %>% lapply(htmltools::HTML)
+  ) %>%
+  addLegend(
+    pal = pal,
+    values = ~rate_diff,
+    title = "High − Middle<br>Discharge Rate",
+    opacity = 1
+  )
+```
+
+## Notes
+
+Overall, combining probation and school discharge data helps us develop a better understand of systemic pressures on youth. Trends in caseloads, rearrests, and school discharges together highlight potential intervention points. Future work could include demographic data or other datasets to explore more intersectional patterns to gain deeper insights on the key players that lead to recidivism in youths.
