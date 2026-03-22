@@ -57,6 +57,21 @@ The following students contributed original research projects to this volume as 
 -   Xinru Wang - @sec-xinru
 -   Laura Werner - @sec-laura
 
+## License
+
+This work is licensed under a Creative Commons Attribution 4.0 International License (CC BY 4.0).
+
+You are free to:
+
+-   Share — copy and redistribute the material
+-   Adapt — remix, transform, and build upon the material
+
+Under the following terms:
+
+-   Attribution — You must give appropriate credit.
+
+[Full license](https://creativecommons.org/licenses/by/4.0/)
+
 ## Acknowledgments
 
 Special thanks to the Brooklyn College Open Educational Resources (OER) team for their support throughout the development of this project. Their dedication to open education and student-centered learning helped make this volume possible.
@@ -65,4 +80,4 @@ Special thanks to the Brooklyn College Open Educational Resources (OER) team for
 
 If you use or reference this volume, please cite it as:
 
-> Martinez, C. A. (Ed.). (2025). *NYC Open Data: Student Research Projects in Reproducible Psychological Research*. Brooklyn College, CUNY. Open-access textbook.
+> Martinez, C. A. (Ed.). (2026). *NYC Open Data: Student Research Projects in Reproducible Psychological Research*. Brooklyn College, CUNY. Open-access textbook.

@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: If you use this textbook, please cite it as follows.
+title: NYC Open Data Student Gallery
+type: book
+authors:
+- family-names: Martinez
+  given-names: Christian
+  orcid: https://orcid.org/0009-0005-6026-6454
+license: CC-BY-4.0
+version: 1.0.0
+date-released: '2026-02-01'
+url: https://martinezc1-nyc-open-data-student-gallery.share.connect.posit.cloud/
+repository-code: https://github.com/martinezc1/NYC-Open-Data-Student-Gallery
+abstract: An open educational resource designed to highlight student research projects using NYC Open Data.
