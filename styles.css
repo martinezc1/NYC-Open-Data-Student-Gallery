@@ -1,0 +1,36 @@
+.cover-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.cover-image {
+  margin-bottom: 0.5rem;
+}
+
+.cover-credit {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.cover-page h1 {
+  margin-bottom: 0.5rem;
+}
+
+.cover-page h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+.cover-page p {
+  margin-top: 0.5rem;
+}
+

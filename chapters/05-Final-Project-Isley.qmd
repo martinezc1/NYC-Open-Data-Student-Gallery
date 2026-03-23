@@ -111,7 +111,6 @@ comparison between monthly rearrest rates and the total number of youth supervis
 
 ```{r}
 #| label: tbl-combined-data-preview
-#| 
 juv_month <- juv_clean %>%
   group_by(month_year) %>%
   summarise(

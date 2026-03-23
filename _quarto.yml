@@ -7,6 +7,7 @@ book:
   date: "2026-01-29"
   chapters:
     - index.qmd
+    - about.qmd
     - chapters/01-Final-Project-Crystal.qmd
     - chapters/02-Final-Social-Infrastructure-and-Well-Being-Jonah.qmd
     - chapters/03-Final-Restaurant-and-Museum-Project-Joyce.qmd
@@ -18,7 +19,6 @@ book:
     - chapters/09-Domestic-Violence-Incidents-vs-Recourse-Allocation-Across-NYC-Laura.qmd
   appendices:
     - chapters/10-references.qmd
-  cover-image: images/cover.png
 
 execute:
   freeze: auto

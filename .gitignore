@@ -32,3 +32,4 @@ _book/
 
 # R build artifacts
 *.tar.gz
+/.quarto/
